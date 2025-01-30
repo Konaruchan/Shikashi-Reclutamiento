@@ -152,5 +152,43 @@
             </div>
         </div>
     </nav>
+<div class="marquee-container">
+    <div class="marquee-content">
+        <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
+    </div>
+</div>
+
+<style>
+    .marquee-container {
+        background: #ffd700;
+        color: #cc0000;
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 0.8rem 0;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        width: 100%;
+    }
+
+    .marquee-content {
+        display: inline-block;
+        white-space: nowrap;
+        will-change: transform;
+        animation: marquee 10s linear infinite;
+    }
+
+    @keyframes marquee {
+        from { transform: translateX(100%); }
+        to { transform: translateX(-100%); }
+    }
+
+    @media (max-width: 768px) {
+        .marquee-container {
+            font-size: 1rem;
+            padding: 0.6rem 0;
+        }
+    }
+</style>
 </body>
 </html>
