@@ -159,23 +159,36 @@
 </div>
 
 <style>
+    @font-face {
+        font-family: 'MarqueeFont';
+        src: url('ttf/marquee.woff2') format('woff2'),
+             url('ttf/marquee.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
     .marquee-container {
-        background: #ffd700;
-        color: #cc0000;
-        font-size: 1.2rem;
+        background: #c9a300; /* Amarillo más oscuro y menos chillón */
+        color: #7a0000; /* Rojo más elegante */
+        font-family: 'MarqueeFont', sans-serif; /* Nueva tipografía personalizada */
+        font-size: 1.3rem;
         font-weight: bold;
         padding: 0.8rem 0;
         overflow: hidden;
         white-space: nowrap;
         position: relative;
         width: 100%;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .marquee-content {
         display: inline-block;
         white-space: nowrap;
         will-change: transform;
-        animation: marquee 10s linear infinite;
+        animation: marquee 12s linear infinite;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     @keyframes marquee {
@@ -185,7 +198,7 @@
 
     @media (max-width: 768px) {
         .marquee-container {
-            font-size: 1rem;
+            font-size: 1.1rem;
             padding: 0.6rem 0;
         }
     }
