@@ -5,24 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shikashi Monthly Friday Series</title>
     <style>
-        /* Carga de Fuentes Personalizadas */
-        @font-face {
-            font-family: 'BotonesFont';
-            src: url('ttf/botones.woff2') format('woff2'),
-                 url('ttf/botones.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'MarqueeFont';
-            src: url('ttf/marquee.woff2') format('woff2'),
-                 url('ttf/marquee.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
         /* Reset General */
         * {
             margin: 0;
@@ -31,104 +13,20 @@
         }
 
         body {
-            font-size: 14px;
-            line-height: 1.6;
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             color: #333;
+            line-height: 1.6;
         }
 
-        /* Barra de Navegación (Compactada) */
-        nav {
-            background: #cc0000;
-            padding: 0.5rem 0; /* Reducido desde 0.8rem */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        .nav-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo-container {
-            width: 100%;
-            text-align: center;
-            padding: 0.3rem 0; /* Reducido desde 0.5rem */
-            border-bottom: 1px solid #ffd700; /* Grosor reducido */
-        }
-        .logo {
-            width: 100%;
-            max-width: 150px; /* Reducido desde 180px */
-            height: auto;
-            transition: transform 0.3s ease;
-        }
-        .logo:hover {
-            transform: rotate(-3deg) scale(1.05);
-        }
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 0.8rem; /* Reducido desde 1rem */
-            padding: 0.6rem 0; /* Reducido desde 1rem */
-            flex-wrap: wrap;
-        }
-        .nav-link {
-            font-family: 'BotonesFont', Arial, sans-serif;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 0.4rem 0.8rem; /* Reducido desde 0.6rem 1.2rem */
-            border-radius: 4px; /* Reducido desde 6px */
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.2);
-            text-transform: uppercase;
-            font-size: 0.9rem; /* Reducido desde 1rem */
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-        .nav-link:hover {
-            background: #ffd700;
-            color: #cc0000;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Responsive Design para Menú */
-        @media (max-width: 768px) {
-            .nav-container {
-                padding: 0 0.5rem;
-            }
-            .logo {
-                max-width: 130px; /* Reducido desde 160px */
-            }
-            .nav-links {
-                flex-direction: column;
-                gap: 0.6rem; /* Reducido desde 0.8rem */
-                display: none;
-            }
-            .nav-link {
-                width: 100%;
-                font-size: 0.8rem; /* Reducido desde 0.9rem */
-                padding: 0.4rem; /* Reducido desde 0.6rem */
-                text-align: center;
-                background: rgba(0, 0, 0, 0.3);
-            }
-        }
-        @media (min-width: 769px) {
-            .nav-links {
-                display: flex !important;
-            }
-        }
-
-        /* Marquee Elegante (Compactado) */
+        /* Marquee (Ya implementado previamente) */
         .marquee-container {
             background: linear-gradient(135deg, #f4a200, #ff6f61);
             color: #7a0000;
             font-family: 'MarqueeFont', Arial, sans-serif;
-            font-size: 0.9rem; /* Reducido desde 1.1rem */
+            font-size: 0.9rem;
             font-weight: bold;
-            padding: 0.5rem 0.8rem; /* Reducido desde 0.8rem 1rem */
+            padding: 0.5rem 0.8rem;
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
@@ -139,55 +37,152 @@
             display: inline-block;
             white-space: nowrap;
             will-change: transform;
-            animation: marquee 12s linear infinite; /* Duración reducida */
+            animation: marquee 12s linear infinite;
             text-transform: uppercase;
             letter-spacing: 1px;
             position: relative;
         }
         .marquee-content span {
-            padding: 0 15px; /* Reducido desde 20px */
+            padding: 0 15px;
         }
-
-        /* Animación del Marquee */
         @keyframes marquee {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
         }
 
-        /* Responsive Design para Marquee */
+        /* Sección Principal Debajo del Marquee */
+        .hero-image-section {
+            position: relative;
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* Cuadrícula Dinámica Encima de la Imagen */
+        .overlay-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .overlay-grid.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .grid-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 0.8rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .grid-item h3 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: #333;
+        }
+
+        .grid-item p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .marquee-container {
-                font-size: 0.8rem; /* Reducido desde 1rem */
-                padding: 0.4rem 0.6rem; /* Reducido desde 0.6rem 0.8rem */
+            .overlay-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Barra de Navegación -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo-container">
-                <img src="img/logo.png" 
-                     alt="Logo de Shikashi Monthly Friday Series" 
-                     class="logo"
-                     loading="lazy">
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Rensai</a>
-                <a href="#" class="nav-link">SMF Plus</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Marquee Elegante -->
+    <!-- Marquee -->
     <div class="marquee-container">
         <div class="marquee-content">
             <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
             <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
         </div>
     </div>
+
+    <!-- Hero Image Section -->
+    <section class="hero-image-section">
+        <img src="img/hero-image.jpg" alt="Imagen Destacada" class="hero-image" loading="lazy">
+
+        <!-- Overlay Grid -->
+        <div class="overlay-grid" id="overlayGrid">
+            <div class="grid-item big-item">
+                <img src="img/article1.jpg" alt="Artículo Destacado">
+                <h3>El Mejor Manga de la Semana</h3>
+                <p>Descubre por qué este manga está causando furor.</p>
+            </div>
+            <div class="grid-item">
+                <img src="img/article2.jpg" alt="Artículo Secundario">
+                <h3>Rensai Exclusivo</h3>
+                <p>Análisis profundo de las últimas tendencias.</p>
+            </div>
+            <div class="grid-item">
+                <img src="img/article3.jpg" alt="Artículo Secundario">
+                <h3>Noticias del Mundo Manga</h3>
+                <p>Lo último en lanzamientos y eventos.</p>
+            </div>
+            <div class="grid-item">
+                <img src="img/article4.jpg" alt="Artículo Secundario">
+                <h3>Recomendaciones Especiales</h3>
+                <p>Nuestros favoritos de la semana.</p>
+            </div>
+            <div class="grid-item">
+                <img src="img/article5.jpg" alt="Artículo Secundario">
+                <h3>Próximos Lanzamientos</h3>
+                <p>Mantente al tanto de lo que viene.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Mostrar el overlay después de 2 segundos
+        setTimeout(() => {
+            const overlay = document.getElementById('overlayGrid');
+            overlay.classList.add('active');
+        }, 2000);
+    </script>
 </body>
 </html>
