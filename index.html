@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shikashi Monthly Friday Series</title>
     <style>
+        /* Carga de Fuentes Personalizadas */
         @font-face {
             font-family: 'BotonesFont';
             src: url('ttf/botones.woff2') format('woff2'),
@@ -13,110 +14,6 @@
             font-style: normal;
             font-display: swap;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-size: 14px; /* Reducción del tamaño general */
-        }
-
-        nav {
-            background: #cc0000;
-            padding: 0.8rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .nav-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .logo-container {
-            width: 100%;
-            text-align: center;
-            padding: 0.5rem 0;
-            border-bottom: 2px solid #ffd700;
-        }
-
-        .logo {
-            width: 100%;
-            max-width: 180px;
-            height: auto;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: rotate(-3deg) scale(1.05);
-        }
-
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            padding: 1rem 0;
-            flex-wrap: wrap;
-        }
-
-        .nav-link {
-            font-family: 'BotonesFont', sans-serif;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            background: rgba(0,0,0,0.2);
-            text-transform: uppercase;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link:hover {
-            background: #ffd700;
-            color: #cc0000;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        @media (max-width: 768px) {
-            .nav-container {
-                padding: 0 0.5rem;
-            }
-
-            .logo {
-                max-width: 160px;
-            }
-
-            .nav-links {
-                flex-direction: column;
-                gap: 0.8rem;
-                display: none;
-            }
-
-            .nav-link {
-                width: 100%;
-                font-size: 0.9rem;
-                padding: 0.6rem;
-                text-align: center;
-                background: rgba(0,0,0,0.3);
-            }
-        }
-
-        @media (min-width: 769px) {
-            .nav-links {
-                display: flex !important;
-            }
-        }
-
-        /* Marquee */
         @font-face {
             font-family: 'MarqueeFont';
             src: url('ttf/marquee.woff2') format('woff2'),
@@ -126,47 +23,153 @@
             font-display: swap;
         }
 
+        /* Reset General */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 14px;
+            line-height: 1.6;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* Barra de Navegación */
+        nav {
+            background: #cc0000;
+            padding: 0.8rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-container {
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid #ffd700;
+        }
+        .logo {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: rotate(-3deg) scale(1.05);
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            font-family: 'BotonesFont', Arial, sans-serif;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-link:hover {
+            background: #ffd700;
+            color: #cc0000;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design para Menú */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 0.5rem;
+            }
+            .logo {
+                max-width: 160px;
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 0.8rem;
+                display: none;
+            }
+            .nav-link {
+                width: 100%;
+                font-size: 0.9rem;
+                padding: 0.6rem;
+                text-align: center;
+                background: rgba(0, 0, 0, 0.3);
+            }
+        }
+        @media (min-width: 769px) {
+            .nav-links {
+                display: flex !important;
+            }
+        }
+
+        /* Marquee Elegante */
         .marquee-container {
-            background: #f4a200;
+            background: linear-gradient(135deg, #f4a200, #ff6f61);
             color: #7a0000;
-            font-family: 'MarqueeFont', sans-serif;
+            font-family: 'MarqueeFont', Arial, sans-serif;
             font-size: 1.1rem;
             font-weight: bold;
-            padding: 0.6rem 0;
+            padding: 0.8rem 1rem;
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
-
         .marquee-content {
             display: inline-block;
             white-space: nowrap;
             will-change: transform;
-            animation: marquee 10s linear infinite;
+            animation: marquee 15s linear infinite;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+        }
+        .marquee-content span {
+            padding: 0 20px; /* Espaciado entre repeticiones */
         }
 
+        /* Animación del Marquee */
         @keyframes marquee {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
         }
 
+        /* Responsive Design para Marquee */
         @media (max-width: 768px) {
             .marquee-container {
                 font-size: 1rem;
-                padding: 0.5rem 0;
+                padding: 0.6rem 0.8rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Barra de Navegación -->
     <nav>
         <div class="nav-container">
             <div class="logo-container">
                 <img src="img/logo.png" 
-                     alt="Shikashi Monthly Friday Series" 
+                     alt="Logo de Shikashi Monthly Friday Series" 
                      class="logo"
                      loading="lazy">
             </div>
@@ -179,8 +182,10 @@
         </div>
     </nav>
 
+    <!-- Marquee Elegante -->
     <div class="marquee-container">
         <div class="marquee-content">
+            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
             <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
         </div>
     </div>
