@@ -38,10 +38,10 @@
             color: #333;
         }
 
-        /* Barra de Navegación */
+        /* Barra de Navegación (Compactada) */
         nav {
             background: #cc0000;
-            padding: 0.8rem 0;
+            padding: 0.5rem 0; /* Reducido desde 0.8rem */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         .nav-container {
@@ -54,12 +54,12 @@
         .logo-container {
             width: 100%;
             text-align: center;
-            padding: 0.5rem 0;
-            border-bottom: 2px solid #ffd700;
+            padding: 0.3rem 0; /* Reducido desde 0.5rem */
+            border-bottom: 1px solid #ffd700; /* Grosor reducido */
         }
         .logo {
             width: 100%;
-            max-width: 180px;
+            max-width: 150px; /* Reducido desde 180px */
             height: auto;
             transition: transform 0.3s ease;
         }
@@ -69,20 +69,20 @@
         .nav-links {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            padding: 1rem 0;
+            gap: 0.8rem; /* Reducido desde 1rem */
+            padding: 0.6rem 0; /* Reducido desde 1rem */
             flex-wrap: wrap;
         }
         .nav-link {
             font-family: 'BotonesFont', Arial, sans-serif;
             color: #ffffff;
             text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
+            padding: 0.4rem 0.8rem; /* Reducido desde 0.6rem 1.2rem */
+            border-radius: 4px; /* Reducido desde 6px */
             transition: all 0.3s ease;
             background: rgba(0, 0, 0, 0.2);
             text-transform: uppercase;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Reducido desde 1rem */
             letter-spacing: 1px;
             position: relative;
             overflow: hidden;
@@ -100,17 +100,17 @@
                 padding: 0 0.5rem;
             }
             .logo {
-                max-width: 160px;
+                max-width: 130px; /* Reducido desde 160px */
             }
             .nav-links {
                 flex-direction: column;
-                gap: 0.8rem;
+                gap: 0.6rem; /* Reducido desde 0.8rem */
                 display: none;
             }
             .nav-link {
                 width: 100%;
-                font-size: 0.9rem;
-                padding: 0.6rem;
+                font-size: 0.8rem; /* Reducido desde 0.9rem */
+                padding: 0.4rem; /* Reducido desde 0.6rem */
                 text-align: center;
                 background: rgba(0, 0, 0, 0.3);
             }
@@ -121,14 +121,14 @@
             }
         }
 
-        /* Marquee Elegante */
+        /* Marquee Elegante (Compactado) */
         .marquee-container {
             background: linear-gradient(135deg, #f4a200, #ff6f61);
             color: #7a0000;
             font-family: 'MarqueeFont', Arial, sans-serif;
-            font-size: 1.1rem;
+            font-size: 0.9rem; /* Reducido desde 1.1rem */
             font-weight: bold;
-            padding: 0.8rem 1rem;
+            padding: 0.5rem 0.8rem; /* Reducido desde 0.8rem 1rem */
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
@@ -139,13 +139,13 @@
             display: inline-block;
             white-space: nowrap;
             will-change: transform;
-            animation: marquee 15s linear infinite;
+            animation: marquee 12s linear infinite; /* Duración reducida */
             text-transform: uppercase;
             letter-spacing: 1px;
             position: relative;
         }
         .marquee-content span {
-            padding: 0 20px; /* Espaciado entre repeticiones */
+            padding: 0 15px; /* Reducido desde 20px */
         }
 
         /* Animación del Marquee */
@@ -157,8 +157,8 @@
         /* Responsive Design para Marquee */
         @media (max-width: 768px) {
             .marquee-container {
-                font-size: 1rem;
-                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem; /* Reducido desde 1rem */
+                padding: 0.4rem 0.6rem; /* Reducido desde 0.6rem 0.8rem */
             }
         }
     </style>
