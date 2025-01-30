@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shikashi Monthly Friday Series</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        nav {
+            background: #cc0000; /* Rojo principal */
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            width: 100%;
+            text-align: center;
+            padding: 1rem 0;
+            border-bottom: 2px solid #ffd700; /* Amarillo */
+        }
+
+        .logo {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background: rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            background: #ffd700; /* Amarillo */
+            color: #cc0000; /* Rojo */
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                max-width: 150px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                gap: 0.5rem;
+                display: none; /* Ocultar en móvil (podríamos añadir hamburguesa después) */
+            }
+            
+            .nav-link {
+                width: 80%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="img/logo.png" alt="Shikashi Monthly Friday Series" class="logo">
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Inicio</a>
+                <a href="#" class="nav-link">Noticias</a>
+                <a href="#" class="nav-link">Rensai</a>
+                <a href="#" class="nav-link">SMF Plus</a>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
