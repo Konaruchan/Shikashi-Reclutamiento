@@ -351,6 +351,112 @@
             </div>
         </div>
     </section>
+<!-- Contador Dinámico -->
+<section class="countdown-section">
+    <div class="countdown-container">
+        <h2>¡Próximo Lanzamiento en:</h2>
+        <div class="countdown">
+            <div class="countdown-item">
+                <span id="days">0</span>
+                <p>Días</p>
+            </div>
+        </div>
+        <p class="easter-egg" id="easterEgg">¿Puedes encontrar el easter egg?</p>
+    </div>
+</section>
+
+<style>
+    /* Estilo para el Contador */
+    .countdown-section {
+        max-width: 1100px;
+        margin: 2rem auto;
+        padding: 1rem;
+        text-align: center;
+        background: #f4a200;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .countdown-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .countdown {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .countdown-item {
+        background: #ffffff;
+        color: #333;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        font-family: 'BotonesFont', Arial, sans-serif;
+        text-transform: uppercase;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .countdown-item p {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        color: #666;
+        text-transform: none;
+        font-weight: normal;
+    }
+    .easter-egg {
+        font-size: 0.9rem;
+        color: #7a0000;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .easter-egg:hover {
+        transform: scale(1.05);
+    }
+    .easter-egg.active {
+        color: #ffd700;
+        font-size: 1.1rem;
+        animation: shake 0.5s ease infinite;
+    }
+    @keyframes shake {
+        0% { transform: translateX(-2px); }
+        50% { transform: translateX(2px); }
+        100% { transform: translateX(-2px); }
+    }
+</style>
+
+<script>
+    // Función para calcular los días restantes
+    function updateCountdown() {
+        const targetDate = new Date('2024-03-28T00:00:00').getTime();
+        const now = new Date().getTime();
+        const timeLeft = targetDate - now;
+
+        if (timeLeft > 0) {
+            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            document.getElementById('days').textContent = daysLeft;
+        } else {
+            document.getElementById('days').textContent = '¡Lanzamiento!';
+        }
+    }
+
+    // Actualizar el contador cada segundo
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Inicializar inmediatamente
+
+    // Easter Egg
+    let clicks = 0;
+    const easterEgg = document.getElementById('easterEgg');
+    easterEgg.addEventListener('click', () => {
+        clicks++;
+        if (clicks === 5) {
+            easterEgg.textContent = '🎉 ¡Encontraste el easter egg! 🎉';
+            easterEgg.classList.add('active');
+        }
+    });
+</script>
 
     <script>
         // Mostrar el overlay después de 2 segundos
