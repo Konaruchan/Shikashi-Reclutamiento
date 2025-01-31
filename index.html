@@ -361,7 +361,7 @@
                 <p>Días</p>
             </div>
         </div>
-        <p class="easter-egg" id="easterEgg">¿Puedes encontrar el easter egg?</p>
+        <p class="easter-egg" id="easterEgg">¿Soportaras la espera?</p>
     </div>
 </section>
 
@@ -430,7 +430,7 @@
 <script>
     // Función para calcular los días restantes
     function updateCountdown() {
-        const targetDate = new Date('2024-03-28T00:00:00').getTime();
+        const targetDate = new Date('2025-03-28T00:00:00').getTime();
         const now = new Date().getTime();
         const timeLeft = targetDate - now;
 
@@ -452,7 +452,7 @@
     easterEgg.addEventListener('click', () => {
         clicks++;
         if (clicks === 5) {
-            easterEgg.textContent = '🎉 ¡Encontraste el easter egg! 🎉';
+            easterEgg.textContent = '¡Deja de tocarme animal!';
             easterEgg.classList.add('active');
         }
     });
