@@ -6,12 +6,11 @@ async function fetchArticles() {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data, 'text/html');
         const links = doc.querySelectorAll('a');
-
         const articles = [];
 
         links.forEach(link => {
             const articlePath = link.getAttribute('href');
-            if (articlePath.endsWith('/')) {
+            if (articlePath.endsWith('/') && articlePath !== '/') {
                 articles.push(articlePath);
             }
         });
