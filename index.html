@@ -7,17 +7,14 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
-
+    <script src="js/scripts.js"></script>
 </head>
 <body>
     <!-- Barra de Navegación -->
     <nav>
         <div class="nav-container">
             <div class="logo-container">
-                <img src="img/logo.png" 
-                     alt="Logo de Shikashi Monthly Friday Series" 
-                     class="logo"
-                     loading="lazy">
+                <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" class="logo" loading="lazy">
             </div>
             <div class="nav-links">
                 <a href="#" class="nav-link">Inicio</a>
@@ -27,50 +24,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Marquee Elegante -->
-    <div class="marquee-container">
-        <div class="marquee-content">
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-        </div>
-    </div>
-
-    <!-- Hero Image Section -->
-    <section class="hero-image-section">
-        <img src="img/hero-image.jpg" alt="Imagen Destacada" class="hero-image" loading="lazy">
-
-        <!-- Overlay Grid -->
-        <div class="overlay-grid" id="overlayGrid">
-            <div class="small-items">
-                <div class="small-item">
-                    <img src="img/article2-exclusive-rensai.jpg" alt="Rensai Exclusivo">
-                    <h3>Rensai Exclusivo</h3>
-                    <p>Análisis profundo de las últimas tendencias.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article3-manga-news.jpg" alt="Noticias del Mundo Manga">
-                    <h3>Noticias del Mundo Manga</h3>
-                    <p>Lo último en lanzamientos y eventos.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article4-special-recommendations.jpg" alt="Recomendaciones Especiales">
-                    <h3>Recomendaciones Especiales</h3>
-                    <p>Nuestros favoritos de la semana.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article5-upcoming-releases.jpg" alt="Próximos Lanzamientos">
-                    <h3>Próximos Lanzamientos</h3>
-                    <p>Mantente al tanto de lo que viene.</p>
-                </div>
-            </div>
-            <div class="big-item">
-                <img src="img/article1-best-manga.jpg" alt="El Mejor Manga de la Semana">
-                <h3>El Mejor Manga de la Semana</h3>
-                <p>Descubre por qué este manga está causando furor.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- Sección de Artículos Destacados -->
     <section class="featured-articles-section">
@@ -90,80 +43,26 @@
         <button class="carousel-button next" id="nextButton">❯</button>
     </section>
 
-    <!-- Cuadro de Errores -->
-    <div class="error-container" id="error-container">
-        <!-- Errores se mostrarán aquí dinámicamente -->
-    </div>
-
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const featuredArticlesContainer = document.getElementById('featured-articles-container');
-        const carouselContainer = document.getElementById('carousel-container');
-        const errorContainer = document.getElementById('error-container');
-        const prevButton = document.getElementById('prevButton');
-        const nextButton = document.getElementById('nextButton');
+        document.addEventListener('DOMContentLoaded', () => {
+            const featuredArticlesContainer = document.getElementById('featured-articles-container');
+            const carouselContainer = document.getElementById('carousel-container');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
 
-        let currentPage = 0;
-        const articlesPerPage = 5;
-        let maxRetries = 10; // Límite de reintentos para cargar artículos
-        let retryCount = 0;
+            let currentPage = 0;
+            const articlesPerPage = 5;
 
-        function displayError(message) {
-            const errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            errorElement.textContent = message;
-            errorContainer.appendChild(errorElement);
-        }
+            function displayFeaturedArticles(articles) {
+                featuredArticlesContainer.innerHTML = '';
+                const featuredArticles = articles.filter(article => article.featured);
 
-        function displayFeaturedArticles(articles) {
-            featuredArticlesContainer.innerHTML = '';
-            const featuredArticles = articles.filter(article => article.featured);
+                // Repetir artículos si hay menos de 5 destacados
+                while (featuredArticles.length < 5) {
+                    featuredArticles.push(...articles);
+                }
 
-            // Repetir artículos si hay menos de 5 destacados
-            while (featuredArticles.length < 5) {
-                featuredArticles.push(...articles);
-            }
-
-            featuredArticles.slice(0, 5).forEach(article => {
-                const articleElement = document.createElement('div');
-                articleElement.className = 'article-item';
-
-                articleElement.innerHTML = `
-                    <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
-                    <h2>${article.title}</h2>
-                    <p class="article-subtitle">${article.subtitle}</p>
-                    <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
-                    <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
-                `;
-
-                featuredArticlesContainer.appendChild(articleElement);
-            });
-        }
-
-        function displayCarouselArticles(articles) {
-            carouselContainer.innerHTML = '';
-
-            // Ordenar artículos: featured, new, fecha
-            articles.sort((a, b) => {
-                if (a.featured && !b.featured) return -1;
-                if (!a.featured && b.featured) return 1;
-                if (a.new && !b.new) return -1;
-                if (!a.new && b.new) return 1;
-                return new Date(b.date) - new Date(a.date);
-            });
-
-            // Repetir artículos si hay menos de 15
-            while (articles.length < 15) {
-                articles.push(...articles);
-            }
-
-            const pages = [];
-            for (let i = 0; i < articles.length; i += articlesPerPage) {
-                const page = articles.slice(i, i + articlesPerPage);
-                const pageContainer = document.createElement('div');
-                pageContainer.className = 'carousel-page';
-
-                page.forEach(article => {
+                featuredArticles.slice(0, 5).forEach(article => {
                     const articleElement = document.createElement('div');
                     articleElement.className = 'article-item';
 
@@ -175,83 +74,89 @@
                         <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
                     `;
 
-                    pageContainer.appendChild(articleElement);
+                    featuredArticlesContainer.appendChild(articleElement);
+                });
+            }
+
+            function displayCarouselArticles(articles) {
+                carouselContainer.innerHTML = '';
+
+                // Ordenar artículos: featured, new, fecha
+                articles.sort((a, b) => {
+                    if (a.featured && !b.featured) return -1;
+                    if (!a.featured && b.featured) return 1;
+                    if (a.new && !b.new) return -1;
+                    if (!a.new && b.new) return 1;
+                    return new Date(b.date) - new Date(a.date);
                 });
 
-                pages.push(pageContainer);
-            }
-
-            pages.forEach((page, index) => {
-                carouselContainer.appendChild(page);
-                if (index === 0) {
-                    page.classList.add('active');
+                // Repetir artículos si hay menos de 15
+                while (articles.length < 15) {
+                    articles.push(...articles);
                 }
-            });
 
-            // Manejo de botones de carrusel
-            prevButton.addEventListener('click', () => {
-                currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
-                showPage(currentPage);
-            });
+                const pages = [];
+                for (let i = 0; i < articles.length; i += articlesPerPage) {
+                    const page = articles.slice(i, i + articlesPerPage);
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'carousel-page';
 
-            nextButton.addEventListener('click', () => {
-                currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                showPage(currentPage);
-            });
-        }
+                    page.forEach(article => {
+                        const articleElement = document.createElement('div');
+                        articleElement.className = 'article-item';
 
-        function showPage(pageIndex) {
-            const pages = carouselContainer.querySelectorAll('.carousel-page');
-            pages.forEach((page, index) => {
-                page.style.display = index === pageIndex ? 'flex' : 'none';
-            });
-        }
+                        articleElement.innerHTML = `
+                            <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                            <h2>${article.title}</h2>
+                            <p class="article-subtitle">${article.subtitle}</p>
+                            <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
+                            <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
+                        `;
 
-        function displayArticles() {
-            if (window.articlesData) {
-                displayFeaturedArticles(window.articlesData);
-                displayCarouselArticles(window.articlesData);
-            } else if (retryCount < maxRetries) {
-                retryCount++;
-                setTimeout(displayArticles, 100); // Esperar hasta que se carguen los artículos
-            } else {
-                displayError('No se pudieron cargar los artículos. Por favor, verifica la carpeta "articulos".');
+                        pageContainer.appendChild(articleElement);
+                    });
+
+                    pages.push(pageContainer);
+                }
+
+                pages.forEach((page, index) => {
+                    carouselContainer.appendChild(page);
+                    if (index === 0) {
+                        page.classList.add('active');
+                    }
+                });
+
+                // Manejo de botones de carrusel
+                prevButton.addEventListener('click', () => {
+                    currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
+                    showPage(currentPage);
+                });
+
+                nextButton.addEventListener('click', () => {
+                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                    showPage(currentPage);
+                });
             }
-        }
 
-        // Mostrar el overlay después de 2 segundos
-        setTimeout(() => {
-            const overlay = document.getElementById('overlayGrid');
-            overlay.classList.add('active');
-        }, 2000);
+            function showPage(pageIndex) {
+                const pages = carouselContainer.querySelectorAll('.carousel-page');
+                pages.forEach((page, index) => {
+                    page.style.display = index === pageIndex ? 'flex' : 'none';
+                });
+            }
 
-        // Inicializar la carga de artículos
-        displayArticles();
-    });
-</script>
-<script>
-    window.articlesData = [
-        {
-            title: "Artículo de Prueba 1",
-            subtitle: "Este es un artículo de prueba.",
-            date: "2023-10-01",
-            author: "Autor de Prueba",
-            featured: true,
-            new: true,
-            path: "articulos/test/",
-            id: "test"
-        },
-        {
-            title: "Artículo de Prueba 2",
-            subtitle: "Otro artículo de prueba.",
-            date: "2023-10-02",
-            author: "Autor de Prueba",
-            featured: false,
-            new: false,
-            path: "articulos/test2/",
-            id: "test2"
-        }
-    ];
-</script>
+            function displayArticles() {
+                if (window.articlesData) {
+                    displayFeaturedArticles(window.articlesData);
+                    displayCarouselArticles(window.articlesData);
+                } else {
+                    setTimeout(displayArticles, 100); // Esperar hasta que se carguen los artículos
+                }
+            }
+
+            // Inicializar la carga de artículos
+            displayArticles();
+        });
+    </script>
 </body>
 </html>
