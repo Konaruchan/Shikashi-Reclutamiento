@@ -6,7 +6,6 @@
     <title>Shikashi Monthly Friday Series</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
     <script src="js/scripts.js"></script>
 </head>
 <body>
@@ -24,6 +23,14 @@
             </div>
         </div>
     </nav>
+
+    <!-- Marquee Elegante -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
+            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
+        </div>
+    </div>
 
     <!-- Sección de Artículos Destacados -->
     <section class="featured-articles-section">
@@ -67,7 +74,7 @@
                     articleElement.className = 'article-item';
 
                     articleElement.innerHTML = `
-                        <img src="${article.path.replace('.md', '')}/thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                        <img src="${article.thumbnail}" alt="${article.title}" class="article-thumbnail">
                         <h2>${article.title}</h2>
                         <p class="article-subtitle">${article.subtitle}</p>
                         <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
@@ -106,7 +113,7 @@
                         articleElement.className = 'article-item';
 
                         articleElement.innerHTML = `
-                            <img src="${article.path.replace('.md', '')}/thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                            <img src="${article.thumbnail}" alt="${article.title}" class="article-thumbnail">
                             <h2>${article.title}</h2>
                             <p class="article-subtitle">${article.subtitle}</p>
                             <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
