@@ -67,7 +67,7 @@
                     articleElement.className = 'article-item';
 
                     articleElement.innerHTML = `
-                        <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                        <img src="${article.path.replace('.md', '')}/thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
                         <h2>${article.title}</h2>
                         <p class="article-subtitle">${article.subtitle}</p>
                         <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
@@ -106,7 +106,7 @@
                         articleElement.className = 'article-item';
 
                         articleElement.innerHTML = `
-                            <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                            <img src="${article.path.replace('.md', '')}/thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
                             <h2>${article.title}</h2>
                             <p class="article-subtitle">${article.subtitle}</p>
                             <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
