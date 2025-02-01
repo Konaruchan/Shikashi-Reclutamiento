@@ -1,75 +1,68 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikashi Monthly Friday Series</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="js/scripts.js"></script>
-</head>
-<body>
-    <!-- Barra de Navegación -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo-container">
-                <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" class="logo" loading="lazy">
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Rensai</a>
-                <a href="#" class="nav-link">SMF Plus</a>
-            </div>
-        </div>
-    </nav>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded disparado. Iniciando inicialización de la página...');
 
-    <!-- Marquee Elegante -->
-    <div class="marquee-container">
-        <div class="marquee-content">
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-        </div>
-    </div>
+        const featuredArticlesContainer = document.getElementById('featured-articles-container');
+        const carouselContainer = document.getElementById('carousel-container');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
 
-    <!-- Sección de Artículos Destacados -->
-    <section class="featured-articles-section">
-        <h2>Artículos Destacados</h2>
-        <div class="featured-articles-container" id="featured-articles-container">
-            <!-- Artículos destacados se cargarán aquí dinámicamente -->
-        </div>
-    </section>
+        let currentPage = 0;
+        const articlesPerPage = 5;
 
-    <!-- Carrusel de Artículos Recientes -->
-    <section class="carousel-section">
-        <h2>Artículos Recientes</h2>
-        <div class="carousel-container" id="carousel-container">
-            <!-- Carrusel se cargará aquí dinámicamente -->
-        </div>
-        <button class="carousel-button prev" id="prevButton">❮</button>
-        <button class="carousel-button next" id="nextButton">❯</button>
-    </section>
+        function displayFeaturedArticles(articles) {
+            console.log('Mostrando artículos destacados...');
+            featuredArticlesContainer.innerHTML = '';
+            const featuredArticles = articles.filter(article => article.featured);
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const featuredArticlesContainer = document.getElementById('featured-articles-container');
-            const carouselContainer = document.getElementById('carousel-container');
-            const prevButton = document.getElementById('prevButton');
-            const nextButton = document.getElementById('nextButton');
+            // Repetir artículos si hay menos de 5 destacados
+            while (featuredArticles.length < 5) {
+                featuredArticles.push(...articles);
+            }
 
-            let currentPage = 0;
-            const articlesPerPage = 5;
+            featuredArticles.slice(0, 5).forEach(article => {
+                console.log('Procesando artículo destacado:', article.title);
+                const articleElement = document.createElement('div');
+                articleElement.className = 'article-item';
 
-            function displayFeaturedArticles(articles) {
-                featuredArticlesContainer.innerHTML = '';
-                const featuredArticles = articles.filter(article => article.featured);
+                articleElement.innerHTML = `
+                    <img src="${article.thumbnail}" alt="${article.title}" class="article-thumbnail">
+                    <h2>${article.title}</h2>
+                    <p class="article-subtitle">${article.subtitle}</p>
+                    <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
+                    <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
+                `;
 
-                // Repetir artículos si hay menos de 5 destacados
-                while (featuredArticles.length < 5) {
-                    featuredArticles.push(...articles);
-                }
+                featuredArticlesContainer.appendChild(articleElement);
+            });
+        }
 
-                featuredArticles.slice(0, 5).forEach(article => {
+        function displayCarouselArticles(articles) {
+            console.log('Mostrando carrusel de artículos...');
+            carouselContainer.innerHTML = '';
+
+            // Ordenar artículos: featured, new, fecha
+            articles.sort((a, b) => {
+                if (a.featured && !b.featured) return -1;
+                if (!a.featured && b.featured) return 1;
+                if (a.new && !b.new) return -1;
+                if (!a.new && b.new) return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            // Repetir artículos si hay menos de 15
+            while (articles.length < 15) {
+                articles.push(...articles);
+            }
+
+            const pages = [];
+            for (let i = 0; i < articles.length; i += articlesPerPage) {
+                const page = articles.slice(i, i + articlesPerPage);
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'carousel-page';
+
+                page.forEach(article => {
+                    console.log('Procesando artículo del carrusel:', article.title);
                     const articleElement = document.createElement('div');
                     articleElement.className = 'article-item';
 
@@ -81,89 +74,53 @@
                         <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
                     `;
 
-                    featuredArticlesContainer.appendChild(articleElement);
+                    pageContainer.appendChild(articleElement);
                 });
+
+                pages.push(pageContainer);
             }
 
-            function displayCarouselArticles(articles) {
-                carouselContainer.innerHTML = '';
-
-                // Ordenar artículos: featured, new, fecha
-                articles.sort((a, b) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    if (a.new && !b.new) return -1;
-                    if (!a.new && b.new) return 1;
-                    return new Date(b.date) - new Date(a.date);
-                });
-
-                // Repetir artículos si hay menos de 15
-                while (articles.length < 15) {
-                    articles.push(...articles);
+            pages.forEach((page, index) => {
+                carouselContainer.appendChild(page);
+                if (index === 0) {
+                    page.classList.add('active');
                 }
+            });
 
-                const pages = [];
-                for (let i = 0; i < articles.length; i += articlesPerPage) {
-                    const page = articles.slice(i, i + articlesPerPage);
-                    const pageContainer = document.createElement('div');
-                    pageContainer.className = 'carousel-page';
+            // Manejo de botones de carrusel
+            prevButton.addEventListener('click', () => {
+                currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
+                showPage(currentPage);
+            });
 
-                    page.forEach(article => {
-                        const articleElement = document.createElement('div');
-                        articleElement.className = 'article-item';
+            nextButton.addEventListener('click', () => {
+                currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                showPage(currentPage);
+            });
+        }
 
-                        articleElement.innerHTML = `
-                            <img src="${article.thumbnail}" alt="${article.title}" class="article-thumbnail">
-                            <h2>${article.title}</h2>
-                            <p class="article-subtitle">${article.subtitle}</p>
-                            <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
-                            <a href="articulo.html?id=${article.id}" class="read-more">Leer Más</a>
-                        `;
+        function showPage(pageIndex) {
+            console.log('Cambiando página del carrusel a:', pageIndex);
+            const pages = carouselContainer.querySelectorAll('.carousel-page');
+            pages.forEach((page, index) => {
+                page.style.display = index === pageIndex ? 'flex' : 'none';
+            });
+        }
 
-                        pageContainer.appendChild(articleElement);
-                    });
-
-                    pages.push(pageContainer);
-                }
-
-                pages.forEach((page, index) => {
-                    carouselContainer.appendChild(page);
-                    if (index === 0) {
-                        page.classList.add('active');
-                    }
-                });
-
-                // Manejo de botones de carrusel
-                prevButton.addEventListener('click', () => {
-                    currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
-                    showPage(currentPage);
-                });
-
-                nextButton.addEventListener('click', () => {
-                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                    showPage(currentPage);
-                });
+        function displayArticles() {
+            console.log('Intentando mostrar artículos...');
+            if (window.articlesData) {
+                console.log('Artículos encontrados en window.articlesData:', window.articlesData);
+                displayFeaturedArticles(window.articlesData);
+                displayCarouselArticles(window.articlesData);
+            } else {
+                console.log('Artículos no disponibles todavía. Reintentando en 100ms...');
+                setTimeout(displayArticles, 100); // Esperar hasta que se carguen los artículos
             }
+        }
 
-            function showPage(pageIndex) {
-                const pages = carouselContainer.querySelectorAll('.carousel-page');
-                pages.forEach((page, index) => {
-                    page.style.display = index === pageIndex ? 'flex' : 'none';
-                });
-            }
-
-            function displayArticles() {
-                if (window.articlesData) {
-                    displayFeaturedArticles(window.articlesData);
-                    displayCarouselArticles(window.articlesData);
-                } else {
-                    setTimeout(displayArticles, 100); // Esperar hasta que se carguen los artículos
-                }
-            }
-
-            // Inicializar la carga de artículos
-            displayArticles();
-        });
-    </script>
-</body>
-</html>
+        // Inicializar la carga de artículos
+        console.log('Inicializando displayArticles...');
+        displayArticles();
+    });
+</script>
