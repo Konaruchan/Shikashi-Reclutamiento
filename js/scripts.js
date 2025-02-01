@@ -1,35 +1,26 @@
 // Función principal para cargar y parsear los artículos
 async function fetchArticles() {
     try {
-        // Paso 1: Cargar la lista de carpetas dentro de "articulos/"
-        const response = await fetch('articulos/');
+        // Paso 1: Leer el archivo articulos.txt
+        const response = await fetch('articulos.txt');
         if (!response.ok) {
-            throw new Error(`Error al cargar la carpeta 'articulos/': ${response.status}`);
+            throw new Error(`Error al cargar el archivo 'articulos.txt': ${response.status}`);
         }
         const data = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, 'text/html');
-        const links = doc.querySelectorAll('a');
 
-        // Filtrar solo las carpetas válidas
-        const folders = [];
-        links.forEach(link => {
-            const folderPath = link.getAttribute('href');
-            if (folderPath.endsWith('/') && folderPath !== '/') {
-                folders.push(folderPath);
-            }
-        });
+        // Paso 2: Extraer las rutas de los archivos Markdown
+        const articlePaths = data.split('\n').map(line => line.trim()).filter(line => line !== '');
 
-        // Paso 2: Leer los archivos Markdown dentro de cada carpeta
+        // Paso 3: Cargar y parsear cada archivo Markdown
         const articles = [];
-        for (const folder of folders) {
-            const article = await loadArticleContent(folder);
+        for (const path of articlePaths) {
+            const article = await loadArticleContent(path);
             if (article) {
                 articles.push(article);
             }
         }
 
-        // Paso 3: Exponer los datos para que los HTMLs puedan usarlos
+        // Paso 4: Exponer los datos para que los HTMLs puedan usarlos
         window.articlesData = articles;
     } catch (error) {
         console.error('Error al cargar los artículos:', error);
@@ -38,10 +29,10 @@ async function fetchArticles() {
 }
 
 // Función para cargar y parsear el contenido de un artículo
-async function loadArticleContent(folderPath) {
+async function loadArticleContent(filePath) {
     try {
         // Leer el archivo Markdown
-        const markdownResponse = await fetch(`${folderPath}articulo.md`);
+        const markdownResponse = await fetch(filePath);
         if (!markdownResponse.ok) {
             throw new Error(`Error al cargar el archivo Markdown: ${markdownResponse.status}`);
         }
@@ -58,17 +49,17 @@ async function loadArticleContent(folderPath) {
         const content = marked.parse(match[2]);
 
         // Obtener el nombre de la carpeta como ID interno del artículo
-        const folderName = folderPath.split('/').filter(Boolean)[0];
+        const folderName = filePath.split('/')[0];
 
         // Devolver el artículo parseado
         return {
             ...frontmatter,
             content,
-            path: folderPath,
+            path: filePath,
             id: folderName
         };
     } catch (error) {
-        console.error(`Error al cargar el artículo en la carpeta ${folderPath}:`, error);
+        console.error(`Error al cargar el artículo en la ruta ${filePath}:`, error);
         return null; // Devolver null si hay un error
     }
 }
