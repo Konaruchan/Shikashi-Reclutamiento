@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
-    <script src="js/scripts.js"></script>
+
 </head>
 <body>
     <!-- Barra de Navegación -->
@@ -228,6 +228,30 @@
         // Inicializar la carga de artículos
         displayArticles();
     });
+</script>
+<script>
+    window.articlesData = [
+        {
+            title: "Artículo de Prueba 1",
+            subtitle: "Este es un artículo de prueba.",
+            date: "2023-10-01",
+            author: "Autor de Prueba",
+            featured: true,
+            new: true,
+            path: "articulos/test/",
+            id: "test"
+        },
+        {
+            title: "Artículo de Prueba 2",
+            subtitle: "Otro artículo de prueba.",
+            date: "2023-10-02",
+            author: "Autor de Prueba",
+            featured: false,
+            new: false,
+            path: "articulos/test2/",
+            id: "test2"
+        }
+    ];
 </script>
 </body>
 </html>
