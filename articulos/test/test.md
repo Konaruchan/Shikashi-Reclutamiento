@@ -13,13 +13,9 @@ new: true
 
 Este es un artículo sobre el manga más popular de la semana. Descubriremos por qué está causando furor entre los fans.
 
-![imagen1.png]
-
 ## Resumen
 
 El manga "One Piece" continúa siendo el más leído y amado por los fans.
-
-![imagen2.png]
 
 ## Conclusión
 
