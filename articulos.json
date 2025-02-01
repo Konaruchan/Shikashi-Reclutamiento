@@ -1,0 +1,13 @@
+[
+    {
+        "id": "test",
+        "title": "El Mejor Manga de la Semana",
+        "subtitle": "Descubre por qué este manga está causando furor.",
+        "date": "2025-03-20",
+        "author": "Juan Pérez",
+        "featured": true,
+        "new": true,
+        "path": "articulos/test/articulo.md",
+        "thumbnail": "articulos/test/thumbnail.jpg"
+    }
+]
