@@ -4,287 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shikashi Monthly Friday Series</title>
-    <style>
-        /* Carga de Fuentes Personalizadas */
-        @font-face {
-            font-family: 'BotonesFont';
-            src: url('ttf/botones.woff2') format('woff2'),
-                 url('ttf/botones.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'MarqueeFont';
-            src: url('ttf/marquee.woff2') format('woff2'),
-                 url('ttf/marquee.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        /* Reset General */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-size: 14px;
-            line-height: 1.6;
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-
-        /* Barra de Navegación (Compactada) */
-        nav {
-            background: #cc0000;
-            padding: 0.5rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        .nav-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo-container {
-            width: 100%;
-            text-align: center;
-            padding: 0.3rem 0;
-            border-bottom: 1px solid #ffd700;
-        }
-        .logo {
-            width: 100%;
-            max-width: 150px;
-            height: auto;
-            transition: transform 0.3s ease;
-        }
-        .logo:hover {
-            transform: rotate(-3deg) scale(1.05);
-        }
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 0.8rem;
-            padding: 0.6rem 0;
-            flex-wrap: wrap;
-        }
-        .nav-link {
-            font-family: 'BotonesFont', Arial, sans-serif;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.2);
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-        .nav-link:hover {
-            background: #ffd700;
-            color: #cc0000;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Responsive Design para Menú */
-        @media (max-width: 768px) {
-            .nav-container {
-                padding: 0 0.5rem;
-            }
-            .logo {
-                max-width: 130px;
-            }
-            .nav-links {
-                flex-direction: column;
-                gap: 0.6rem;
-                display: none;
-            }
-            .nav-link {
-                width: 100%;
-                font-size: 0.8rem;
-                padding: 0.4rem;
-                text-align: center;
-                background: rgba(0, 0, 0, 0.3);
-            }
-        }
-        @media (min-width: 769px) {
-            .nav-links {
-                display: flex !important;
-            }
-        }
-
-        /* Marquee Elegante (Compactado) */
-        .marquee-container {
-            background: linear-gradient(135deg, #f4a200, #ff6f61);
-            color: #7a0000;
-            font-family: 'MarqueeFont', Arial, sans-serif;
-            font-size: 0.9rem;
-            font-weight: bold;
-            padding: 0.5rem 0.8rem;
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-        .marquee-content {
-            display: inline-block;
-            white-space: nowrap;
-            will-change: transform;
-            animation: marquee 12s linear infinite;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-        }
-        .marquee-content span {
-            padding: 0 15px;
-        }
-        /* Animación del Marquee */
-        @keyframes marquee {
-            from { transform: translateX(100%); }
-            to { transform: translateX(-100%); }
-        }
-        /* Responsive Design para Marquee */
-        @media (max-width: 768px) {
-            .marquee-container {
-                font-size: 0.8rem;
-                padding: 0.4rem 0.6rem;
-            }
-        }
-
-        /* Hero Image Section */
-        .hero-image-section {
-            position: relative;
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 1rem;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .hero-image {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-        .hero-image:hover {
-            transform: scale(1.02);
-        }
-
-        /* Cuadrícula Dinámica Encima de la Imagen */
-        .overlay-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: grid;
-            grid-template-columns: 1fr 2fr; /* Columna izquierda (1fr) y columna derecha (2fr) */
-            gap: 1rem;
-            padding: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .overlay-grid.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Artículo Grande (Columna Derecha) */
-        .big-item {
-            grid-column: 2 / 3; /* Ocupa la segunda columna */
-            grid-row: 1 / 3; /* Ocupa dos filas */
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 0.8rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .big-item img {
-            width: 100%;
-            height: 200px; /* Altura mayor para el artículo destacado */
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-        }
-        .big-item h3 {
-            font-size: 1.2rem; /* Título más grande */
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        .big-item p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* Artículos Pequeños (Columna Izquierda) */
-        .small-items {
-            grid-column: 1 / 2; /* Ocupa la primera columna */
-            grid-row: 1 / 3; /* Ocupa dos filas */
-            display: grid;
-            grid-template-rows: repeat(4, 1fr); /* 4 filas iguales */
-            gap: 0.5rem;
-        }
-        .small-item {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 0.8rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .small-item img {
-            width: 100%;
-            height: 80px; /* Altura menor para los artículos pequeños */
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-        }
-        .small-item h3 {
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-            color: #333;
-        }
-        .small-item p {
-            font-size: 0.7rem;
-            color: #666;
-        }
-
-        /* Responsive Design para Overlay */
-        @media (max-width: 768px) {
-            .overlay-grid {
-                grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
-                grid-template-rows: auto; /* Ajuste automático de filas */
-            }
-            .big-item {
-                grid-column: 1 / 2;
-                grid-row: 1 / 2;
-            }
-            .small-items {
-                grid-column: 1 / 2;
-                grid-row: 2 / 3;
-                grid-template-rows: repeat(4, auto); /* Filas automáticas */
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+    <script src="js/scripts.js"></script>
 </head>
 <body>
     <!-- Barra de Navegación -->
@@ -313,200 +36,156 @@
         </div>
     </div>
 
-    <!-- Hero Image Section -->
-    <section class="hero-image-section">
-        <img src="img/hero-image.jpg" alt="Imagen Destacada" class="hero-image" loading="lazy">
-
-        <!-- Overlay Grid -->
-        <div class="overlay-grid" id="overlayGrid">
-            <!-- Artículo Grande (Derecha) -->
-            <div class="big-item">
-                <img src="img/article1.jpg" alt="El Mejor Manga de la Semana">
-                <h3>El Mejor Manga de la Semana</h3>
-                <p>Descubre por qué este manga está causando furor.</p>
-            </div>
-
-            <!-- Artículos Pequeños (Izquierda) -->
-            <div class="small-items">
-                <div class="small-item">
-                    <img src="img/article2.jpg" alt="Rensai Exclusivo">
-                    <h3>Rensai Exclusivo</h3>
-                    <p>Análisis profundo de las últimas tendencias.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article3.jpg" alt="Noticias del Mundo Manga">
-                    <h3>Noticias del Mundo Manga</h3>
-                    <p>Lo último en lanzamientos y eventos.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article4.jpg" alt="Recomendaciones Especiales">
-                    <h3>Recomendaciones Especiales</h3>
-                    <p>Nuestros favoritos de la semana.</p>
-                </div>
-                <div class="small-item">
-                    <img src="img/article5.jpg" alt="Próximos Lanzamientos">
-                    <h3>Próximos Lanzamientos</h3>
-                    <p>Mantente al tanto de lo que viene.</p>
-                </div>
-            </div>
+    <!-- Sección de Artículos Destacados -->
+    <section class="featured-articles-section">
+        <h2>Artículos Destacados</h2>
+        <div class="featured-articles-container" id="featured-articles-container">
+            <!-- Artículos destacados se cargarán aquí dinámicamente -->
         </div>
     </section>
-<!-- Contador Horizontal Animado -->
-<section class="timeline-section">
-    <div class="timeline-container">
-        <h2>¡Próximo Lanzamiento en:</h2>
-        <div class="timeline">
-            <div class="timeline-progress" id="timelineProgress"></div>
-            <div class="timeline-marker">
-                <span id="days">0</span>
-                <p>Días</p>
-            </div>
+
+    <!-- Carrusel de Artículos Recientes -->
+    <section class="carousel-section">
+        <h2>Artículos Recientes</h2>
+        <div class="carousel-container" id="carousel-container">
+            <!-- Carrusel se cargará aquí dinámicamente -->
         </div>
-        <p class="easter-egg" id="easterEgg">¿Soportarás la espera?</p>
+        <button class="carousel-button prev" id="prevButton">❮</button>
+        <button class="carousel-button next" id="nextButton">❯</button>
+    </section>
+
+    <!-- Cuadro de Errores -->
+    <div class="error-container" id="error-container">
+        <!-- Errores se mostrarán aquí dinámicamente -->
     </div>
-</section>
-
-<style>
-    /* Estilo para la Sección Horizontal */
-    .timeline-section {
-        width: 100%; /* Ocupa todo el ancho de la página */
-        padding: 2rem 0; /* Padding vertical para dar espacio */
-        text-align: center;
-        background: linear-gradient(135deg, #f4a200, #ff6f61);
-        color: #333;
-        font-family: Arial, sans-serif;
-        overflow: hidden;
-    }
-    .timeline-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2rem;
-    }
-    h2 {
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: #ffffff;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Línea de Tiempo */
-    .timeline {
-        position: relative;
-        width: 90%;
-        height: 50px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 25px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-    .timeline-progress {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: #ffffff;
-        border-radius: 25px;
-        transition: width 0.5s ease;
-    }
-    .timeline-marker {
-        position: absolute;
-        top: 50%;
-        right: 0;
-        transform: translateX(50%) translateY(-50%);
-        background: #7a0000;
-        color: #ffffff;
-        padding: 0.8rem 1.5rem;
-        border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        font-family: 'BotonesFont', Arial, sans-serif;
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    .timeline-marker p {
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-        color: #ffffff;
-        text-transform: none;
-        font-weight: normal;
-    }
-
-    /* Easter Egg */
-    .easter-egg {
-        font-size: 1rem;
-        color: #ffffff;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-    }
-    .easter-egg:hover {
-        transform: scale(1.05);
-    }
-    .easter-egg.angry {
-        color: #ff0000;
-        font-size: 1.2rem;
-        font-weight: bold;
-        animation: shake 0.1s infinite;
-    }
-    @keyframes shake {
-        0% { transform: translateX(-5px); }
-        50% { transform: translateX(5px); }
-        100% { transform: translateX(-5px); }
-    }
-</style>
-
-<script>
-    // Función para calcular los días restantes
-    function updateCountdown() {
-        const targetDate = new Date('2025-03-28T00:00:00').getTime();
-        const now = new Date().getTime();
-        const timeLeft = targetDate - now;
-
-        if (timeLeft > 0) {
-            const totalDays = Math.floor((targetDate - new Date('2023-01-01T00:00:00')) / (1000 * 60 * 60 * 24));
-            const daysPassed = Math.floor((now - new Date('2023-01-01T00:00:00')) / (1000 * 60 * 60 * 24));
-            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-
-            document.getElementById('days').textContent = daysLeft;
-
-            // Actualizar la barra de progreso
-            const progressWidth = (daysPassed / totalDays) * 100;
-            document.getElementById('timelineProgress').style.width = `${progressWidth}%`;
-        } else {
-            document.getElementById('days').textContent = '¡Lanzamiento!';
-            document.getElementById('timelineProgress').style.width = '100%';
-        }
-    }
-
-    // Actualizar el contador cada segundo
-    setInterval(updateCountdown, 1000);
-    updateCountdown(); // Inicializar inmediatamente
-
-    // Easter Egg
-    let clicks = 0;
-    const easterEgg = document.getElementById('easterEgg');
-    easterEgg.addEventListener('click', () => {
-        clicks++;
-        if (clicks === 12) {
-            easterEgg.textContent = '¡DEJA DE TOCARME YA INSECTO!';
-            easterEgg.classList.add('angry');
-        }
-    });
-</script>
 
     <script>
-        // Mostrar el overlay después de 2 segundos
-        setTimeout(() => {
-            const overlay = document.getElementById('overlayGrid');
-            overlay.classList.add('active');
-        }, 2000);
+        document.addEventListener('DOMContentLoaded', () => {
+            const featuredArticlesContainer = document.getElementById('featured-articles-container');
+            const carouselContainer = document.getElementById('carousel-container');
+            const errorContainer = document.getElementById('error-container');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+
+            let currentPage = 0;
+            const articlesPerPage = 5;
+
+            function displayError(message) {
+                const errorElement = document.createElement('div');
+                errorElement.className = 'error-message';
+                errorElement.textContent = message;
+                errorContainer.appendChild(errorElement);
+            }
+
+            function displayFeaturedArticles(articles) {
+                featuredArticlesContainer.innerHTML = '';
+                const featuredArticles = articles.filter(article => article.featured);
+                const allArticles = articles.slice();
+
+                // Repetir artículos si hay menos de 5 destacados
+                while (featuredArticles.length < 5) {
+                    featuredArticles.push(...allArticles);
+                }
+
+                featuredArticles.slice(0, 5).forEach(article => {
+                    const articleElement = document.createElement('div');
+                    articleElement.className = 'article-item';
+
+                    articleElement.innerHTML = `
+                        <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                        <h2>${article.title}</h2>
+                        <p class="article-subtitle">${article.subtitle}</p>
+                        <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
+                        <a href="articulo.html?id=${article.path.split('/').filter(Boolean)[0]}" class="read-more">Leer Más</a>
+                    `;
+
+                    featuredArticlesContainer.appendChild(articleElement);
+                });
+            }
+
+            function displayCarouselArticles(articles) {
+                carouselContainer.innerHTML = '';
+
+                // Ordenar artículos: featured, new, fecha
+                articles.sort((a, b) => {
+                    if (a.featured && !b.featured) return -1;
+                    if (!a.featured && b.featured) return 1;
+                    if (a.new && !b.new) return -1;
+                    if (!a.new && b.new) return 1;
+                    return new Date(b.date) - new Date(a.date);
+                });
+
+                // Repetir artículos si hay menos de 15
+                while (articles.length < 15) {
+                    articles.push(...articles);
+                }
+
+                const pages = [];
+                for (let i = 0; i < articles.length; i += articlesPerPage) {
+                    pages.push(articles.slice(i, i + articlesPerPage));
+                }
+
+                pages.forEach(page => {
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'carousel-page';
+
+                    page.forEach(article => {
+                        const articleElement = document.createElement('div');
+                        articleElement.className = 'article-item';
+
+                        articleElement.innerHTML = `
+                            <img src="${article.path}thumbnail.jpg" alt="${article.title}" class="article-thumbnail">
+                            <h2>${article.title}</h2>
+                            <p class="article-subtitle">${article.subtitle}</p>
+                            <p class="article-date-author">Publicado el ${article.date} por ${article.author}</p>
+                            <a href="articulo.html?id=${article.path.split('/').filter(Boolean)[0]}" class="read-more">Leer Más</a>
+                        `;
+
+                        pageContainer.appendChild(articleElement);
+                    });
+
+                    carouselContainer.appendChild(pageContainer);
+                });
+
+                // Mostrar la primera página
+                showPage(currentPage);
+
+                // Manejo de botones de carrusel
+                prevButton.addEventListener('click', () => {
+                    currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
+                    showPage(currentPage);
+                });
+
+                nextButton.addEventListener('click', () => {
+                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                    showPage(currentPage);
+                });
+            }
+
+            function showPage(pageIndex) {
+                const pages = carouselContainer.querySelectorAll('.carousel-page');
+                pages.forEach((page, index) => {
+                    page.style.display = index === pageIndex ? 'block' : 'none';
+                });
+            }
+
+            function displayArticles() {
+                if (window.articlesData) {
+                    displayFeaturedArticles(window.articlesData);
+                    displayCarouselArticles(window.articlesData);
+                } else {
+                    setTimeout(displayArticles, 100); // Esperar hasta que se carguen los artículos
+                }
+            }
+
+            function initializeCarousel() {
+                setTimeout(() => {
+                    displayArticles();
+                }, 2000); // Mostrar después de 2 segundos
+            }
+
+            initializeCarousel();
+        });
     </script>
 </body>
 </html>
