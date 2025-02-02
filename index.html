@@ -7,22 +7,22 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Fuentes fresquitas -->
+  <!-- Fuentes modernas -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     /* Reset y base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f0f0f0;
+      background-color: #fafafa;
       color: #333;
       line-height: 1.6;
     }
-    /* SECCIÓN 1: Barra de Navegación */
+    /* Barra de Navegación */
     nav {
-      background: #cc0000;
+      background: #e53935;
       padding: 1rem 2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .nav-container {
       max-width: 1200px;
@@ -33,11 +33,11 @@
     }
     .logo-container img {
       width: 150px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
     .nav-links {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.2rem;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -47,17 +47,17 @@
       color: #fff;
       text-decoration: none;
       font-size: 1rem;
-      transition: all 0.3s ease;
       padding: 0.5rem 1rem;
-      border-radius: 20px;
+      transition: background 0.3s ease;
+      /* Bordes muy cuadrados */
+      border-radius: 4px;
     }
     .nav-link:hover {
-      background: rgba(255,255,255,0.2);
-      color: #ffd700;
+      background: rgba(255,255,255,0.15);
     }
-    /* SECCIÓN 2: Marquee */
+    /* Marquee */
     .marquee-container {
-      background: #f4a200;
+      background: #fb8c00;
       color: #fff;
       font-family: 'Roboto', sans-serif;
       font-weight: bold;
@@ -76,91 +76,87 @@
       from { transform: translateX(100%); }
       to { transform: translateX(-100%); }
     }
-    /* SECCIÓN 3: Hero Image y Overlay */
+    /* Hero Image y Overlay */
     .hero-image-section {
       max-width: 1200px;
       margin: 2rem auto;
       position: relative;
       aspect-ratio: 16/9;
       background: url('img/hero-image.jpg') center/cover no-repeat;
-      border-radius: 12px;
+      border: 1px solid #ddd;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
-    /* Overlay con margen interno para apreciar la hero-image */
     .overlay-grid {
       position: absolute;
       top: 1rem;
       left: 1rem;
       right: 1rem;
       bottom: 1rem;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
       padding: 1rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-      overflow: hidden;
-      border-radius: 12px;
+      transition: opacity 0.5s ease;
+      border: 1px solid #ccc;
     }
     .overlay-grid.active {
       opacity: 1;
       visibility: visible;
     }
-    /* --- CUADRO GRANDE (Portada de la Edición) ---
-       Este bloque se configura manualmente en el HTML y simula un formato B5 (aprox. 1:1.42) */
+    /* Bloque Grande (Portada) - menos redondeado, estilo B5 */
     .big-item {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding-top: 4rem; /* Espacio para el encabezado */
+      padding-top: 4rem;
       padding-bottom: 1rem;
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
+      border: 1px solid #ccc;
+      /* Bordes cuadrados */
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    /* Encabezado "Artículos Destacados" */
     .featured-header {
       position: absolute;
-      top: 1rem; /* Un poquito más abajo */
+      top: 1rem;
       left: 50%;
       transform: translateX(-50%);
-      background: #ff6f61;
+      background: #e53935;
       color: #fff;
       padding: 0.5rem 1rem;
-      border-radius: 12px;
+      border-radius: 4px;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
       font-size: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
-    /* En formato B5 simulamos un aspect-ratio de 1/1.42 para la imagen */
     .big-item img {
       width: 100%;
-      max-width: 300px; 
+      max-width: 300px;
       aspect-ratio: 1 / 1.42;
       object-fit: cover;
-      border-radius: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
       margin-bottom: 0.5rem;
     }
     .big-item h3 {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
-      font-size: 1.8rem; /* Más grande */
+      font-size: 1.8rem;
       margin-bottom: 0.8rem;
     }
-    /* Botón "Quiero leerlo!" */
     .big-item-btn {
       padding: 1rem 2rem;
-      background: #cc0000;
+      background: #e53935;
       color: #fff;
+      text-decoration: none;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
@@ -168,9 +164,9 @@
       transition: background 0.3s ease;
     }
     .big-item-btn:hover {
-      background: #a30000;
+      background: #c62828;
     }
-    /* Mitad derecha: grid 2x2 para 4 artículos pequeños */
+    /* Artículos pequeños */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -178,18 +174,19 @@
     }
     .small-item {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
-    /* La imagen ocupa 2/3 y el título 1/3 */
     .small-item img {
       width: 100%;
       aspect-ratio: 1/1;
       object-fit: cover;
       flex: 2;
+      border-bottom: 1px solid #eee;
     }
     .small-item h3 {
       flex: 1;
@@ -202,15 +199,16 @@
       justify-content: center;
       padding: 0.2rem;
     }
-    /* SECCIÓN 4: Carrusel de Artículos Recientes */
+    /* Carrusel */
     .carousel-wrapper {
       position: relative;
       max-width: 1200px;
       margin: 2rem auto;
       padding: 2rem;
-      background: #ff6f61;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      background: #e53935;
+      border: 1px solid #d32f2f;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       overflow: hidden;
     }
     .carousel-section h2 {
@@ -242,9 +240,9 @@
     .carousel-item {
       flex: 1;
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       padding: 1rem;
       text-align: center;
       transition: transform 0.3s ease;
@@ -256,7 +254,8 @@
       width: 100%;
       aspect-ratio: 1/1;
       object-fit: cover;
-      border-radius: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
       margin-bottom: 0.5rem;
     }
     .carousel-item h3 {
@@ -266,20 +265,19 @@
       color: #333;
       margin: 0;
     }
-    /* Botones del carrusel */
     .carousel-button {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
       background: rgba(255,255,255,0.9);
-      border: none;
-      border-radius: 50%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
       padding: 0.8rem;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       font-size: 1.5rem;
       font-weight: bold;
-      color: #ff6f61;
+      color: #e53935;
       transition: background 0.3s ease;
       z-index: 2;
     }
@@ -327,17 +325,16 @@
   <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Mitad Izquierda: Portada de la Edición (configurada manualmente) -->
+      <!-- Bloque Grande: Portada de la Edición (configurado manualmente) -->
       <div class="big-item">
         <div class="featured-header">Artículos Destacados</div>
-        <!-- Puedes cambiar la imagen y el título manualmente -->
         <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         <h3>☆ MARZO 2024 ☆</h3>
         <a href="pagina-lectura.html" class="big-item-btn">Quiero leerlo!</a>
       </div>
-      <!-- Mitad Derecha: Grid 2x2 para 4 artículos pequeños (se carga dinámicamente) -->
+      <!-- Bloque Dinámico: 4 artículos pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
-        <!-- Se inyectarán los 4 artículos pequeños -->
+        <!-- Se inyectarán dinámicamente -->
       </div>
     </div>
   </section>
@@ -354,7 +351,7 @@
     </div>
   </section>
 
-  <!-- Cargar el script externo que trae window.articlesData -->
+  <!-- Cargar script externo con window.articlesData -->
   <script src="js/scripts.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -366,17 +363,15 @@
       let currentPage = 0;
       const articlesPerPage = 5;
 
-      // Solo se actualizarán los 4 artículos pequeños; el bloque grande se configura manualmente
+      // Solo se actualizan los 4 artículos pequeños; el bloque grande es manual
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
-        // Priorizar artículos "featured" y completar hasta 5
         let featured = articles.filter(article => article.featured);
         if (featured.length < 5) {
           const nonFeatured = articles.filter(article => !article.featured);
           featured = featured.concat(nonFeatured);
         }
         const displayArticles = featured.slice(0, 5);
-        // Actualizar solo los artículos pequeños (excluyendo el primero)
         smallItemsContainer.innerHTML = '';
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
@@ -390,7 +385,6 @@
       }
 
       function displayCarouselArticles(articles) {
-        // Orden: new > featured > resto y por fecha descendente
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
           if(!a.new && b.new) return 1;
@@ -398,7 +392,6 @@
           if(!a.featured && b.featured) return 1;
           return new Date(b.date) - new Date(a.date);
         });
-        // Duplicar para tener al menos 15 artículos
         let articlesForCarousel = [...articles];
         while (articlesForCarousel.length < 15) {
           articlesForCarousel = articlesForCarousel.concat(articles);
@@ -414,7 +407,6 @@
           pageArticles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.className = 'carousel-item';
-            // Se elimina el subtítulo para mantener el diseño cuadrado
             articleElement.innerHTML = `
               <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
               <h3>${article.title}</h3>
@@ -457,7 +449,6 @@
       }
 
       function displayArticles() {
-        // Espera a que window.articlesData esté cargado por js/scripts.js
         if (window.articlesData && window.articlesData.length > 0) {
           displayFeaturedArticles(window.articlesData);
           displayCarouselArticles(window.articlesData);
@@ -466,14 +457,9 @@
         }
       }
 
-      // Mostrar el overlay después de 2 segundos
-      setTimeout(() => {
-        overlayGrid.classList.add('active');
-      }, 2000);
-
+      setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
     });
   </script>
 </body>
 </html>
-
