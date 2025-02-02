@@ -87,41 +87,43 @@
       overflow: hidden;
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
-    /* El overlay se divide en 2 columnas: la izquierda (2/3 del espacio) para el artículo grande y la derecha para los 4 pequeños.
-       Se deja un poco de "espacio" (gap y padding) para apreciar la hero-image. */
+    /* Overlay con margen interno para apreciar la hero-image */
     .overlay-grid {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 1rem;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
       background: rgba(255,255,255,0.9);
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1rem;
       padding: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s ease, visibility 0.5s ease;
+      overflow: hidden;
+      border-radius: 12px;
     }
     .overlay-grid.active {
       opacity: 1;
       visibility: visible;
     }
-    /* Artículo Grande: ocupa la columna izquierda */
+    /* Mitad izquierda: Artículo grande */
     .big-item {
-      grid-column: 1 / 2;
-      background: #fff;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      padding: 0.5rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
     .big-item img {
       width: 100%;
+      max-width: 300px; /* Tamaño mediano */
       aspect-ratio: 1/1;
       object-fit: cover;
       border-radius: 8px;
@@ -133,45 +135,34 @@
       font-size: 1.3rem;
       margin-bottom: 0.3rem;
     }
-    .big-item p {
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.95rem;
-      color: #666;
-    }
-    /* Contenedor para los 4 artículos pequeños (ventanita) en la columna derecha */
+    /* Mitad derecha: grid de 2x2 para los 4 artículos pequeños */
     .small-items-container {
-      grid-column: 2 / 3;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: auto;
       gap: 1rem;
-      overflow-y: auto;
     }
     .small-item {
       background: #fff;
       border-radius: 12px;
-      padding: 0.8rem;
+      padding: 0.5rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
+      overflow: hidden;
+      text-align: center;
     }
     .small-item img {
-      width: 60px;
-      height: 60px;
+      width: 100%;
+      max-width: 120px; /* Tamaño pequeño */
+      aspect-ratio: 1/1;
       object-fit: cover;
       border-radius: 8px;
-      flex-shrink: 0;
+      margin-bottom: 0.3rem;
     }
     .small-item h3 {
       font-family: 'Roboto', sans-serif;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 1rem;
-      margin-bottom: 0.2rem;
-    }
-    .small-item p {
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.85rem;
-      color: #666;
+      margin: 0.3rem 0;
     }
     /* SECCIÓN 4: Carrusel de Artículos Recientes */
     .carousel-wrapper {
@@ -261,12 +252,8 @@
     .carousel-button:hover {
       background: rgba(255,255,255,1);
     }
-    .carousel-button.prev {
-      left: 1rem;
-    }
-    .carousel-button.next {
-      right: 1rem;
-    }
+    .carousel-button.prev { left: 1rem; }
+    .carousel-button.next { right: 1rem; }
     /* Responsive */
     @media (max-width: 768px) {
       .hero-image-section { margin: 1rem; }
@@ -274,7 +261,9 @@
         padding: 0.5rem;
         grid-template-columns: 1fr;
       }
-      .big-item, .small-items-container { grid-column: 1 / -1; }
+      .small-items-container {
+        grid-template-columns: 1fr 1fr;
+      }
       .carousel-page { flex-direction: column; }
       .carousel-button.prev, .carousel-button.next {
         top: auto;
@@ -313,13 +302,12 @@
   <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Artículo Grande (mitad izquierda) -->
+      <!-- Mitad Izquierda: Artículo Grande -->
       <div class="big-item">
         <img src="" alt="Artículo Grande" class="big-thumbnail">
         <h3></h3>
-        <p></p>
       </div>
-      <!-- Contenedor para los 4 Artículos Pequeños (mitad derecha) -->
+      <!-- Mitad Derecha: Grid 2x2 para Artículos Pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
         <!-- Aquí se inyectarán los 4 artículos pequeños -->
       </div>
@@ -352,7 +340,7 @@
 
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
-        // Priorizar los artículos "featured" y completar si son menos de 5
+        // Priorizar artículos "featured" y completar hasta 5
         let featured = articles.filter(article => article.featured);
         if (featured.length < 5) {
           const nonFeatured = articles.filter(article => !article.featured);
@@ -360,26 +348,21 @@
         }
         const displayArticles = featured.slice(0, 5);
 
-        // Artículo grande: el primero
+        // Artículo Grande (mitad izquierda)
         const bigArticle = displayArticles[0];
         const bigItem = overlayGrid.querySelector('.big-item');
         if (bigArticle) {
           bigItem.querySelector('img').src = bigArticle.thumbnail;
           bigItem.querySelector('h3').textContent = bigArticle.title;
-          bigItem.querySelector('p').textContent = bigArticle.subtitle;
         }
-
-        // Artículos pequeños: los siguientes 4
+        // Artículos pequeños (mitad derecha, grid 2x2)
         smallItemsContainer.innerHTML = '';
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
           smallItem.className = 'small-item';
           smallItem.innerHTML = `
             <img src="${article.thumbnail}" alt="${article.title}">
-            <div>
-              <h3>${article.title}</h3>
-              <p>${article.subtitle}</p>
-            </div>
+            <h3>${article.title}</h3>
           `;
           smallItemsContainer.appendChild(smallItem);
         });
@@ -394,9 +377,9 @@
           if(!a.featured && b.featured) return 1;
           return new Date(b.date) - new Date(a.date);
         });
-        // Duplicamos para tener al menos 15 artículos
+        // Duplicar para tener al menos 15 artículos
         let articlesForCarousel = [...articles];
-        while(articlesForCarousel.length < 15) {
+        while (articlesForCarousel.length < 15) {
           articlesForCarousel = articlesForCarousel.concat(articles);
         }
         articlesForCarousel = articlesForCarousel.slice(0, 15);
@@ -462,7 +445,7 @@
         }
       }
 
-      // Muestra el overlay después de 2 segundos
+      // Mostrar el overlay después de 2 segundos
       setTimeout(() => {
         overlayGrid.classList.add('active');
       }, 2000);
