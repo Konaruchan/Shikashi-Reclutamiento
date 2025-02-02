@@ -111,27 +111,31 @@
     }
     /* Mitad izquierda: Artículo grande */
     .big-item {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 0.5rem;
+      padding-top: 3rem; /* Espacio para el encabezado */
+      padding-bottom: 1rem;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
-      position: relative;
     }
-    /* Encabezado encima del cuadro grande */
+    /* Encabezado "Artículos Destacados" */
     .featured-header {
       position: absolute;
-      top: -1.5rem;
+      top: 0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
       background: #ff6f61;
       color: #fff;
       padding: 0.5rem 1rem;
       border-radius: 12px;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
+      font-size: 1.2rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     .big-item img {
@@ -144,20 +148,21 @@
     }
     .big-item h3 {
       font-family: 'Roboto', sans-serif;
-      font-weight: 600;
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
+      font-weight: 700;
+      font-size: 1.6rem;
+      margin-bottom: 0.8rem;
     }
-    /* Botón debajo del título del artículo grande */
+    /* Botón grande debajo del título */
     .big-item-btn {
-      padding: 0.5rem 1rem;
+      padding: 0.8rem 1.5rem;
       background: #cc0000;
       color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1.1rem;
       transition: background 0.3s ease;
     }
     .big-item-btn:hover {
