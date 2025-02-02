@@ -120,6 +120,19 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
+      position: relative;
+    }
+    /* Encabezado encima del cuadro grande */
+    .featured-header {
+      position: absolute;
+      top: -1.5rem;
+      background: #ff6f61;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     .big-item img {
       width: 100%;
@@ -133,7 +146,22 @@
       font-family: 'Roboto', sans-serif;
       font-weight: 600;
       font-size: 1.3rem;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+    /* Botón debajo del título del artículo grande */
+    .big-item-btn {
+      padding: 0.5rem 1rem;
+      background: #cc0000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .big-item-btn:hover {
+      background: #a30000;
     }
     /* Mitad derecha: grid 2x2 para 4 artículos pequeños */
     .small-items-container {
@@ -149,7 +177,7 @@
       display: flex;
       flex-direction: column;
     }
-    /* La imagen ocupará 2/3 del contenedor y el título el 1/3 restante */
+    /* La imagen ocupa 2/3 y el título 1/3 */
     .small-item img {
       width: 100%;
       aspect-ratio: 1/1;
@@ -292,14 +320,16 @@
   <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Mitad Izquierda: Artículo Grande -->
+      <!-- Mitad Izquierda: Artículo Grande con Encabezado y Botón -->
       <div class="big-item">
+        <div class="featured-header">Artículos Destacados</div>
         <img src="" alt="Artículo Grande" class="big-thumbnail">
         <h3></h3>
+        <button class="big-item-btn">Descubrir más</button>
       </div>
       <!-- Mitad Derecha: Grid 2x2 para 4 artículos pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
-        <!-- Aquí se inyectarán los 4 artículos pequeños -->
+        <!-- Se inyectarán los 4 artículos pequeños -->
       </div>
     </div>
   </section>
