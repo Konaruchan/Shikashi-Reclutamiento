@@ -95,7 +95,7 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
       background-color: #fff;
     }
-    /* Overlay con 5 articulos (1 grande y 4 pequeños) */
+    /* Overlay: Tarjetas dinámicas con diseño mejorado */
     .overlay-grid {
       position: absolute;
       top: 0;
@@ -104,75 +104,74 @@
       height: 100%;
       background: rgba(255,255,255,0.9);
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 1rem;
       padding: 1rem;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s ease, visibility 0.5s ease;
+      overflow-y: auto;
     }
     .overlay-grid.active {
       opacity: 1;
       visibility: visible;
     }
-    /* Artículo Grande (lado izquierdo, ocupa dos filas) */
+    /* Artículo Grande: Layout de tarjeta con imagen a la izquierda */
     .big-item {
-      grid-column: 1 / 2;
-      grid-row: 1 / 3;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       background: #fff;
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
       overflow: hidden;
     }
     .big-item img {
-      width: 100%;
-      aspect-ratio: 1/1;
+      width: 120px;
+      height: 120px;
       object-fit: cover;
       border-radius: 8px;
-      margin-bottom: 0.5rem;
+      flex-shrink: 0;
+    }
+    .big-item .text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .big-item h3 {
       font-family: 'Roboto', sans-serif;
       font-weight: 600;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       margin-bottom: 0.3rem;
     }
     .big-item p {
       font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #666;
     }
-    /* Artículos Pequeños (lado derecho, 4 celdas) */
-    .small-items {
-      grid-column: 2 / 3;
-      grid-row: 1 / 3;
-      display: grid;
-      grid-template-rows: repeat(4, 1fr);
-      gap: 0.8rem;
-    }
+    /* Artículos Pequeños: Layout tipo tarjeta horizontal */
     .small-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
       background: #fff;
       border-radius: 12px;
-      padding: 0.6rem;
+      padding: 0.8rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
       overflow: hidden;
     }
     .small-item img {
-      width: 100%;
-      aspect-ratio: 1/1;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
       border-radius: 8px;
-      margin-bottom: 0.3rem;
+      flex-shrink: 0;
+    }
+    .small-item .text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .small-item h3 {
       font-family: 'Roboto', sans-serif;
@@ -182,7 +181,7 @@
     }
     .small-item p {
       font-family: 'Poppins', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
     }
 
@@ -202,19 +201,26 @@
       margin-bottom: 1rem;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
+      text-align: center;
     }
     .carousel-container {
-      width: 100%;
-      overflow: hidden;
+      position: relative;
+      height: 260px;
     }
     .carousel-page {
-      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
+      opacity: 0;
+      display: flex;
       justify-content: space-between;
       gap: 1rem;
+      transition: opacity 0.5s ease;
     }
     .carousel-page.active {
-      display: flex;
+      opacity: 1;
+      z-index: 1;
     }
     .carousel-item {
       flex: 1;
@@ -231,7 +237,7 @@
     }
     .carousel-thumbnail {
       width: 100%;
-      aspect-ratio: 1/1;
+      height: 100px;
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 0.5rem;
@@ -262,6 +268,7 @@
       font-weight: bold;
       color: #ff6f61;
       transition: background 0.3s ease;
+      z-index: 2;
     }
     .carousel-button:hover {
       background: rgba(255,255,255,1);
@@ -279,18 +286,25 @@
         margin: 1rem;
       }
       .overlay-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
+        padding: 0.5rem;
       }
       .big-item {
-        grid-column: 1 / -1;
-        grid-row: auto;
+        flex-direction: column;
+        align-items: flex-start;
       }
-      .small-items {
-        grid-column: 1 / -1;
-        grid-row: auto;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto;
+      .big-item img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 0.5rem;
+      }
+      .small-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .small-item img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 0.3rem;
       }
       .carousel-page {
         flex-direction: column;
@@ -332,29 +346,39 @@
   <!-- SECCIÓN 3: Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
+      <!-- Artículo Grande -->
       <div class="big-item">
         <img src="" alt="Artículo Grande" class="big-thumbnail">
-        <h3></h3>
-        <p></p>
+        <div class="text">
+          <h3></h3>
+          <p></p>
+        </div>
       </div>
-      <div class="small-items">
-        <div class="small-item">
-          <img src="" alt="Artículo Pequeño">
+      <!-- 4 Artículos Pequeños -->
+      <div class="small-item">
+        <img src="" alt="Artículo Pequeño">
+        <div class="text">
           <h3></h3>
           <p></p>
         </div>
-        <div class="small-item">
-          <img src="" alt="Artículo Pequeño">
+      </div>
+      <div class="small-item">
+        <img src="" alt="Artículo Pequeño">
+        <div class="text">
           <h3></h3>
           <p></p>
         </div>
-        <div class="small-item">
-          <img src="" alt="Artículo Pequeño">
+      </div>
+      <div class="small-item">
+        <img src="" alt="Artículo Pequeño">
+        <div class="text">
           <h3></h3>
           <p></p>
         </div>
-        <div class="small-item">
-          <img src="" alt="Artículo Pequeño">
+      </div>
+      <div class="small-item">
+        <img src="" alt="Artículo Pequeño">
+        <div class="text">
           <h3></h3>
           <p></p>
         </div>
@@ -441,17 +465,15 @@
          Se muestran 5 artículos: el primero grande y los 4 siguientes pequeños. */
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
-
-        // Ordenar: primero featured y luego el resto
+        // Prioridad: artículos featured y luego el resto
         let featured = articles.filter(article => article.featured);
         if(featured.length < 5){
-          // Agrega el resto de artículos que no sean ya featured
           const nonFeatured = articles.filter(article => !article.featured);
           featured = featured.concat(nonFeatured);
         }
         const displayArticles = featured.slice(0, 5);
 
-        // Artículo grande: primer artículo
+        // Artículo Grande
         const bigArticle = displayArticles[0];
         const bigItem = overlayGrid.querySelector('.big-item');
         if (bigArticle) {
@@ -459,8 +481,7 @@
           bigItem.querySelector('h3').textContent = bigArticle.title;
           bigItem.querySelector('p').textContent = bigArticle.subtitle;
         }
-
-        // Artículos pequeños: los siguientes 4
+        // Artículos Pequeños
         const smallItems = overlayGrid.querySelectorAll('.small-item');
         displayArticles.slice(1,5).forEach((article, index) => {
           const item = smallItems[index];
@@ -477,7 +498,7 @@
 
       /* Función para mostrar el carrusel.
          Se priorizan los artículos new, luego featured y por fecha.
-         Se crean 3 páginas de 5 artículos cada una. */
+         Se crean 3 páginas de 5 artículos cada una, aunque se repitan. */
       function displayCarouselArticles(articles) {
         // Ordenar artículos: new > featured > resto y fecha descendente
         articles.sort((a, b) => {
@@ -487,16 +508,13 @@
           if(!a.featured && b.featured) return 1;
           return new Date(b.date) - new Date(a.date);
         });
-
-        // Hacemos un duplicado para tener al menos 15 artículos (3 páginas de 5)
+        // Duplicar si hay pocos artículos para tener al menos 15 items
         let articlesForCarousel = [...articles];
         while (articlesForCarousel.length < 15) {
           articlesForCarousel = articlesForCarousel.concat(articles);
         }
-        // Cortamos exactamente 15 artículos
         articlesForCarousel = articlesForCarousel.slice(0,15);
 
-        // Crear páginas
         carouselContainer.innerHTML = '';
         const pages = [];
         for (let i = 0; i < articlesForCarousel.length; i += articlesPerPage) {
@@ -516,7 +534,6 @@
           pages.push(pageContainer);
           carouselContainer.appendChild(pageContainer);
         }
-        // Activar la primera página
         showPage(currentPage);
 
         // Botones del carrusel
@@ -534,8 +551,7 @@
           currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
           showPage(currentPage);
         }, 5000);
-
-        // Pausar avance automático al interactuar
+        // Pausar avance al interactuar
         carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
         carouselContainer.addEventListener('mouseleave', () => {
           autoAdvanceInterval = setInterval(() => {
@@ -567,3 +583,4 @@
   </script>
 </body>
 </html>
+
