@@ -49,7 +49,6 @@
       font-size: 1rem;
       padding: 0.5rem 1rem;
       transition: background 0.3s ease;
-      /* Bordes muy cuadrados */
       border-radius: 4px;
     }
     .nav-link:hover {
@@ -69,29 +68,26 @@
       display: inline-block;
       animation: marquee 15s linear infinite;
     }
-    .marquee-content span {
-      padding: 0 20px;
-    }
+    .marquee-content span { padding: 0 20px; }
     @keyframes marquee {
       from { transform: translateX(100%); }
       to { transform: translateX(-100%); }
     }
-    /* Hero Image y Overlay */
+    /* Hero Image sin márgenes verticales */
     .hero-image-section {
-      max-width: 1200px;
-      margin: 2rem auto;
+      width: 100%;
+      height: 100vh; /* Ocupa toda la pantalla, sin márgenes verticales */
       position: relative;
-      aspect-ratio: 16/9;
       background: url('img/hero-image.jpg') center/cover no-repeat;
-      border: 1px solid #ddd;
-      overflow: hidden;
+      border-bottom: 1px solid #ddd;
     }
+    /* Overlay ocupa toda la sección */
     .overlay-grid {
       position: absolute;
-      top: 1rem;
-      left: 1rem;
-      right: 1rem;
-      bottom: 1rem;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(255,255,255,0.95);
       padding: 1rem;
       display: grid;
@@ -100,13 +96,12 @@
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s ease;
-      border: 1px solid #ccc;
     }
     .overlay-grid.active {
       opacity: 1;
       visibility: visible;
     }
-    /* Bloque Grande (Portada) - menos redondeado, estilo B5 */
+    /* Bloque Grande (Portada) – estilo B5, con diseño cuadrado */
     .big-item {
       position: relative;
       display: flex;
@@ -117,7 +112,6 @@
       padding-bottom: 1rem;
       background: #fff;
       border: 1px solid #ccc;
-      /* Bordes cuadrados */
       border-radius: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
@@ -163,10 +157,8 @@
       font-size: 1.2rem;
       transition: background 0.3s ease;
     }
-    .big-item-btn:hover {
-      background: #c62828;
-    }
-    /* Artículos pequeños */
+    .big-item-btn:hover { background: #c62828; }
+    /* Artículos pequeños: títulos arriba de la imagen */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -181,61 +173,53 @@
       flex-direction: column;
       overflow: hidden;
     }
-    .small-item img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      flex: 2;
-      border-bottom: 1px solid #eee;
-    }
     .small-item h3 {
-      flex: 1;
       font-family: 'Roboto', sans-serif;
       font-weight: 500;
       font-size: 1rem;
       margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.2rem;
+      padding: 0.3rem;
+      text-align: center;
+      border-bottom: 1px solid #eee;
     }
-    /* Carrusel */
+    .small-item img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      flex: 1;
+    }
+    /* Carrusel: sección roja sin márgenes laterales */
     .carousel-wrapper {
-      position: relative;
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 2rem;
+      width: 100%;
+      padding: 2rem 0; /* Solo vertical */
       background: #e53935;
-      border: 1px solid #d32f2f;
-      border-radius: 4px;
+      border-top: 1px solid #d32f2f;
+      border-bottom: 1px solid #d32f2f;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       overflow: hidden;
+      position: relative;
     }
     .carousel-section h2 {
       color: #fff;
       margin-bottom: 1rem;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
-      text-align: center;
+      text-align: left;
+      padding-left: 2rem;
     }
     .carousel-container {
       position: relative;
-      height: 260px;
+      overflow: hidden;
+    }
+    /* Slider horizontal: contenedor de páginas */
+    .carousel-pages {
+      display: flex;
+      transition: transform 0.8s ease; /* Animación de deslizado */
     }
     .carousel-page {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      opacity: 0;
+      min-width: 100%;
       display: flex;
-      justify-content: space-between;
       gap: 1rem;
-      transition: opacity 0.5s ease;
-    }
-    .carousel-page.active {
-      opacity: 1;
-      z-index: 1;
     }
     .carousel-item {
       flex: 1;
@@ -247,9 +231,7 @@
       text-align: center;
       transition: transform 0.3s ease;
     }
-    .carousel-item:hover {
-      transform: translateY(-5px);
-    }
+    .carousel-item:hover { transform: translateY(-5px); }
     .carousel-thumbnail {
       width: 100%;
       aspect-ratio: 1/1;
@@ -265,6 +247,7 @@
       color: #333;
       margin: 0;
     }
+    /* Botones del carrusel, reposicionados para no colisionar */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -286,15 +269,15 @@
     .carousel-button.next { right: 1rem; }
     /* Responsive */
     @media (max-width: 768px) {
-      .hero-image-section { margin: 1rem; }
+      .hero-image-section { height: 60vh; }
       .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
       .small-items-container { grid-template-columns: 1fr 1fr; }
-      .carousel-page { flex-direction: column; }
       .carousel-button.prev, .carousel-button.next {
         top: auto; bottom: 1rem; transform: translateY(0);
       }
       .carousel-button.prev { left: 1rem; }
       .carousel-button.next { right: 1rem; }
+      .carousel-section h2 { padding-left: 1rem; text-align: left; }
     }
   </style>
 </head>
@@ -325,7 +308,7 @@
   <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Bloque Grande: Portada de la Edición (configurado manualmente) -->
+      <!-- Bloque Grande: Portada de la Edición (manual) -->
       <div class="big-item">
         <div class="featured-header">SHIKASHI MONTHLY DE ESTE MES</div>
         <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
@@ -344,7 +327,9 @@
     <div class="carousel-wrapper">
       <h2>Artículos Recientes</h2>
       <div class="carousel-container" id="carousel-container">
-        <!-- Carrusel dinámico -->
+        <div class="carousel-pages" id="carouselPages">
+          <!-- Se inyectarán las páginas dinámicamente -->
+        </div>
       </div>
       <button class="carousel-button prev" id="prevButton">❮</button>
       <button class="carousel-button next" id="nextButton">❯</button>
@@ -357,13 +342,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const overlayGrid = document.getElementById('overlayGrid');
       const smallItemsContainer = document.getElementById('smallItemsContainer');
-      const carouselContainer = document.getElementById('carousel-container');
+      const carouselPagesContainer = document.getElementById('carouselPages');
       const prevButton = document.getElementById('prevButton');
       const nextButton = document.getElementById('nextButton');
       let currentPage = 0;
       const articlesPerPage = 5;
-
-      // Solo se actualizan los 4 artículos pequeños; el bloque grande es manual
+      
+      // Actualiza los 4 artículos pequeños (el bloque grande es manual)
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
         let featured = articles.filter(article => article.featured);
@@ -373,17 +358,19 @@
         }
         const displayArticles = featured.slice(0, 5);
         smallItemsContainer.innerHTML = '';
+        // Colocar el título arriba de la miniatura para cada artículo pequeño
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
           smallItem.className = 'small-item';
           smallItem.innerHTML = `
-            <img src="${article.thumbnail}" alt="${article.title}">
             <h3>${article.title}</h3>
+            <img src="${article.thumbnail}" alt="${article.title}">
           `;
           smallItemsContainer.appendChild(smallItem);
         });
       }
 
+      // Construye el carrusel con efecto de deslizamiento
       function displayCarouselArticles(articles) {
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
@@ -397,13 +384,15 @@
           articlesForCarousel = articlesForCarousel.concat(articles);
         }
         articlesForCarousel = articlesForCarousel.slice(0, 15);
-
-        carouselContainer.innerHTML = '';
-        const pages = [];
-        for (let i = 0; i < articlesForCarousel.length; i += articlesPerPage) {
-          const pageArticles = articlesForCarousel.slice(i, i + articlesPerPage);
+        
+        // Limpiar el contenedor y crear páginas
+        carouselPagesContainer.innerHTML = '';
+        const numPages = Math.ceil(articlesForCarousel.length / articlesPerPage);
+        for (let i = 0; i < numPages; i++) {
           const pageContainer = document.createElement('div');
           pageContainer.className = 'carousel-page';
+          const start = i * articlesPerPage;
+          const pageArticles = articlesForCarousel.slice(start, start + articlesPerPage);
           pageArticles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.className = 'carousel-item';
@@ -413,41 +402,37 @@
             `;
             pageContainer.appendChild(articleElement);
           });
-          pages.push(pageContainer);
-          carouselContainer.appendChild(pageContainer);
+          carouselPagesContainer.appendChild(pageContainer);
         }
-        showPage(currentPage);
-
-        prevButton.onclick = () => {
-          currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
-          showPage(currentPage);
-        };
-        nextButton.onclick = () => {
-          currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-          showPage(currentPage);
-        };
-
-        let autoAdvanceInterval = setInterval(() => {
-          currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-          showPage(currentPage);
+        updateCarousel();
+      }
+      
+      function updateCarousel() {
+        const offset = -currentPage * 100;
+        carouselPagesContainer.style.transform = `translateX(${offset}%)`;
+      }
+      
+      prevButton.onclick = () => {
+        currentPage = (currentPage > 0) ? currentPage - 1 : carouselPagesContainer.children.length - 1;
+        updateCarousel();
+      };
+      nextButton.onclick = () => {
+        currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
+        updateCarousel();
+      };
+      
+      let autoAdvanceInterval = setInterval(() => {
+        currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
+        updateCarousel();
+      }, 5000);
+      document.getElementById('carousel-container').addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
+      document.getElementById('carousel-container').addEventListener('mouseleave', () => {
+        autoAdvanceInterval = setInterval(() => {
+          currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
+          updateCarousel();
         }, 5000);
-
-        carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
-        carouselContainer.addEventListener('mouseleave', () => {
-          autoAdvanceInterval = setInterval(() => {
-            currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-            showPage(currentPage);
-          }, 5000);
-        });
-      }
-
-      function showPage(pageIndex) {
-        const pages = carouselContainer.querySelectorAll('.carousel-page');
-        pages.forEach((page, index) => {
-          page.classList.toggle('active', index === pageIndex);
-        });
-      }
-
+      });
+      
       function displayArticles() {
         if (window.articlesData && window.articlesData.length > 0) {
           displayFeaturedArticles(window.articlesData);
@@ -456,7 +441,8 @@
           setTimeout(displayArticles, 100);
         }
       }
-
+      
+      // Mostrar el overlay sin márgenes (inmediatamente)
       setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
     });
