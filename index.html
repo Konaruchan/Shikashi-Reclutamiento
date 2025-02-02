@@ -135,34 +135,37 @@
       font-size: 1.3rem;
       margin-bottom: 0.3rem;
     }
-    /* Mitad derecha: grid de 2x2 para los 4 artículos pequeños */
+    /* Mitad derecha: grid 2x2 para 4 artículos pequeños */
     .small-items-container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-auto-rows: auto;
+      grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
     .small-item {
       background: #fff;
       border-radius: 12px;
-      padding: 0.5rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
     }
+    /* La imagen ocupará 2/3 del contenedor y el título el 1/3 restante */
     .small-item img {
       width: 100%;
-      max-width: 120px; /* Tamaño pequeño */
       aspect-ratio: 1/1;
       object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 0.3rem;
+      flex: 2;
     }
     .small-item h3 {
+      flex: 1;
       font-family: 'Roboto', sans-serif;
       font-weight: 500;
       font-size: 1rem;
-      margin: 0.3rem 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem;
     }
     /* SECCIÓN 4: Carrusel de Artículos Recientes */
     .carousel-wrapper {
@@ -225,14 +228,10 @@
       font-family: 'Roboto', sans-serif;
       font-weight: 600;
       font-size: 1.1rem;
-      margin-bottom: 0.4rem;
       color: #333;
+      margin: 0;
     }
-    .carousel-item p {
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.9rem;
-      color: #666;
-    }
+    /* Botones del carrusel */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -249,26 +248,17 @@
       transition: background 0.3s ease;
       z-index: 2;
     }
-    .carousel-button:hover {
-      background: rgba(255,255,255,1);
-    }
+    .carousel-button:hover { background: rgba(255,255,255,1); }
     .carousel-button.prev { left: 1rem; }
     .carousel-button.next { right: 1rem; }
     /* Responsive */
     @media (max-width: 768px) {
       .hero-image-section { margin: 1rem; }
-      .overlay-grid {
-        padding: 0.5rem;
-        grid-template-columns: 1fr;
-      }
-      .small-items-container {
-        grid-template-columns: 1fr 1fr;
-      }
+      .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
+      .small-items-container { grid-template-columns: 1fr 1fr; }
       .carousel-page { flex-direction: column; }
       .carousel-button.prev, .carousel-button.next {
-        top: auto;
-        bottom: 1rem;
-        transform: translateY(0);
+        top: auto; bottom: 1rem; transform: translateY(0);
       }
       .carousel-button.prev { left: 1rem; }
       .carousel-button.next { right: 1rem; }
@@ -307,7 +297,7 @@
         <img src="" alt="Artículo Grande" class="big-thumbnail">
         <h3></h3>
       </div>
-      <!-- Mitad Derecha: Grid 2x2 para Artículos Pequeños -->
+      <!-- Mitad Derecha: Grid 2x2 para 4 artículos pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
         <!-- Aquí se inyectarán los 4 artículos pequeños -->
       </div>
@@ -393,10 +383,10 @@
           pageArticles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.className = 'carousel-item';
+            // Se elimina el subtítulo para mantener el diseño cuadrado
             articleElement.innerHTML = `
               <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
               <h3>${article.title}</h3>
-              <p>${article.subtitle}</p>
             `;
             pageContainer.appendChild(articleElement);
           });
