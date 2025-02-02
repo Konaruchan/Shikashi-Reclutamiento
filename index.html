@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shikashi Monthly Friday Series</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* Carga de Fuentes Personalizadas */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
@@ -134,13 +133,13 @@
         .big-item h3 {
             font-family: 'Roboto', sans-serif;
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #333;
             margin-bottom: 0.5rem;
         }
         .big-item p {
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
         }
         .small-items {
@@ -191,21 +190,14 @@
         .carousel-container {
             max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            position: relative;
             overflow: hidden;
         }
         .carousel-page {
-            display: none;
-            width: 100%;
             display: flex;
             justify-content: space-between;
             gap: 1rem;
-        }
-        .carousel-page.active {
-            display: flex;
+            transition: transform 0.5s ease;
         }
         .carousel-item {
             flex: 1;
@@ -337,16 +329,18 @@
     <section class="carousel-section">
         <h2>Artículos Recientes</h2>
         <div class="carousel-container" id="carousel-container">
-            <!-- Carrusel dinámico -->
+            <button class="carousel-button prev" id="prevButton">❮</button>
+            <button class="carousel-button next" id="nextButton">❯</button>
+            <div class="carousel-wrapper" id="carouselWrapper">
+                <!-- Carrusel dinámico -->
+            </div>
         </div>
-        <button class="carousel-button prev" id="prevButton">❮</button>
-        <button class="carousel-button next" id="nextButton">❯</button>
     </section>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const featuredArticlesContainer = document.getElementById('overlayGrid');
-            const carouselContainer = document.getElementById('carousel-container');
+            const carouselWrapper = document.getElementById('carouselWrapper');
             const prevButton = document.getElementById('prevButton');
             const nextButton = document.getElementById('nextButton');
 
@@ -436,7 +430,7 @@
             }
 
             function displayCarouselArticles(articles) {
-                carouselContainer.innerHTML = '';
+                carouselWrapper.innerHTML = '';
 
                 // Ordenar artículos: new, featured, fecha
                 articles.sort((a, b) => {
@@ -474,46 +468,45 @@
                     pages.push(pageContainer);
                 }
 
-                pages.forEach((page, index) => {
-                    carouselContainer.appendChild(page);
-                    if (index === 0) {
-                        page.classList.add('active');
-                    }
+                pages.forEach(page => {
+                    carouselWrapper.appendChild(page);
                 });
 
-                // Manejo de botones de carrusel
-                prevButton.addEventListener('click', () => {
-                    currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
-                    showPage(currentPage);
-                });
-
-                nextButton.addEventListener('click', () => {
-                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                    showPage(currentPage);
-                });
-
-                // Avance automático del carrusel
-                let autoAdvanceInterval = setInterval(() => {
-                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                    showPage(currentPage);
-                }, 5000); // Cambia cada 5 segundos
-
-                // Detener avance automático al interactuar
-                carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
-                carouselContainer.addEventListener('mouseleave', () => {
-                    autoAdvanceInterval = setInterval(() => {
-                        currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                        showPage(currentPage);
-                    }, 5000);
-                });
+                // Mostrar la primera página
+                showPage(currentPage);
             }
 
             function showPage(pageIndex) {
-                const pages = carouselContainer.querySelectorAll('.carousel-page');
-                pages.forEach((page, index) => {
-                    page.style.display = index === pageIndex ? 'flex' : 'none';
-                });
+                const pages = carouselWrapper.querySelectorAll('.carousel-page');
+                const offset = -pageIndex * 100;
+                carouselWrapper.style.transform = `translateX(${offset}%)`;
             }
+
+            // Manejo de botones de carrusel
+            prevButton.addEventListener('click', () => {
+                currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
+                showPage(currentPage);
+            });
+
+            nextButton.addEventListener('click', () => {
+                currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                showPage(currentPage);
+            });
+
+            // Avance automático del carrusel
+            let autoAdvanceInterval = setInterval(() => {
+                currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                showPage(currentPage);
+            }, 5000); // Cambia cada 5 segundos
+
+            // Detener avance automático al interactuar
+            carouselWrapper.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
+            carouselWrapper.addEventListener('mouseleave', () => {
+                autoAdvanceInterval = setInterval(() => {
+                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+                    showPage(currentPage);
+                }, 5000);
+            });
 
             function displayArticles() {
                 displayFeaturedArticles(articlesData);
