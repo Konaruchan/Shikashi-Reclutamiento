@@ -80,192 +80,6 @@
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
         }
-
-        /* SECCIÓN 3: Hero Image con Overlay */
-        .hero-image-section {
-            position: relative;
-            max-width: 1200px;
-            margin: 2rem auto;
-            height: 400px;
-            background: url('img/hero-image.jpg') center/cover no-repeat;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-        .overlay-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            padding: 2rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .overlay-grid.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .big-item {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .big-item img {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-        .big-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        .big-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        .small-items {
-            grid-column: 2 / 3;
-            grid-row: 1 / 3;
-            display: grid;
-            grid-template-rows: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        .small-item {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .small-item img {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-        }
-        .small-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 0.3rem;
-        }
-        .small-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* SECCIÓN 4: Carrusel de Artículos Recientes */
-        .carousel-section {
-            width: 100%;
-            padding: 3rem 0;
-            background: #ff6f61;
-            color: #fff;
-            text-align: center;
-        }
-        .carousel-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
-        .carousel-page {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            transition: transform 0.5s ease;
-        }
-        .carousel-item {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            padding: 1rem;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .carousel-item:hover {
-            transform: translateY(-5px);
-        }
-        .carousel-thumbnail {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-        .carousel-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        .carousel-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        .carousel-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            padding: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ff6f61;
-            transition: background 0.3s ease;
-        }
-        .carousel-button:hover {
-            background: rgba(255, 255, 255, 1);
-        }
-        .carousel-button.prev {
-            left: 1rem;
-        }
-        .carousel-button.next {
-            right: 1rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero-image-section {
-                height: 300px;
-            }
-            .overlay-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -292,38 +106,258 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 3: Hero Image con Overlay -->
-    <section class="hero-image-section">
-        <div class="overlay-grid" id="overlayGrid">
-            <div class="big-item">
-                <img src="" alt="Artículo Grande" class="big-thumbnail">
+<!-- SECCIÓN 3: Hero Image con Overlay -->
+<section class="hero-image-section">
+    <div class="hero-image" style="background: url('img/hero-image.jpg') center/cover no-repeat;"></div>
+    <div class="overlay-grid" id="overlayGrid">
+        <!-- Artículo Grande (Mitad Izquierda) -->
+        <div class="big-item">
+            <img src="" alt="Artículo Grande" class="big-thumbnail">
+            <h3></h3>
+            <p></p>
+        </div>
+        <!-- Artículos Pequeños (Mitad Derecha) -->
+        <div class="small-items">
+            <div class="small-item">
+                <img src="" alt="Artículo Pequeño">
                 <h3></h3>
                 <p></p>
             </div>
-            <div class="small-items">
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
+            <div class="small-item">
+                <img src="" alt="Artículo Pequeño">
+                <h3></h3>
+                <p></p>
+            </div>
+            <div class="small-item">
+                <img src="" alt="Artículo Pequeño">
+                <h3></h3>
+                <p></p>
+            </div>
+            <div class="small-item">
+                <img src="" alt="Artículo Pequeño">
+                <h3></h3>
+                <p></p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+    /* Hero Image Section */
+    .hero-image-section {
+        position: relative;
+        max-width: 1200px;
+        margin: 2rem auto;
+        height: 400px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: opacity 0.5s ease;
+    }
+
+    /* Overlay Grid */
+    .overlay-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        padding: 2rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .overlay-grid.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Artículo Grande (Mitad Izquierda) */
+    .big-item {
+        grid-column: 1 / 2;
+        grid-row: 1 / 3;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .big-item img {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* Imagen cuadrada */
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    .big-item h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    .big-item p {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    /* Artículos Pequeños (Mitad Derecha) */
+    .small-items {
+        grid-column: 2 / 3;
+        grid-row: 1 / 3;
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 1rem;
+    }
+    .small-item {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .small-item img {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* Imagen cuadrada */
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+    }
+    .small-item h3 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.3rem;
+    }
+    .small-item p {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-image-section {
+            height: 300px;
+        }
+        .overlay-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Mostrar el overlay después de 2 segundos
+    setTimeout(() => {
+        const overlay = document.getElementById('overlayGrid');
+        overlay.classList.add('active');
+    }, 2000);
+
+    // Cargar artículos destacados en el overlay
+    function displayFeaturedArticles(articles) {
+        if (!articles || articles.length === 0) return;
+
+        // Artículo grande (mitad izquierda)
+        const bigArticle = articles.find(article => article.featured);
+        const bigItem = document.querySelector('.big-item');
+        if (bigArticle) {
+            bigItem.querySelector('img').src = bigArticle.thumbnail;
+            bigItem.querySelector('h3').textContent = bigArticle.title;
+            bigItem.querySelector('p').textContent = bigArticle.subtitle;
+        }
+
+        // Artículos pequeños (mitad derecha)
+        const smallItems = document.querySelectorAll('.small-item');
+        const smallArticles = articles.filter(article => !article.featured).slice(0, 4);
+
+        smallItems.forEach((item, index) => {
+            const article = smallArticles[index];
+            if (article) {
+                item.querySelector('img').src = article.thumbnail;
+                item.querySelector('h3').textContent = article.title;
+                item.querySelector('p').textContent = article.subtitle;
+            } else {
+                item.style.display = 'none'; // Ocultar si no hay suficientes artículos
+            }
+        });
+    }
+
+    // Ejemplo de datos de prueba
+    const articlesData = [
+        {
+            "id": "test",
+            "title": "El Mejor Manga de la Semana",
+            "subtitle": "Descubre por qué este manga está causando furor.",
+            "date": "2025-03-20",
+            "author": "Juan Pérez",
+            "featured": true,
+            "new": true,
+            "thumbnail": "img/article1.jpg"
+        },
+        {
+            "id": "test2",
+            "title": "Rensai Exclusivo",
+            "subtitle": "Análisis profundo de las últimas tendencias.",
+            "date": "2025-03-19",
+            "author": "María López",
+            "featured": false,
+            "new": false,
+            "thumbnail": "img/article2.jpg"
+        },
+        {
+            "id": "test3",
+            "title": "Noticias del Mundo Manga",
+            "subtitle": "Lo último en lanzamientos y eventos.",
+            "date": "2025-03-18",
+            "author": "Carlos Gómez",
+            "featured": false,
+            "new": true,
+            "thumbnail": "img/article3.jpg"
+        },
+        {
+            "id": "test4",
+            "title": "Recomendaciones Especiales",
+            "subtitle": "Nuestros favoritos de la semana.",
+            "date": "2025-03-17",
+            "author": "Ana Torres",
+            "featured": false,
+            "new": false,
+            "thumbnail": "img/article4.jpg"
+        },
+        {
+            "id": "test5",
+            "title": "Próximos Lanzamientos",
+            "subtitle": "Mantente al tanto de lo que viene.",
+            "date": "2025-03-16",
+            "author": "Luis Ramírez",
+            "featured": false,
+            "new": false,
+            "thumbnail": "img/article5.jpg"
+        }
+    ];
+
+    // Inicializar la carga de artículos destacados
+    displayFeaturedArticles(articlesData);
+</script>
 
     <!-- SECCIÓN 4: Carrusel de Artículos Recientes -->
     <section class="carousel-section">
