@@ -109,7 +109,8 @@
       opacity: 1;
       visibility: visible;
     }
-    /* Mitad izquierda: Artículo grande */
+    /* --- CUADRO GRANDE (Portada de la Edición) ---
+       Este bloque se configura manualmente en el HTML y simula un formato B5 (aprox. 1:1.42) */
     .big-item {
       position: relative;
       display: flex;
@@ -123,10 +124,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       overflow: hidden;
     }
-    /* Encabezado "Artículos Destacados" movido un poco más abajo */
+    /* Encabezado "Artículos Destacados" */
     .featured-header {
       position: absolute;
-      top: 1rem; /* Antes estaba en 0.5rem, ahora más abajo */
+      top: 1rem; /* Un poquito más abajo */
       left: 50%;
       transform: translateX(-50%);
       background: #ff6f61;
@@ -138,10 +139,11 @@
       font-size: 1.2rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
+    /* En formato B5 simulamos un aspect-ratio de 1/1.42 para la imagen */
     .big-item img {
       width: 100%;
-      max-width: 300px; /* Tamaño mediano */
-      aspect-ratio: 1/1;
+      max-width: 300px; 
+      aspect-ratio: 1 / 1.42;
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 0.5rem;
@@ -149,12 +151,12 @@
     .big-item h3 {
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
-      font-size: 1.6rem;
+      font-size: 1.8rem; /* Más grande */
       margin-bottom: 0.8rem;
     }
-    /* Botón grande debajo del título */
+    /* Botón "Quiero leerlo!" */
     .big-item-btn {
-      padding: 0.8rem 1.5rem;
+      padding: 1rem 2rem;
       background: #cc0000;
       color: #fff;
       border: none;
@@ -162,7 +164,7 @@
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       transition: background 0.3s ease;
     }
     .big-item-btn:hover {
@@ -325,14 +327,15 @@
   <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Mitad Izquierda: Artículo Grande con Encabezado y Botón -->
+      <!-- Mitad Izquierda: Portada de la Edición (configurada manualmente) -->
       <div class="big-item">
         <div class="featured-header">Artículos Destacados</div>
-        <img src="" alt="Artículo Grande" class="big-thumbnail">
-        <h3></h3>
-        <button class="big-item-btn">Descubrir más</button>
+        <!-- Puedes cambiar la imagen y el título manualmente -->
+        <img src="img/portada-edicion.jpg" alt="Portada de la Edición" class="big-thumbnail">
+        <h3>Portada Edición Reciente</h3>
+        <a href="pagina-lectura.html" class="big-item-btn">Quiero leerlo!</a>
       </div>
-      <!-- Mitad Derecha: Grid 2x2 para 4 artículos pequeños -->
+      <!-- Mitad Derecha: Grid 2x2 para 4 artículos pequeños (se carga dinámicamente) -->
       <div class="small-items-container" id="smallItemsContainer">
         <!-- Se inyectarán los 4 artículos pequeños -->
       </div>
@@ -363,6 +366,7 @@
       let currentPage = 0;
       const articlesPerPage = 5;
 
+      // Solo se actualizarán los 4 artículos pequeños; el bloque grande se configura manualmente
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
         // Priorizar artículos "featured" y completar hasta 5
@@ -372,15 +376,7 @@
           featured = featured.concat(nonFeatured);
         }
         const displayArticles = featured.slice(0, 5);
-
-        // Artículo Grande (mitad izquierda)
-        const bigArticle = displayArticles[0];
-        const bigItem = overlayGrid.querySelector('.big-item');
-        if (bigArticle) {
-          bigItem.querySelector('img').src = bigArticle.thumbnail;
-          bigItem.querySelector('h3').textContent = bigArticle.title;
-        }
-        // Artículos pequeños (mitad derecha, grid 2x2)
+        // Actualizar solo los artículos pequeños (excluyendo el primero)
         smallItemsContainer.innerHTML = '';
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
