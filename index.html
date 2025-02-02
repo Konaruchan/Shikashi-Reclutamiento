@@ -27,7 +27,7 @@
 
         /* Barra de Navegación */
         nav {
-            background: linear-gradient(135deg, #ff6f61, #f4a200);
+            background: #cc0000; /* Rojo oscuro */
             padding: 1rem 2rem;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -36,11 +36,12 @@
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
         }
         .logo-container img {
             width: 150px;
+            margin-bottom: 1rem;
         }
         .nav-links {
             display: flex;
@@ -60,7 +61,7 @@
 
         /* Marquee Elegante */
         .marquee-container {
-            background: linear-gradient(135deg, #ff6f61, #f4a200);
+            background: #f4a200; /* Amarillo oscuro */
             color: #fff;
             font-family: 'Roboto', sans-serif;
             font-weight: bold;
@@ -101,8 +102,8 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.85);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
             padding: 2rem;
             opacity: 0;
             visibility: hidden;
@@ -134,13 +135,13 @@
         .article-item h3 {
             font-family: 'Roboto', sans-serif;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #333;
             margin-bottom: 0.5rem;
         }
         .article-item p {
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
         }
 
@@ -148,7 +149,7 @@
         .carousel-section {
             width: 100%;
             padding: 3rem 0;
-            background: linear-gradient(135deg, #ff6f61, #f4a200);
+            background: #ff6f61;
             color: #fff;
             text-align: center;
         }
