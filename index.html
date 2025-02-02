@@ -1,546 +1,569 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikashi Monthly Friday Series</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        /* Carga de Fuentes Personalizadas */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shikashi Monthly Friday Series</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fuentes fresquitas -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset y base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+      line-height: 1.6;
+    }
 
-        /* Reset General */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* SECCIÓN 1: Barra de Navegación */
+    nav {
+      background: #cc0000;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-container img {
+      width: 150px;
+      margin-bottom: 1rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-link {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 500;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+    }
+    .nav-link:hover {
+      background: rgba(255,255,255,0.2);
+      color: #ffd700;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            line-height: 1.6;
-        }
+    /* SECCIÓN 2: Marquee */
+    .marquee-container {
+      background: #f4a200;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      padding: 0.8rem 2rem;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-content {
+      display: inline-block;
+      animation: marquee 15s linear infinite;
+    }
+    .marquee-content span {
+      padding: 0 20px;
+    }
+    @keyframes marquee {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
 
-        /* SECCIÓN 1: Barra de Navegación */
-        nav {
-            background: #cc0000; /* Rojo oscuro */
-            padding: 1rem 2rem;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo-container img {
-            width: 150px;
-            margin-bottom: 1rem;
-        }
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-        .nav-link {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 500;
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-        }
-        .nav-link:hover {
-            color: #ffd700;
-            background: rgba(255, 255, 255, 0.2);
-        }
+    /* SECCIÓN 3: Hero Image con Overlay */
+    .hero-image-section {
+      max-width: 1200px;
+      margin: 2rem auto;
+      position: relative;
+      aspect-ratio: 16/9;
+      background: url('img/hero-image.jpg') center/cover no-repeat;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      background-color: #fff;
+    }
+    /* Overlay con 5 articulos (1 grande y 4 pequeños) */
+    .overlay-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .overlay-grid.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* Artículo Grande (lado izquierdo, ocupa dos filas) */
+    .big-item {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .big-item img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .big-item h3 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+    }
+    .big-item p {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      color: #666;
+    }
+    /* Artículos Pequeños (lado derecho, 4 celdas) */
+    .small-items {
+      grid-column: 2 / 3;
+      grid-row: 1 / 3;
+      display: grid;
+      grid-template-rows: repeat(4, 1fr);
+      gap: 0.8rem;
+    }
+    .small-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 0.6rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .small-item img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.3rem;
+    }
+    .small-item h3 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .small-item p {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: #666;
+    }
 
-        /* SECCIÓN 2: Marquee */
-        .marquee-container {
-            background: #f4a200; /* Amarillo oscuro */
-            color: #fff;
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-            padding: 0.8rem 2rem;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 15s linear infinite;
-        }
-        .marquee-content span {
-            padding: 0 20px;
-        }
-        @keyframes marquee {
-            from { transform: translateX(100%); }
-            to { transform: translateX(-100%); }
-        }
+    /* SECCIÓN 4: Carrusel de Artículos Recientes */
+    .carousel-wrapper {
+      position: relative;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #ff6f61;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .carousel-section h2 {
+      color: #fff;
+      margin-bottom: 1rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+    }
+    .carousel-container {
+      width: 100%;
+      overflow: hidden;
+    }
+    .carousel-page {
+      display: none;
+      width: 100%;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .carousel-page.active {
+      display: flex;
+    }
+    .carousel-item {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .carousel-item:hover {
+      transform: translateY(-5px);
+    }
+    .carousel-thumbnail {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .carousel-item h3 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      color: #333;
+    }
+    .carousel-item p {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      padding: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6f61;
+      transition: background 0.3s ease;
+    }
+    .carousel-button:hover {
+      background: rgba(255,255,255,1);
+    }
+    .carousel-button.prev {
+      left: 1rem;
+    }
+    .carousel-button.next {
+      right: 1rem;
+    }
 
-        /* SECCIÓN 3: Hero Image con Overlay */
-        .hero-image-section {
-            position: relative;
-            max-width: 1200px;
-            margin: 2rem auto;
-            height: 400px;
-            background: url('img/hero-image.jpg') center/cover no-repeat;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-        .overlay-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            padding: 2rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .overlay-grid.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Artículo Grande (Mitad Izquierda) */
-        .big-item {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .big-item img {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-        .big-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        .big-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            color: #666;
-        }
-
-        /* Artículos Pequeños (Mitad Derecha) */
-        .small-items {
-            grid-column: 2 / 3;
-            grid-row: 1 / 3;
-            display: grid;
-            grid-template-rows: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        .small-item {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .small-item img {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-        }
-        .small-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 0.3rem;
-        }
-        .small-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* SECCIÓN 4: Carrusel de Artículos Recientes */
-        .carousel-section {
-            width: 100%;
-            padding: 3rem 0;
-            background: #ff6f61;
-            color: #fff;
-            text-align: center;
-        }
-        .carousel-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            overflow: hidden;
-        }
-        .carousel-page {
-            display: none;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-        .carousel-page.active {
-            display: flex;
-        }
-        .carousel-item {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            padding: 1rem;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .carousel-item:hover {
-            transform: translateY(-5px);
-        }
-        .carousel-thumbnail {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Imagen cuadrada */
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-        .carousel-item h3 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        .carousel-item p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        .carousel-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            padding: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ff6f61;
-            transition: background 0.3s ease;
-        }
-        .carousel-button:hover {
-            background: rgba(255, 255, 255, 1);
-        }
-        .carousel-button.prev {
-            left: 1rem;
-        }
-        .carousel-button.next {
-            right: 1rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero-image-section {
-                height: 300px;
-            }
-            .overlay-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            .carousel-page {
-                flex-direction: column;
-                justify-content: center;
-                gap: 1rem;
-            }
-            .carousel-item {
-                flex: 0 0 100%;
-            }
-        }
-    </style>
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-image-section {
+        margin: 1rem;
+      }
+      .overlay-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .big-item {
+        grid-column: 1 / -1;
+        grid-row: auto;
+      }
+      .small-items {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+      }
+      .carousel-page {
+        flex-direction: column;
+      }
+      .carousel-button.prev, .carousel-button.next {
+        top: auto;
+        bottom: 1rem;
+        transform: translateY(0);
+      }
+      .carousel-button.prev { left: 1rem; }
+      .carousel-button.next { right: 1rem; }
+    }
+  </style>
 </head>
 <body>
-    <!-- SECCIÓN 1: Barra de Navegación -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo-container">
-                <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Rensai</a>
-                <a href="#" class="nav-link">SMF Plus</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- SECCIÓN 2: Marquee -->
-    <div class="marquee-container">
-        <div class="marquee-content">
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-            <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición! </span>
-        </div>
+  <!-- SECCIÓN 1: Barra de Navegación -->
+  <nav>
+    <div class="nav-container">
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" />
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link">Inicio</a>
+        <a href="#" class="nav-link">Noticias</a>
+        <a href="#" class="nav-link">Rensai</a>
+        <a href="#" class="nav-link">SMF Plus</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- SECCIÓN 3: Hero Image con Overlay -->
-    <section class="hero-image-section">
-        <div class="overlay-grid" id="overlayGrid">
-            <div class="big-item">
-                <img src="" alt="Artículo Grande" class="big-thumbnail">
-                <h3></h3>
-                <p></p>
-            </div>
-            <div class="small-items">
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-                <div class="small-item">
-                    <img src="" alt="Artículo Pequeño">
-                    <h3></h3>
-                    <p></p>
-                </div>
-            </div>
+  <!-- SECCIÓN 2: Marquee -->
+  <div class="marquee-container">
+    <div class="marquee-content">
+      <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
+      <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3: Hero Image con Overlay -->
+  <section class="hero-image-section">
+    <div class="overlay-grid" id="overlayGrid">
+      <div class="big-item">
+        <img src="" alt="Artículo Grande" class="big-thumbnail">
+        <h3></h3>
+        <p></p>
+      </div>
+      <div class="small-items">
+        <div class="small-item">
+          <img src="" alt="Artículo Pequeño">
+          <h3></h3>
+          <p></p>
         </div>
-    </section>
-
-    <!-- SECCIÓN 4: Carrusel de Artículos Recientes -->
-    <section class="carousel-section">
-        <h2>Artículos Recientes</h2>
-        <div class="carousel-container" id="carousel-container">
-            <!-- Carrusel dinámico -->
+        <div class="small-item">
+          <img src="" alt="Artículo Pequeño">
+          <h3></h3>
+          <p></p>
         </div>
-        <button class="carousel-button prev" id="prevButton">❮</button>
-        <button class="carousel-button next" id="nextButton">❯</button>
-    </section>
+        <div class="small-item">
+          <img src="" alt="Artículo Pequeño">
+          <h3></h3>
+          <p></p>
+        </div>
+        <div class="small-item">
+          <img src="" alt="Artículo Pequeño">
+          <h3></h3>
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const featuredArticlesContainer = document.getElementById('overlayGrid');
-            const carouselContainer = document.getElementById('carousel-container');
-            const prevButton = document.getElementById('prevButton');
-            const nextButton = document.getElementById('nextButton');
+  <!-- SECCIÓN 4: Carrusel de Artículos Recientes -->
+  <section class="carousel-section">
+    <div class="carousel-wrapper">
+      <h2>Artículos Recientes</h2>
+      <div class="carousel-container" id="carousel-container">
+        <!-- Carrusel dinámico -->
+      </div>
+      <button class="carousel-button prev" id="prevButton">❮</button>
+      <button class="carousel-button next" id="nextButton">❯</button>
+    </div>
+  </section>
 
-            let currentPage = 0;
-            const articlesPerPage = 5;
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlayGrid = document.getElementById('overlayGrid');
+      const carouselContainer = document.getElementById('carousel-container');
+      const prevButton = document.getElementById('prevButton');
+      const nextButton = document.getElementById('nextButton');
+      let currentPage = 0;
+      const articlesPerPage = 5;
 
-            // Datos de prueba (reemplaza esto con tus datos reales)
-            const articlesData = [
-                {
-                    "id": "test",
-                    "title": "El Mejor Manga de la Semana",
-                    "subtitle": "Descubre por qué este manga está causando furor.",
-                    "date": "2025-03-20",
-                    "author": "Juan Pérez",
-                    "featured": true,
-                    "new": true,
-                    "thumbnail": "img/article1.jpg"
-                },
-                {
-                    "id": "test2",
-                    "title": "Rensai Exclusivo",
-                    "subtitle": "Análisis profundo de las últimas tendencias.",
-                    "date": "2025-03-19",
-                    "author": "María López",
-                    "featured": true,
-                    "new": false,
-                    "thumbnail": "img/article2.jpg"
-                },
-                {
-                    "id": "test3",
-                    "title": "Noticias del Mundo Manga",
-                    "subtitle": "Lo último en lanzamientos y eventos.",
-                    "date": "2025-03-18",
-                    "author": "Carlos Gómez",
-                    "featured": false,
-                    "new": true,
-                    "thumbnail": "img/article3.jpg"
-                },
-                {
-                    "id": "test4",
-                    "title": "Recomendaciones Especiales",
-                    "subtitle": "Nuestros favoritos de la semana.",
-                    "date": "2025-03-17",
-                    "author": "Ana Torres",
-                    "featured": false,
-                    "new": false,
-                    "thumbnail": "img/article4.jpg"
-                },
-                {
-                    "id": "test5",
-                    "title": "Próximos Lanzamientos",
-                    "subtitle": "Mantente al tanto de lo que viene.",
-                    "date": "2025-03-16",
-                    "author": "Luis Ramírez",
-                    "featured": false,
-                    "new": false,
-                    "thumbnail": "img/article5.jpg"
-                }
-            ];
+      // Datos de prueba (cambia por tus datos reales)
+      const articlesData = [
+        {
+          "id": "test",
+          "title": "El Mejor Manga de la Semana",
+          "subtitle": "Descubre por qué este manga está causando furor.",
+          "date": "2025-03-20",
+          "author": "Juan Pérez",
+          "featured": true,
+          "new": true,
+          "thumbnail": "img/article1.jpg"
+        },
+        {
+          "id": "test2",
+          "title": "Rensai Exclusivo",
+          "subtitle": "Análisis profundo de las últimas tendencias.",
+          "date": "2025-03-19",
+          "author": "María López",
+          "featured": true,
+          "new": false,
+          "thumbnail": "img/article2.jpg"
+        },
+        {
+          "id": "test3",
+          "title": "Noticias del Mundo Manga",
+          "subtitle": "Lo último en lanzamientos y eventos.",
+          "date": "2025-03-18",
+          "author": "Carlos Gómez",
+          "featured": false,
+          "new": true,
+          "thumbnail": "img/article3.jpg"
+        },
+        {
+          "id": "test4",
+          "title": "Recomendaciones Especiales",
+          "subtitle": "Nuestros favoritos de la semana.",
+          "date": "2025-03-17",
+          "author": "Ana Torres",
+          "featured": false,
+          "new": false,
+          "thumbnail": "img/article4.jpg"
+        },
+        {
+          "id": "test5",
+          "title": "Próximos Lanzamientos",
+          "subtitle": "Mantente al tanto de lo que viene.",
+          "date": "2025-03-16",
+          "author": "Luis Ramírez",
+          "featured": false,
+          "new": false,
+          "thumbnail": "img/article5.jpg"
+        }
+      ];
 
-            function displayFeaturedArticles(articles) {
-                if (!articles || articles.length === 0) return;
+      /* Función para mostrar los artículos destacados en el overlay.
+         Se muestran 5 artículos: el primero grande y los 4 siguientes pequeños. */
+      function displayFeaturedArticles(articles) {
+        if (!articles || articles.length === 0) return;
 
-                // Artículo grande (mitad izquierda)
-                const bigArticle = articles.find(article => article.featured);
-                const bigItem = featuredArticlesContainer.querySelector('.big-item');
-                if (bigArticle) {
-                    bigItem.querySelector('img').src = bigArticle.thumbnail;
-                    bigItem.querySelector('h3').textContent = bigArticle.title;
-                    bigItem.querySelector('p').textContent = bigArticle.subtitle;
-                }
+        // Ordenar: primero featured y luego el resto
+        let featured = articles.filter(article => article.featured);
+        if(featured.length < 5){
+          // Agrega el resto de artículos que no sean ya featured
+          const nonFeatured = articles.filter(article => !article.featured);
+          featured = featured.concat(nonFeatured);
+        }
+        const displayArticles = featured.slice(0, 5);
 
-                // Artículos pequeños (mitad derecha)
-                const smallItems = featuredArticlesContainer.querySelectorAll('.small-item');
-                const smallArticles = articles.filter(article => !article.featured).slice(0, 4);
+        // Artículo grande: primer artículo
+        const bigArticle = displayArticles[0];
+        const bigItem = overlayGrid.querySelector('.big-item');
+        if (bigArticle) {
+          bigItem.querySelector('img').src = bigArticle.thumbnail;
+          bigItem.querySelector('h3').textContent = bigArticle.title;
+          bigItem.querySelector('p').textContent = bigArticle.subtitle;
+        }
 
-                smallItems.forEach((item, index) => {
-                    const article = smallArticles[index];
-                    if (article) {
-                        item.querySelector('img').src = article.thumbnail;
-                        item.querySelector('h3').textContent = article.title;
-                        item.querySelector('p').textContent = article.subtitle;
-                    } else {
-                        item.style.display = 'none'; // Ocultar si no hay suficientes artículos
-                    }
-                });
-            }
-
-            function displayCarouselArticles(articles) {
-                carouselContainer.innerHTML = '';
-
-                // Ordenar artículos: new, featured, fecha
-                articles.sort((a, b) => {
-                    if (a.new && !b.new) return -1;
-                    if (!a.new && b.new) return 1;
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    return new Date(b.date) - new Date(a.date);
-                });
-
-                // Repetir artículos si hay menos de 15
-                while (articles.length < 15) {
-                    articles.push(...articles);
-                }
-
-                const pages = [];
-                for (let i = 0; i < articles.length; i += articlesPerPage) {
-                    const page = articles.slice(i, i + articlesPerPage);
-                    const pageContainer = document.createElement('div');
-                    pageContainer.className = 'carousel-page';
-
-                    page.forEach(article => {
-                        const articleElement = document.createElement('div');
-                        articleElement.className = 'carousel-item';
-
-                        articleElement.innerHTML = `
-                            <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
-                            <h3>${article.title}</h3>
-                            <p>${article.subtitle}</p>
-                        `;
-
-                        pageContainer.appendChild(articleElement);
-                    });
-
-                    pages.push(pageContainer);
-                }
-
-                pages.forEach((page, index) => {
-                    carouselContainer.appendChild(page);
-                    if (index === 0) {
-                        page.classList.add('active');
-                    }
-                });
-
-                // Manejo de botones de carrusel
-                prevButton.addEventListener('click', () => {
-                    currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
-                    showPage(currentPage);
-                });
-
-                nextButton.addEventListener('click', () => {
-                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                    showPage(currentPage);
-                });
-
-                // Avance automático del carrusel
-                let autoAdvanceInterval = setInterval(() => {
-                    currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                    showPage(currentPage);
-                }, 5000); // Cambia cada 5 segundos
-
-                // Detener avance automático al interactuar
-                carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
-                carouselContainer.addEventListener('mouseleave', () => {
-                    autoAdvanceInterval = setInterval(() => {
-                        currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
-                        showPage(currentPage);
-                    }, 5000);
-                });
-            }
-
-            function showPage(pageIndex) {
-                const pages = carouselContainer.querySelectorAll('.carousel-page');
-                pages.forEach((page, index) => {
-                    page.style.display = index === pageIndex ? 'flex' : 'none';
-                });
-            }
-
-            function displayArticles() {
-                displayFeaturedArticles(articlesData);
-                displayCarouselArticles(articlesData);
-            }
-
-            // Mostrar el overlay después de 2 segundos
-            setTimeout(() => {
-                const overlay = document.getElementById('overlayGrid');
-                overlay.classList.add('active');
-            }, 2000);
-
-            // Inicializar la carga de artículos
-            displayArticles();
+        // Artículos pequeños: los siguientes 4
+        const smallItems = overlayGrid.querySelectorAll('.small-item');
+        displayArticles.slice(1,5).forEach((article, index) => {
+          const item = smallItems[index];
+          if (article && item) {
+            item.querySelector('img').src = article.thumbnail;
+            item.querySelector('h3').textContent = article.title;
+            item.querySelector('p').textContent = article.subtitle;
+            item.style.display = 'flex';
+          } else if(item) {
+            item.style.display = 'none';
+          }
         });
-    </script>
+      }
+
+      /* Función para mostrar el carrusel.
+         Se priorizan los artículos new, luego featured y por fecha.
+         Se crean 3 páginas de 5 artículos cada una. */
+      function displayCarouselArticles(articles) {
+        // Ordenar artículos: new > featured > resto y fecha descendente
+        articles.sort((a, b) => {
+          if(a.new && !b.new) return -1;
+          if(!a.new && b.new) return 1;
+          if(a.featured && !b.featured) return -1;
+          if(!a.featured && b.featured) return 1;
+          return new Date(b.date) - new Date(a.date);
+        });
+
+        // Hacemos un duplicado para tener al menos 15 artículos (3 páginas de 5)
+        let articlesForCarousel = [...articles];
+        while (articlesForCarousel.length < 15) {
+          articlesForCarousel = articlesForCarousel.concat(articles);
+        }
+        // Cortamos exactamente 15 artículos
+        articlesForCarousel = articlesForCarousel.slice(0,15);
+
+        // Crear páginas
+        carouselContainer.innerHTML = '';
+        const pages = [];
+        for (let i = 0; i < articlesForCarousel.length; i += articlesPerPage) {
+          const pageArticles = articlesForCarousel.slice(i, i + articlesPerPage);
+          const pageContainer = document.createElement('div');
+          pageContainer.className = 'carousel-page';
+          pageArticles.forEach(article => {
+            const articleElement = document.createElement('div');
+            articleElement.className = 'carousel-item';
+            articleElement.innerHTML = `
+              <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
+              <h3>${article.title}</h3>
+              <p>${article.subtitle}</p>
+            `;
+            pageContainer.appendChild(articleElement);
+          });
+          pages.push(pageContainer);
+          carouselContainer.appendChild(pageContainer);
+        }
+        // Activar la primera página
+        showPage(currentPage);
+
+        // Botones del carrusel
+        prevButton.onclick = () => {
+          currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
+          showPage(currentPage);
+        };
+        nextButton.onclick = () => {
+          currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+          showPage(currentPage);
+        };
+
+        // Avance automático
+        let autoAdvanceInterval = setInterval(() => {
+          currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+          showPage(currentPage);
+        }, 5000);
+
+        // Pausar avance automático al interactuar
+        carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
+        carouselContainer.addEventListener('mouseleave', () => {
+          autoAdvanceInterval = setInterval(() => {
+            currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
+            showPage(currentPage);
+          }, 5000);
+        });
+      }
+
+      function showPage(pageIndex) {
+        const pages = carouselContainer.querySelectorAll('.carousel-page');
+        pages.forEach((page, index) => {
+          page.classList.toggle('active', index === pageIndex);
+        });
+      }
+
+      function displayArticles() {
+        displayFeaturedArticles(articlesData);
+        displayCarouselArticles(articlesData);
+      }
+
+      // Mostrar el overlay dinámico después de 2 segundos
+      setTimeout(() => {
+        overlayGrid.classList.add('active');
+      }, 2000);
+
+      displayArticles();
+    });
+  </script>
 </body>
 </html>
