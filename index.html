@@ -22,7 +22,6 @@
             background-color: #f9f9f9;
             color: #333;
             line-height: 1.6;
-            padding: 0 2rem; /* Márgenes laterales en pantallas grandes */
         }
 
         /* Barra de Navegación */
@@ -54,9 +53,12 @@
             text-decoration: none;
             font-size: 1rem;
             transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
         }
         .nav-link:hover {
             color: #ffd700;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* Marquee Elegante */
@@ -84,10 +86,10 @@
         /* Hero Image Section */
         .hero-image-section {
             position: relative;
-            width: 100%;
-            height: 500px;
+            max-width: 1200px;
+            margin: 2rem auto;
+            height: 400px;
             background: url('img/hero-image.jpg') center/cover no-repeat;
-            margin: 2rem 0;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
@@ -102,7 +104,7 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.85);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             padding: 2rem;
             opacity: 0;
@@ -114,8 +116,10 @@
             visibility: visible;
         }
 
-        /* Artículo Destacado */
-        .article-item {
+        /* Artículo Grande (Mitad Izquierda) */
+        .big-item {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
             padding: 1rem;
@@ -125,21 +129,59 @@
             align-items: center;
             text-align: center;
         }
-        .article-item img {
+        .big-item img {
             width: 100%;
             aspect-ratio: 1 / 1; /* Imagen cuadrada */
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 1rem;
         }
-        .article-item h3 {
+        .big-item h3 {
             font-family: 'Roboto', sans-serif;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.5rem;
             color: #333;
             margin-bottom: 0.5rem;
         }
-        .article-item p {
+        .big-item p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Artículos Pequeños (Mitad Derecha) */
+        .small-items {
+            grid-column: 2 / 3;
+            grid-row: 1 / 3;
+            display: grid;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .small-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .small-item img {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Imagen cuadrada */
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+        }
+        .small-item h3 {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+        .small-item p {
             font-family: 'Poppins', sans-serif;
             font-size: 0.9rem;
             color: #666;
@@ -233,13 +275,6 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            body {
-                padding: 0 1rem;
-            }
-            .nav-links {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
             .hero-image-section {
                 height: 300px;
             }
@@ -277,7 +312,33 @@
     <!-- Hero Image Section -->
     <section class="hero-image-section">
         <div class="overlay-grid" id="overlayGrid">
-            <!-- Artículos destacados se cargarán aquí dinámicamente -->
+            <div class="big-item">
+                <img src="" alt="Artículo Grande" class="big-thumbnail">
+                <h3></h3>
+                <p></p>
+            </div>
+            <div class="small-items">
+                <div class="small-item">
+                    <img src="" alt="Artículo Pequeño">
+                    <h3></h3>
+                    <p></p>
+                </div>
+                <div class="small-item">
+                    <img src="" alt="Artículo Pequeño">
+                    <h3></h3>
+                    <p></p>
+                </div>
+                <div class="small-item">
+                    <img src="" alt="Artículo Pequeño">
+                    <h3></h3>
+                    <p></p>
+                </div>
+                <div class="small-item">
+                    <img src="" alt="Artículo Pequeño">
+                    <h3></h3>
+                    <p></p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -304,38 +365,47 @@
             function displayFeaturedArticles(articles) {
                 if (!articles || articles.length === 0) return;
 
-                // Filtrar artículos destacados
-                const featuredArticles = articles.filter(article => article.featured);
+                // Artículo grande (mitad izquierda)
+                const bigArticle = articles.find(article => article.featured);
+                const bigItem = featuredArticlesContainer.querySelector('.big-item');
+                if (bigArticle) {
+                    bigItem.querySelector('img').src = bigArticle.thumbnail;
+                    bigItem.querySelector('h3').textContent = bigArticle.title;
+                    bigItem.querySelector('p').textContent = bigArticle.subtitle;
+                }
 
-                // Limpiar el contenedor
-                featuredArticlesContainer.innerHTML = '';
+                // Artículos pequeños (mitad derecha)
+                const smallItems = featuredArticlesContainer.querySelectorAll('.small-item');
+                const smallArticles = articles.filter(article => !article.featured).slice(0, 4);
 
-                // Mostrar artículos destacados
-                featuredArticles.forEach(article => {
-                    const articleElement = document.createElement('div');
-                    articleElement.className = 'article-item';
-
-                    articleElement.innerHTML = `
-                        <img src="${article.thumbnail}" alt="${article.title}">
-                        <h3>${article.title}</h3>
-                        <p>${article.subtitle}</p>
-                    `;
-
-                    featuredArticlesContainer.appendChild(articleElement);
+                smallItems.forEach((item, index) => {
+                    const article = smallArticles[index];
+                    if (article) {
+                        item.querySelector('img').src = article.thumbnail;
+                        item.querySelector('h3').textContent = article.title;
+                        item.querySelector('p').textContent = article.subtitle;
+                    } else {
+                        item.style.display = 'none'; // Ocultar si no hay suficientes artículos
+                    }
                 });
             }
 
             function displayCarouselArticles(articles) {
                 carouselContainer.innerHTML = '';
 
-                // Ordenar artículos: featured, new, fecha
+                // Ordenar artículos: new, featured, fecha
                 articles.sort((a, b) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
                     if (a.new && !b.new) return -1;
                     if (!a.new && b.new) return 1;
+                    if (a.featured && !b.featured) return -1;
+                    if (!a.featured && b.featured) return 1;
                     return new Date(b.date) - new Date(a.date);
                 });
+
+                // Repetir artículos si hay menos de 15
+                while (articles.length < 15) {
+                    articles.push(...articles);
+                }
 
                 const pages = [];
                 for (let i = 0; i < articles.length; i += articlesPerPage) {
