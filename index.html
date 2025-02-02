@@ -11,18 +11,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     /* Reset y base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f0f0f0;
       color: #333;
       line-height: 1.6;
     }
-
     /* SECCIÓN 1: Barra de Navegación */
     nav {
       background: #cc0000;
@@ -60,7 +55,6 @@
       background: rgba(255,255,255,0.2);
       color: #ffd700;
     }
-
     /* SECCIÓN 2: Marquee */
     .marquee-container {
       background: #f4a200;
@@ -82,8 +76,7 @@
       from { transform: translateX(100%); }
       to { transform: translateX(-100%); }
     }
-
-    /* SECCIÓN 3: Hero Image con Overlay */
+    /* SECCIÓN 3: Hero Image y Overlay */
     .hero-image-section {
       max-width: 1200px;
       margin: 2rem auto;
@@ -93,9 +86,9 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      background-color: #fff;
     }
-    /* Overlay: Tarjetas dinámicas con diseño mejorado */
+    /* El overlay se divide en 2 columnas: la izquierda (2/3 del espacio) para el artículo grande y la derecha para los 4 pequeños.
+       Se deja un poco de "espacio" (gap y padding) para apreciar la hero-image. */
     .overlay-grid {
       position: absolute;
       top: 0;
@@ -104,40 +97,35 @@
       height: 100%;
       background: rgba(255,255,255,0.9);
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 1rem;
       padding: 1rem;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s ease, visibility 0.5s ease;
-      overflow-y: auto;
     }
     .overlay-grid.active {
       opacity: 1;
       visibility: visible;
     }
-    /* Artículo Grande: Layout de tarjeta con imagen a la izquierda */
+    /* Artículo Grande: ocupa la columna izquierda */
     .big-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      grid-column: 1 / 2;
       background: #fff;
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .big-item img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-    .big-item .text {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .big-item img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
     }
     .big-item h3 {
       font-family: 'Roboto', sans-serif;
@@ -150,16 +138,22 @@
       font-size: 0.95rem;
       color: #666;
     }
-    /* Artículos Pequeños: Layout tipo tarjeta horizontal */
-    .small-item {
+    /* Contenedor para los 4 artículos pequeños (ventanita) en la columna derecha */
+    .small-items-container {
+      grid-column: 2 / 3;
       display: flex;
-      align-items: center;
-      gap: 0.8rem;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+    }
+    .small-item {
       background: #fff;
       border-radius: 12px;
       padding: 0.8rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
     }
     .small-item img {
       width: 60px;
@@ -167,11 +161,6 @@
       object-fit: cover;
       border-radius: 8px;
       flex-shrink: 0;
-    }
-    .small-item .text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
     .small-item h3 {
       font-family: 'Roboto', sans-serif;
@@ -184,7 +173,6 @@
       font-size: 0.85rem;
       color: #666;
     }
-
     /* SECCIÓN 4: Carrusel de Artículos Recientes */
     .carousel-wrapper {
       position: relative;
@@ -237,7 +225,7 @@
     }
     .carousel-thumbnail {
       width: 100%;
-      height: 100px;
+      aspect-ratio: 1/1;
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 0.5rem;
@@ -279,36 +267,15 @@
     .carousel-button.next {
       right: 1rem;
     }
-
     /* Responsive */
     @media (max-width: 768px) {
-      .hero-image-section {
-        margin: 1rem;
-      }
+      .hero-image-section { margin: 1rem; }
       .overlay-grid {
         padding: 0.5rem;
+        grid-template-columns: 1fr;
       }
-      .big-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .big-item img {
-        width: 100%;
-        height: auto;
-        margin-bottom: 0.5rem;
-      }
-      .small-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .small-item img {
-        width: 100%;
-        height: auto;
-        margin-bottom: 0.3rem;
-      }
-      .carousel-page {
-        flex-direction: column;
-      }
+      .big-item, .small-items-container { grid-column: 1 / -1; }
+      .carousel-page { flex-direction: column; }
       .carousel-button.prev, .carousel-button.next {
         top: auto;
         bottom: 1rem;
@@ -320,7 +287,7 @@
   </style>
 </head>
 <body>
-  <!-- SECCIÓN 1: Barra de Navegación -->
+  <!-- Barra de Navegación -->
   <nav>
     <div class="nav-container">
       <div class="logo-container">
@@ -335,7 +302,7 @@
     </div>
   </nav>
 
-  <!-- SECCIÓN 2: Marquee -->
+  <!-- Marquee -->
   <div class="marquee-container">
     <div class="marquee-content">
       <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
@@ -343,50 +310,23 @@
     </div>
   </div>
 
-  <!-- SECCIÓN 3: Hero Image con Overlay -->
+  <!-- Hero Image con Overlay -->
   <section class="hero-image-section">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Artículo Grande -->
+      <!-- Artículo Grande (mitad izquierda) -->
       <div class="big-item">
         <img src="" alt="Artículo Grande" class="big-thumbnail">
-        <div class="text">
-          <h3></h3>
-          <p></p>
-        </div>
+        <h3></h3>
+        <p></p>
       </div>
-      <!-- 4 Artículos Pequeños -->
-      <div class="small-item">
-        <img src="" alt="Artículo Pequeño">
-        <div class="text">
-          <h3></h3>
-          <p></p>
-        </div>
-      </div>
-      <div class="small-item">
-        <img src="" alt="Artículo Pequeño">
-        <div class="text">
-          <h3></h3>
-          <p></p>
-        </div>
-      </div>
-      <div class="small-item">
-        <img src="" alt="Artículo Pequeño">
-        <div class="text">
-          <h3></h3>
-          <p></p>
-        </div>
-      </div>
-      <div class="small-item">
-        <img src="" alt="Artículo Pequeño">
-        <div class="text">
-          <h3></h3>
-          <p></p>
-        </div>
+      <!-- Contenedor para los 4 Artículos Pequeños (mitad derecha) -->
+      <div class="small-items-container" id="smallItemsContainer">
+        <!-- Aquí se inyectarán los 4 artículos pequeños -->
       </div>
     </div>
   </section>
 
-  <!-- SECCIÓN 4: Carrusel de Artículos Recientes -->
+  <!-- Carrusel de Artículos Recientes -->
   <section class="carousel-section">
     <div class="carousel-wrapper">
       <h2>Artículos Recientes</h2>
@@ -398,82 +338,29 @@
     </div>
   </section>
 
+  <!-- Cargar el script externo que trae window.articlesData -->
+  <script src="js/scripts.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const overlayGrid = document.getElementById('overlayGrid');
+      const smallItemsContainer = document.getElementById('smallItemsContainer');
       const carouselContainer = document.getElementById('carousel-container');
       const prevButton = document.getElementById('prevButton');
       const nextButton = document.getElementById('nextButton');
       let currentPage = 0;
       const articlesPerPage = 5;
 
-      // Datos de prueba (cambia por tus datos reales)
-      const articlesData = [
-        {
-          "id": "test",
-          "title": "El Mejor Manga de la Semana",
-          "subtitle": "Descubre por qué este manga está causando furor.",
-          "date": "2025-03-20",
-          "author": "Juan Pérez",
-          "featured": true,
-          "new": true,
-          "thumbnail": "img/article1.jpg"
-        },
-        {
-          "id": "test2",
-          "title": "Rensai Exclusivo",
-          "subtitle": "Análisis profundo de las últimas tendencias.",
-          "date": "2025-03-19",
-          "author": "María López",
-          "featured": true,
-          "new": false,
-          "thumbnail": "img/article2.jpg"
-        },
-        {
-          "id": "test3",
-          "title": "Noticias del Mundo Manga",
-          "subtitle": "Lo último en lanzamientos y eventos.",
-          "date": "2025-03-18",
-          "author": "Carlos Gómez",
-          "featured": false,
-          "new": true,
-          "thumbnail": "img/article3.jpg"
-        },
-        {
-          "id": "test4",
-          "title": "Recomendaciones Especiales",
-          "subtitle": "Nuestros favoritos de la semana.",
-          "date": "2025-03-17",
-          "author": "Ana Torres",
-          "featured": false,
-          "new": false,
-          "thumbnail": "img/article4.jpg"
-        },
-        {
-          "id": "test5",
-          "title": "Próximos Lanzamientos",
-          "subtitle": "Mantente al tanto de lo que viene.",
-          "date": "2025-03-16",
-          "author": "Luis Ramírez",
-          "featured": false,
-          "new": false,
-          "thumbnail": "img/article5.jpg"
-        }
-      ];
-
-      /* Función para mostrar los artículos destacados en el overlay.
-         Se muestran 5 artículos: el primero grande y los 4 siguientes pequeños. */
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
-        // Prioridad: artículos featured y luego el resto
+        // Priorizar los artículos "featured" y completar si son menos de 5
         let featured = articles.filter(article => article.featured);
-        if(featured.length < 5){
+        if (featured.length < 5) {
           const nonFeatured = articles.filter(article => !article.featured);
           featured = featured.concat(nonFeatured);
         }
         const displayArticles = featured.slice(0, 5);
 
-        // Artículo Grande
+        // Artículo grande: el primero
         const bigArticle = displayArticles[0];
         const bigItem = overlayGrid.querySelector('.big-item');
         if (bigArticle) {
@@ -481,26 +368,25 @@
           bigItem.querySelector('h3').textContent = bigArticle.title;
           bigItem.querySelector('p').textContent = bigArticle.subtitle;
         }
-        // Artículos Pequeños
-        const smallItems = overlayGrid.querySelectorAll('.small-item');
-        displayArticles.slice(1,5).forEach((article, index) => {
-          const item = smallItems[index];
-          if (article && item) {
-            item.querySelector('img').src = article.thumbnail;
-            item.querySelector('h3').textContent = article.title;
-            item.querySelector('p').textContent = article.subtitle;
-            item.style.display = 'flex';
-          } else if(item) {
-            item.style.display = 'none';
-          }
+
+        // Artículos pequeños: los siguientes 4
+        smallItemsContainer.innerHTML = '';
+        displayArticles.slice(1, 5).forEach(article => {
+          const smallItem = document.createElement('div');
+          smallItem.className = 'small-item';
+          smallItem.innerHTML = `
+            <img src="${article.thumbnail}" alt="${article.title}">
+            <div>
+              <h3>${article.title}</h3>
+              <p>${article.subtitle}</p>
+            </div>
+          `;
+          smallItemsContainer.appendChild(smallItem);
         });
       }
 
-      /* Función para mostrar el carrusel.
-         Se priorizan los artículos new, luego featured y por fecha.
-         Se crean 3 páginas de 5 artículos cada una, aunque se repitan. */
       function displayCarouselArticles(articles) {
-        // Ordenar artículos: new > featured > resto y fecha descendente
+        // Orden: new > featured > resto y por fecha descendente
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
           if(!a.new && b.new) return 1;
@@ -508,12 +394,12 @@
           if(!a.featured && b.featured) return 1;
           return new Date(b.date) - new Date(a.date);
         });
-        // Duplicar si hay pocos artículos para tener al menos 15 items
+        // Duplicamos para tener al menos 15 artículos
         let articlesForCarousel = [...articles];
-        while (articlesForCarousel.length < 15) {
+        while(articlesForCarousel.length < 15) {
           articlesForCarousel = articlesForCarousel.concat(articles);
         }
-        articlesForCarousel = articlesForCarousel.slice(0,15);
+        articlesForCarousel = articlesForCarousel.slice(0, 15);
 
         carouselContainer.innerHTML = '';
         const pages = [];
@@ -536,7 +422,6 @@
         }
         showPage(currentPage);
 
-        // Botones del carrusel
         prevButton.onclick = () => {
           currentPage = (currentPage > 0) ? currentPage - 1 : pages.length - 1;
           showPage(currentPage);
@@ -546,12 +431,11 @@
           showPage(currentPage);
         };
 
-        // Avance automático
         let autoAdvanceInterval = setInterval(() => {
           currentPage = (currentPage < pages.length - 1) ? currentPage + 1 : 0;
           showPage(currentPage);
         }, 5000);
-        // Pausar avance al interactuar
+
         carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvanceInterval));
         carouselContainer.addEventListener('mouseleave', () => {
           autoAdvanceInterval = setInterval(() => {
@@ -569,11 +453,16 @@
       }
 
       function displayArticles() {
-        displayFeaturedArticles(articlesData);
-        displayCarouselArticles(articlesData);
+        // Espera a que window.articlesData esté cargado por js/scripts.js
+        if (window.articlesData && window.articlesData.length > 0) {
+          displayFeaturedArticles(window.articlesData);
+          displayCarouselArticles(window.articlesData);
+        } else {
+          setTimeout(displayArticles, 100);
+        }
       }
 
-      // Mostrar el overlay dinámico después de 2 segundos
+      // Muestra el overlay después de 2 segundos
       setTimeout(() => {
         overlayGrid.classList.add('active');
       }, 2000);
@@ -583,4 +472,3 @@
   </script>
 </body>
 </html>
-
