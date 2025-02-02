@@ -10,4 +10,48 @@
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
     }
+    {
+        "id": "test",
+        "title": "Mono es goat",
+        "subtitle": "Descubre por qué SUS.",
+        "date": "2025-03-20",
+        "author": "Juan Pérez",
+        "featured": true,
+        "new": true,
+        "path": "articulos/test/articulo.md",
+        "thumbnail": "articulos/test/thumbnail.jpg"
+    }
+    {
+        "id": "test",
+        "title": "JUAN",
+        "subtitle": "Descubre por qué  JONH",
+        "date": "2025-03-20",
+        "author": "Juan Pérez",
+        "featured": true,
+        "new": true,
+        "path": "articulos/test/articulo.md",
+        "thumbnail": "articulos/test/thumbnail.jpg"
+    }
+    {
+        "id": "test",
+        "title": "awita de coco",
+        "subtitle": "Descubre por qué amo a mi novia",
+        "date": "2025-03-20",
+        "author": "Juan Pérez",
+        "featured": true,
+        "new": true,
+        "path": "articulos/test/articulo.md",
+        "thumbnail": "articulos/test/thumbnail.jpg"
+    }
+    {
+        "id": "test",
+        "title": "diosa",
+        "subtitle": "Te amo linda",
+        "date": "2025-03-20",
+        "author": "Juan Pérez",
+        "featured": true,
+        "new": true,
+        "path": "articulos/test/articulo.md",
+        "thumbnail": "articulos/test/thumbnail.jpg"
+    }
 ]
