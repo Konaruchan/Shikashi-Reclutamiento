@@ -9,7 +9,7 @@
         "new": true,
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
-    }
+    },
     {
         "id": "test2",
         "title": "Mono es goat",
@@ -20,7 +20,7 @@
         "new": true,
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
-    }
+    },
     {
         "id": "test3",
         "title": "JUAN",
@@ -31,7 +31,7 @@
         "new": true,
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
-    }
+    },
     {
         "id": "test4",
         "title": "awita de coco",
@@ -42,7 +42,7 @@
         "new": true,
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
-    }
+    },
     {
         "id": "test5",
         "title": "diosa",
@@ -53,5 +53,5 @@
         "new": true,
         "path": "articulos/test/articulo.md",
         "thumbnail": "articulos/test/thumbnail.jpg"
-    }
+    },
 ]
