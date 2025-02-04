@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Fuentes modernas -->
+  <!-- Fuentes modernas: asegúrate de que se carguen correctamente -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     /* Reset y base */
@@ -18,23 +16,20 @@
       color: #333;
       line-height: 1.6;
     }
+    /* CONTAINER GENERAL (usa márgenes laterales) */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
     /* Barra de Navegación */
     nav {
       background: #e53935;
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .logo-container img {
-      width: 150px;
-      margin-bottom: 0.8rem;
-    }
+    .nav-container { display: flex; flex-direction: column; align-items: center; }
+    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
     .nav-links {
       display: flex;
       gap: 1.2rem;
@@ -51,9 +46,7 @@
       transition: background 0.3s ease;
       border-radius: 4px;
     }
-    .nav-link:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    .nav-link:hover { background: rgba(255,255,255,0.15); }
     /* Marquee */
     .marquee-container {
       background: #fb8c00;
@@ -69,19 +62,18 @@
       animation: marquee 15s linear infinite;
     }
     .marquee-content span { padding: 0 20px; }
-    @keyframes marquee {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
-    }
-    /* Hero Image sin márgenes verticales */
+    @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    /* HERO IMAGE con contenedor con márgenes */
     .hero-image-section {
-      width: 100%;
-      height: 100vh; /* Ocupa toda la pantalla, sin márgenes verticales */
+      max-width: 1200px;
+      margin: 2rem auto;
       position: relative;
+      aspect-ratio: 16/9;
       background: url('img/hero-image.jpg') center/cover no-repeat;
-      border-bottom: 1px solid #ddd;
+      border: 1px solid #ddd;
+      overflow: hidden;
     }
-    /* Overlay ocupa toda la sección */
+    /* El overlay se extiende a lo largo de la hero image (sin márgenes internos) */
     .overlay-grid {
       position: absolute;
       top: 0;
@@ -97,18 +89,15 @@
       visibility: hidden;
       transition: opacity 0.5s ease;
     }
-    .overlay-grid.active {
-      opacity: 1;
-      visibility: visible;
-    }
-    /* Bloque Grande (Portada) – estilo B5, con diseño cuadrado */
+    .overlay-grid.active { opacity: 1; visibility: visible; }
+    /* Bloque Grande (Portada) – estilo B5 */
     .big-item {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding-top: 4rem;
+      padding-top: 4rem; /* espacio para el encabezado */
       padding-bottom: 1rem;
       background: #fff;
       border: 1px solid #ccc;
@@ -158,7 +147,7 @@
       transition: background 0.3s ease;
     }
     .big-item-btn:hover { background: #c62828; }
-    /* Artículos pequeños: títulos arriba de la imagen */
+    /* Artículos pequeños: Título arriba de la imagen */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -188,15 +177,17 @@
       object-fit: cover;
       flex: 1;
     }
-    /* Carrusel: sección roja sin márgenes laterales */
-    .carousel-wrapper {
+    /* CARRUSEL */
+    /* La franja roja ocupa el ancho completo, sin márgenes */
+    .carousel-section {
       width: 100%;
-      padding: 2rem 0; /* Solo vertical */
       background: #e53935;
-      border-top: 1px solid #d32f2f;
-      border-bottom: 1px solid #d32f2f;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
+    }
+    /* Dentro del carrusel, el contenido tendrá márgenes */
+    .carousel-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
       position: relative;
     }
     .carousel-section h2 {
@@ -205,16 +196,16 @@
       font-family: 'Roboto', sans-serif;
       font-weight: 700;
       text-align: left;
-      padding-left: 2rem;
+      padding-left: 1rem;
     }
     .carousel-container {
       position: relative;
       overflow: hidden;
     }
-    /* Slider horizontal: contenedor de páginas */
+    /* Slider horizontal con efecto de deslizado */
     .carousel-pages {
       display: flex;
-      transition: transform 0.8s ease; /* Animación de deslizado */
+      transition: transform 0.8s ease;
     }
     .carousel-page {
       min-width: 100%;
@@ -247,7 +238,7 @@
       color: #333;
       margin: 0;
     }
-    /* Botones del carrusel, reposicionados para no colisionar */
+    /* Botones del carrusel, con separación extra */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -265,11 +256,11 @@
       z-index: 2;
     }
     .carousel-button:hover { background: rgba(255,255,255,1); }
-    .carousel-button.prev { left: 1rem; }
-    .carousel-button.next { right: 1rem; }
+    .carousel-button.prev { left: -2rem; } /* desplazados hacia afuera */
+    .carousel-button.next { right: -2rem; }
     /* Responsive */
     @media (max-width: 768px) {
-      .hero-image-section { height: 60vh; }
+      .hero-image-section { max-width: 100%; margin: 1rem; }
       .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
       .small-items-container { grid-template-columns: 1fr 1fr; }
       .carousel-button.prev, .carousel-button.next {
@@ -284,7 +275,7 @@
 <body>
   <!-- Barra de Navegación -->
   <nav>
-    <div class="nav-container">
+    <div class="nav-container container">
       <div class="logo-container">
         <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" />
       </div>
@@ -299,16 +290,16 @@
 
   <!-- Marquee -->
   <div class="marquee-container">
-    <div class="marquee-content">
+    <div class="marquee-content container">
       <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
       <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
     </div>
   </div>
 
-  <!-- Hero Image con Overlay -->
-  <section class="hero-image-section">
+  <!-- Hero Image con Overlay (el contenedor mantiene márgenes) -->
+  <section class="hero-image-section container">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Bloque Grande: Portada de la Edición (manual) -->
+      <!-- Bloque Grande: Portada de la Edición (configurado manualmente) -->
       <div class="big-item">
         <div class="featured-header">SHIKASHI MONTHLY DE ESTE MES</div>
         <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
@@ -323,12 +314,13 @@
   </section>
 
   <!-- Carrusel de Artículos Recientes -->
+  <!-- La franja roja ocupa el ancho completo -->
   <section class="carousel-section">
-    <div class="carousel-wrapper">
+    <div class="carousel-wrapper container">
       <h2>Artículos Recientes</h2>
       <div class="carousel-container" id="carousel-container">
         <div class="carousel-pages" id="carouselPages">
-          <!-- Se inyectarán las páginas dinámicamente -->
+          <!-- Páginas se inyectan dinámicamente -->
         </div>
       </div>
       <button class="carousel-button prev" id="prevButton">❮</button>
@@ -358,7 +350,7 @@
         }
         const displayArticles = featured.slice(0, 5);
         smallItemsContainer.innerHTML = '';
-        // Colocar el título arriba de la miniatura para cada artículo pequeño
+        // Título arriba de la imagen en cada pequeño
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
           smallItem.className = 'small-item';
@@ -369,8 +361,8 @@
           smallItemsContainer.appendChild(smallItem);
         });
       }
-
-      // Construye el carrusel con efecto de deslizamiento
+      
+      // Construye el carrusel con deslizado horizontal
       function displayCarouselArticles(articles) {
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
@@ -385,7 +377,6 @@
         }
         articlesForCarousel = articlesForCarousel.slice(0, 15);
         
-        // Limpiar el contenedor y crear páginas
         carouselPagesContainer.innerHTML = '';
         const numPages = Math.ceil(articlesForCarousel.length / articlesPerPage);
         for (let i = 0; i < numPages; i++) {
@@ -442,7 +433,6 @@
         }
       }
       
-      // Mostrar el overlay sin márgenes (inmediatamente)
       setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
     });
