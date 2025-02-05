@@ -39,7 +39,7 @@
     }
     /* Barra de Navegación */
     nav {
-      background: #e53935;
+      background: #820000;
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
@@ -64,7 +64,7 @@
     .nav-link:hover { background: rgba(255,255,255,0.15); }
     /* Marquee */
     .marquee-container {
-      background: #fb8c00;
+      background: #F4A200;
       color: #fff;
       font-family: 'Botones', sans-serif;
       font-weight: 700;
@@ -78,7 +78,7 @@
     }
     .marquee-content span { padding: 0 20px; }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE: el contenedor mantiene márgenes laterales, sin verticales */
+    /* HERO IMAGE: el contenedor mantiene márgenes laterales (por .container) y sin márgenes verticales */
     .hero-image-section {
       max-width: 1200px;
       margin: 0 auto; /* sin margen vertical */
@@ -103,7 +103,7 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Estructura de Card para bloques (grande y pequeños) */
+    /* Estructura de Card para bloques grandes y pequeños */
     .card {
       background: #fff;
       border: 1px solid #ccc;
@@ -119,13 +119,13 @@
       align-items: center;
       background: #fff;
       padding: 0.5rem;
-      border-bottom: 2px solid #FFD700;
+      border-bottom: 2px solid #F4A200;
     }
     .card-header .accent {
       display: inline-block;
       width: 6px;
       height: 100%;
-      background: #FFD700;
+      background: #F4A200;
       margin-right: 0.5rem;
     }
     .card-header h3 {
@@ -133,7 +133,7 @@
       font-size: 1.6rem;
       margin: 0;
     }
-    /* Card body: contenedor fijo y semitransparente para la imagen */
+    /* Card body: contenedor fijo para la imagen con fondo semitransparente */
     .card-body {
       width: 100%;
       background: rgba(255,255,255,0.8);
@@ -142,8 +142,10 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Bloque Grande: aumentar el tamaño del contenedor de imagen */
+    /* Para el bloque grande: altura mayor */
     .big-item .card-body { height: 510px; }
+    /* Para los pequeños: altura fija */
+    .small-item .card-body { height: 200px; }
     .card-body img {
       max-width: 100%;
       max-height: 100%;
@@ -151,12 +153,12 @@
     }
     /* Bloque Grande (Portada) */
     .big-item { position: relative; }
-    /* Botón para el bloque grande, más horizontal */
+    /* Botón para el bloque grande, más horizontal y cuadrado */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
       padding: 0.8rem 1.8rem;
-      background: #e53935;
+      background: #820000;
       color: #fff;
       text-decoration: none;
       border: none;
@@ -166,18 +168,17 @@
       font-size: 1.2rem;
       transition: background 0.3s ease;
     }
-    .big-item-btn:hover { background: #c62828; }
-    /* Contenedor para artículos pequeños (overlay) */
+    .big-item-btn:hover { background: #680000; }
+    /* Contenedor para artículos pequeños */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
     }
-    .small-item { }
     /* CARRUSEL */
     .carousel-section {
       width: 100%;
-      background: #e53935;
+      background: #820000;
     }
     .carousel-wrapper {
       max-width: 1200px;
@@ -224,7 +225,7 @@
       padding: 0.5rem 0;
     }
     .carousel-info .new-label {
-      color: #FFD700;
+      color: #F4A200;
       font-weight: bold;
       margin-right: 0.5rem;
     }
@@ -262,7 +263,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       font-size: 1.5rem;
       font-weight: bold;
-      color: #e53935;
+      color: #820000;
       transition: background 0.3s ease;
       z-index: 2;
     }
@@ -319,7 +320,6 @@
         <div class="card-body">
           <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         </div>
-        <!-- Eliminado el texto "Gratis Digital" -->
         <a href="pagina-lectura.html" class="big-item-btn">¡Quiero leerlo!</a>
       </div>
       <!-- Bloque Dinámico: 4 artículos pequeños -->
@@ -382,7 +382,7 @@
         });
       }
       
-      // Construye el carrusel con efecto de deslizado horizontal
+      // Construye el carrusel con efecto de deslizamiento horizontal
       function displayCarouselArticles(articles) {
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
