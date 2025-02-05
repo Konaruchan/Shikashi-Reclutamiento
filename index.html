@@ -5,18 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Fuentes modernas: asegúrate de que se carguen correctamente -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Cargar fuentes locales -->
+  <style>
+    @font-face {
+      font-family: 'Botones';
+      src: url('ttf/botones.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Cuerpo';
+      src: url('ttf/cuerpo.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     /* Reset y base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Cuerpo', sans-serif;
       background-color: #fafafa;
       color: #333;
       line-height: 1.6;
     }
-    /* CONTAINER GENERAL (usa márgenes laterales) */
+    /* Contenedor general: márgenes laterales */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -37,7 +52,7 @@
       justify-content: center;
     }
     .nav-link {
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Botones', sans-serif;
       font-weight: 500;
       color: #fff;
       text-decoration: none;
@@ -51,8 +66,8 @@
     .marquee-container {
       background: #fb8c00;
       color: #fff;
-      font-family: 'Roboto', sans-serif;
-      font-weight: bold;
+      font-family: 'Botones', sans-serif;
+      font-weight: 700;
       padding: 0.8rem 2rem;
       overflow: hidden;
       white-space: nowrap;
@@ -63,17 +78,18 @@
     }
     .marquee-content span { padding: 0 20px; }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE con contenedor con márgenes */
+    /* HERO IMAGE: el contenedor conserva márgenes laterales (por la clase container) y no tiene márgenes verticales */
     .hero-image-section {
-      max-width: 1200px;
-      margin: 2rem auto;
+      width: 100%;
+      /* Sin margen vertical */
+      margin: 0 auto;
       position: relative;
       aspect-ratio: 16/9;
       background: url('img/hero-image.jpg') center/cover no-repeat;
       border: 1px solid #ddd;
       overflow: hidden;
     }
-    /* El overlay se extiende a lo largo de la hero image (sin márgenes internos) */
+    /* Overlay: se extiende a toda la sección hero, sin márgenes internos */
     .overlay-grid {
       position: absolute;
       top: 0;
@@ -90,100 +106,81 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Bloque Grande (Portada) – estilo B5 */
-    .big-item {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding-top: 4rem; /* espacio para el encabezado */
-      padding-bottom: 1rem;
+    /* Estilo de Card (para bloque grande y pequeños) */
+    .card {
       background: #fff;
       border: 1px solid #ccc;
       border-radius: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
-    .featured-header {
-      position: absolute;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #e53935;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    .card-header {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 0.5rem;
+      border-bottom: 2px solid #FFD700;
     }
-    .big-item img {
-      width: 100%;
-      max-width: 300px;
-      aspect-ratio: 1 / 1.42;
+    .card-header .accent {
+      display: inline-block;
+      width: 6px;
+      height: 100%;
+      background: #FFD700;
+      margin-right: 0.5rem;
+    }
+    .card-header h3 {
+      font-family: 'Botones', sans-serif;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+    .card-body {
+      background: rgba(255,255,255,0.8);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    .card-body img {
+      max-width: 100%;
+      height: auto;
       object-fit: cover;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
     }
-    .big-item h3 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 1.8rem;
-      margin-bottom: 0.8rem;
+    /* Bloque Grande (Portada) – utiliza la estructura card */
+    .big-item { 
+      position: relative; 
+      padding-top: 0; /* La card-header se mostrará arriba */
     }
+    .big-item .card-header { border-bottom: 2px solid #FFD700; }
+    .big-item .card-body { background: rgba(255,255,255,0.8); }
     .big-item-btn {
-      padding: 1rem 2rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.8rem 1.5rem;
       background: #e53935;
       color: #fff;
       text-decoration: none;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
+      font-family: 'Botones', sans-serif;
       font-size: 1.2rem;
       transition: background 0.3s ease;
     }
     .big-item-btn:hover { background: #c62828; }
-    /* Artículos pequeños: Título arriba de la imagen */
+    /* Artículos pequeños (overlay): usan la misma estructura card */
+    .small-item { }
+    /* GRID para artículos pequeños */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
-    .small-item {
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .small-item h3 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 500;
-      font-size: 1rem;
-      margin: 0;
-      padding: 0.3rem;
-      text-align: center;
-      border-bottom: 1px solid #eee;
-    }
-    .small-item img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      flex: 1;
-    }
     /* CARRUSEL */
-    /* La franja roja ocupa el ancho completo, sin márgenes */
+    /* La franja roja ocupa todo el ancho */
     .carousel-section {
       width: 100%;
       background: #e53935;
     }
-    /* Dentro del carrusel, el contenido tendrá márgenes */
+    /* Contenido interno del carrusel con márgenes */
     .carousel-wrapper {
       max-width: 1200px;
       margin: 0 auto;
@@ -193,8 +190,8 @@
     .carousel-section h2 {
       color: #fff;
       margin-bottom: 1rem;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
+      font-family: 'Botones', sans-serif;
+      font-size: 1.8rem;
       text-align: left;
       padding-left: 1rem;
     }
@@ -202,7 +199,7 @@
       position: relative;
       overflow: hidden;
     }
-    /* Slider horizontal con efecto de deslizado */
+    /* Slider horizontal */
     .carousel-pages {
       display: flex;
       transition: transform 0.8s ease;
@@ -219,10 +216,38 @@
       border-radius: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       padding: 1rem;
-      text-align: center;
       transition: transform 0.3s ease;
     }
     .carousel-item:hover { transform: translateY(-5px); }
+    .carousel-card img {
+      width: 100%;
+    }
+    /* Estilo para la info debajo de la imagen del carrusel */
+    .carousel-info {
+      text-align: left;
+      font-family: 'Cuerpo', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.5rem 0;
+    }
+    .carousel-info .new-label {
+      color: #FFD700;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    .carousel-info .date {
+      color: #999;
+      margin-right: 0.5rem;
+    }
+    .carousel-info h3 {
+      font-family: 'Botones', sans-serif;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    /* Cada carrusel item: la imagen y debajo la info */
+    .carousel-card {
+      display: flex;
+      flex-direction: column;
+    }
     .carousel-thumbnail {
       width: 100%;
       aspect-ratio: 1/1;
@@ -231,14 +256,7 @@
       border-radius: 4px;
       margin-bottom: 0.5rem;
     }
-    .carousel-item h3 {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #333;
-      margin: 0;
-    }
-    /* Botones del carrusel, con separación extra */
+    /* Botones del carrusel: se desplazan fuera del contenido para no colisionar */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -256,11 +274,11 @@
       z-index: 2;
     }
     .carousel-button:hover { background: rgba(255,255,255,1); }
-    .carousel-button.prev { left: -2rem; } /* desplazados hacia afuera */
+    .carousel-button.prev { left: -2rem; }
     .carousel-button.next { right: -2rem; }
     /* Responsive */
     @media (max-width: 768px) {
-      .hero-image-section { max-width: 100%; margin: 1rem; }
+      .hero-image-section { margin: 0 1rem; }
       .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
       .small-items-container { grid-template-columns: 1fr 1fr; }
       .carousel-button.prev, .carousel-button.next {
@@ -296,14 +314,19 @@
     </div>
   </div>
 
-  <!-- Hero Image con Overlay (el contenedor mantiene márgenes) -->
+  <!-- Hero Image con Overlay -->
   <section class="hero-image-section container">
     <div class="overlay-grid" id="overlayGrid">
       <!-- Bloque Grande: Portada de la Edición (configurado manualmente) -->
-      <div class="big-item">
-        <div class="featured-header">SHIKASHI MONTHLY DE ESTE MES</div>
-        <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
-        <h3>☆ GRATIS DIGITAL ☆</h3>
+      <div class="big-item card">
+        <div class="card-header">
+          <span class="accent"></span>
+          <h3>SHIKASHI MONTHLY DE ESTE MES</h3>
+        </div>
+        <div class="card-body">
+          <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
+        </div>
+        <h3 style="font-family: 'Botones', sans-serif; font-size:1.8rem; margin:0.5rem 0;">☆ GRATIS DIGITAL ☆</h3>
         <a href="pagina-lectura.html" class="big-item-btn">¡Quiero leerlo!</a>
       </div>
       <!-- Bloque Dinámico: 4 artículos pequeños -->
@@ -314,7 +337,6 @@
   </section>
 
   <!-- Carrusel de Artículos Recientes -->
-  <!-- La franja roja ocupa el ancho completo -->
   <section class="carousel-section">
     <div class="carousel-wrapper container">
       <h2>Artículos Recientes</h2>
@@ -350,13 +372,18 @@
         }
         const displayArticles = featured.slice(0, 5);
         smallItemsContainer.innerHTML = '';
-        // Título arriba de la imagen en cada pequeño
+        // Cada pequeño: título arriba y luego imagen dentro de una card
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
-          smallItem.className = 'small-item';
+          smallItem.className = 'small-item card';
           smallItem.innerHTML = `
-            <h3>${article.title}</h3>
-            <img src="${article.thumbnail}" alt="${article.title}">
+            <div class="card-header">
+              <span class="accent"></span>
+              <h3>${article.title}</h3>
+            </div>
+            <div class="card-body">
+              <img src="${article.thumbnail}" alt="${article.title}">
+            </div>
           `;
           smallItemsContainer.appendChild(smallItem);
         });
@@ -387,9 +414,16 @@
           pageArticles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.className = 'carousel-item';
+            // Se añade info: fecha y "Nuevo!" si corresponde
             articleElement.innerHTML = `
-              <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
-              <h3>${article.title}</h3>
+              <div class="carousel-card">
+                <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
+                <div class="carousel-info">
+                  ${article.new ? '<span class="new-label">Nuevo!</span>' : ''}
+                  <span class="date">${article.date}</span>
+                  <h3>${article.title}</h3>
+                </div>
+              </div>
             `;
             pageContainer.appendChild(articleElement);
           });
