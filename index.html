@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <!-- Se mantiene el width=device-width para responsividad, el zoom se controla vía CSS -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -20,7 +19,7 @@
       font-weight: normal;
       font-style: normal;
     }
-    /* Reducir el zoom general al 75% */
+    /* Reducir el zoom global al 75% */
     html { zoom: 0.75; }
   </style>
   <style>
@@ -32,7 +31,7 @@
       color: #333;
       line-height: 1.6;
     }
-    /* Contenedor general: mantiene márgenes laterales */
+    /* Contenedor general: márgenes laterales */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -79,7 +78,7 @@
     }
     .marquee-content span { padding: 0 20px; }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE: el contenedor mantiene márgenes laterales, pero sin márgenes verticales */
+    /* HERO IMAGE: el contenedor mantiene márgenes laterales, sin verticales */
     .hero-image-section {
       max-width: 1200px;
       margin: 0 auto; /* sin margen vertical */
@@ -104,7 +103,7 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Estructura de Card: para bloques grandes y pequeños */
+    /* Estructura de Card para bloques (grande y pequeños) */
     .card {
       background: #fff;
       border: 1px solid #ccc;
@@ -134,7 +133,7 @@
       font-size: 1.6rem;
       margin: 0;
     }
-    /* La card-body ahora es un cuadrado semitransparente con tamaño fijo */
+    /* Card body: contenedor fijo y semitransparente para la imagen */
     .card-body {
       width: 100%;
       background: rgba(255,255,255,0.8);
@@ -143,24 +142,20 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Para el bloque grande, definimos una altura mayor */
-    .big-item .card-body { height: 350px; }
-    /* Para los pequeños, algo más compacto */
-    .small-item .card-body { height: 200px; }
+    /* Bloque Grande: aumentar el tamaño del contenedor de imagen */
+    .big-item .card-body { height: 450px; }
     .card-body img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
     /* Bloque Grande (Portada) */
-    .big-item {
-      position: relative;
-    }
-    /* Bloque Grande: El botón se hace más compacto y centrado */
+    .big-item { position: relative; }
+    /* Botón para el bloque grande, más horizontal */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
-      padding: 0.8rem 1.2rem;
+      padding: 0.8rem 1.8rem;
       background: #e53935;
       color: #fff;
       text-decoration: none;
@@ -172,12 +167,13 @@
       transition: background 0.3s ease;
     }
     .big-item-btn:hover { background: #c62828; }
-    /* Contenedor para artículos pequeños */
+    /* Contenedor para artículos pequeños (overlay) */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
     }
+    .small-item { }
     /* CARRUSEL */
     .carousel-section {
       width: 100%;
@@ -311,7 +307,7 @@
     </div>
   </div>
 
-  <!-- HERO IMAGE con Overlay (mantiene márgenes laterales, sin verticales) -->
+  <!-- HERO IMAGE con Overlay -->
   <section class="hero-image-section container">
     <div class="overlay-grid" id="overlayGrid">
       <!-- Bloque Grande: Portada (manual) -->
@@ -323,7 +319,7 @@
         <div class="card-body">
           <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         </div>
-        <h3 style="font-family: 'Botones', sans-serif; margin:0.5rem 0;">☆ GRATIS DIGITAL ☆</h3>
+        <!-- Eliminado el texto "Gratis Digital" -->
         <a href="pagina-lectura.html" class="big-item-btn">¡Quiero leerlo!</a>
       </div>
       <!-- Bloque Dinámico: 4 artículos pequeños -->
