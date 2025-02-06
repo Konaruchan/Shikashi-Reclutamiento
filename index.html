@@ -5,19 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Cargar fuentes locales -->
+  <!-- Declaración de fuentes locales -->
   <style>
     @font-face {
       font-family: 'Botones';
       src: url('ttf/botones.woff2') format('woff2');
-      font-weight: normal;
-      font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Cuerpo';
       src: url('ttf/cuerpo.woff2') format('woff2');
-      font-weight: normal;
-      font-style: normal;
+      font-display: swap;
     }
     /* Reducir el zoom global al 75% */
     html { zoom: 0.75; }
@@ -78,10 +76,10 @@
     }
     .marquee-content span { padding: 0 20px; }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE: el contenedor mantiene márgenes laterales (por .container) y sin márgenes verticales */
+    /* HERO IMAGE: el contenedor mantiene márgenes laterales y sin márgenes verticales */
     .hero-image-section {
       max-width: 1200px;
-      margin: 0 auto; /* sin margen vertical */
+      margin: 0 auto; 
       position: relative;
       aspect-ratio: 16/9;
       background: url('img/hero-image.jpg') center/cover no-repeat;
@@ -142,7 +140,7 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Para el bloque grande: altura mayor */
+    /* Para el bloque grande: altura mayor (solo para el bloque grande) */
     .big-item .card-body { height: 510px; }
     /* Para los pequeños: altura fija */
     .small-item .card-body { height: 200px; }
@@ -153,7 +151,7 @@
     }
     /* Bloque Grande (Portada) */
     .big-item { position: relative; }
-    /* Botón para el bloque grande, más horizontal y cuadrado */
+    /* Botón para el bloque grande, más horizontal */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
