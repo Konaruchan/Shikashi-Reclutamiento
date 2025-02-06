@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Declaración de fuentes locales -->
+  <!-- Cargar fuentes locales -->
   <style>
     @font-face {
       font-family: 'Botones';
@@ -17,7 +17,6 @@
       src: url('ttf/cuerpo.woff2') format('woff2');
       font-display: swap;
     }
-    /* Reducir el zoom global al 75% */
     html { zoom: 0.75; }
   </style>
   <style>
@@ -29,7 +28,7 @@
       color: #333;
       line-height: 1.6;
     }
-    /* Contenedor general: márgenes laterales */
+    /* Contenedor general */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -41,25 +40,39 @@
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container { display: flex; flex-direction: column; align-items: center; }
-    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
+    .nav-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-container img {
+      width: 150px;
+      margin-bottom: 0.8rem;
+    }
     .nav-links {
       display: flex;
       gap: 1.2rem;
       flex-wrap: wrap;
       justify-content: center;
     }
+    /* Mejora de los botones de la navegación */
     .nav-link {
-      font-family: 'Botones', sans-serif;
-      font-weight: 500;
+      font-family: sans-serif; /* Sistema, en caso de no cargar la fuente personalizada */
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: #fff;
       text-decoration: none;
-      font-size: 1rem;
-      padding: 0.5rem 1rem;
-      transition: background 0.3s ease;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid transparent;
       border-radius: 4px;
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
-    .nav-link:hover { background: rgba(255,255,255,0.15); }
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
     /* Marquee */
     .marquee-container {
       background: #F4A200;
@@ -75,8 +88,11 @@
       animation: marquee 15s linear infinite;
     }
     .marquee-content span { padding: 0 20px; }
-    @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE: el contenedor mantiene márgenes laterales y sin márgenes verticales */
+    @keyframes marquee {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+    /* HERO IMAGE */
     .hero-image-section {
       max-width: 1200px;
       margin: 0 auto; 
@@ -86,7 +102,7 @@
       border: 1px solid #ddd;
       overflow: hidden;
     }
-    /* Overlay: se extiende sobre toda la hero image */
+    /* Overlay */
     .overlay-grid {
       position: absolute;
       top: 0; left: 0;
@@ -101,7 +117,7 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Estructura de Card para bloques grandes y pequeños */
+    /* Estructura de Card */
     .card {
       background: #fff;
       border: 1px solid #ccc;
@@ -131,7 +147,7 @@
       font-size: 1.6rem;
       margin: 0;
     }
-    /* Card body: contenedor fijo para la imagen con fondo semitransparente */
+    /* Card Body: contenedor para la imagen */
     .card-body {
       width: 100%;
       background: rgba(255,255,255,0.8);
@@ -140,18 +156,14 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Para el bloque grande: altura mayor (solo para el bloque grande) */
+    /* Bloque Grande (Portada) */
+    .big-item { position: relative; }
     .big-item .card-body { height: 510px; }
-    /* Para los pequeños: altura fija */
-    .small-item .card-body { height: 200px; }
     .card-body img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
-    /* Bloque Grande (Portada) */
-    .big-item { position: relative; }
-    /* Botón para el bloque grande, más horizontal */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
@@ -215,7 +227,6 @@
       transition: transform 0.3s ease;
     }
     .carousel-item:hover { transform: translateY(-5px); }
-    /* Información en el carrusel */
     .carousel-info {
       text-align: left;
       font-family: 'Cuerpo', sans-serif;
@@ -248,7 +259,7 @@
       border-radius: 4px;
       margin-bottom: 0.5rem;
     }
-    /* Botones del carrusel */
+    /* Botones del Carrusel */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -380,7 +391,7 @@
         });
       }
       
-      // Construye el carrusel con efecto de deslizamiento horizontal
+      // Construye el carrusel con efecto de deslizado horizontal
       function displayCarouselArticles(articles) {
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
