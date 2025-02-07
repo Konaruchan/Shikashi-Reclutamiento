@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artículo - Shikashi Monthly Friday Series</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: 'Cuerpo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fafafa;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    nav {
+      background: #820000;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .nav-container { display: flex; flex-direction: column; align-items: center; }
+    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-link {
+      font-family: 'Botones', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    .banner {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+    .article-meta {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .article-meta h1 {
+      font-family: 'Botones', sans-serif;
+      font-size: 2rem;
+      margin: 0;
+      color: #820000;
+    }
+    .article-meta h2 {
+      font-size: 1.2rem;
+      color: #666;
+      margin: 0.5rem 0;
+    }
+    .article-meta span {
+      font-size: 0.9rem;
+      color: #999;
+    }
+    .article-content {
+      line-height: 1.8;
+    }
+    .article-content img {
+      max-width: 100%;
+      display: block;
+      margin: 1rem auto;
+    }
+    footer {
+      background: #820000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de Navegación -->
+  <nav>
+    <div class="nav-container container">
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">INICIO</a>
+        <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+        <a href="#" class="nav-link">RENSAI</a>
+        <a href="#" class="nav-link">SMF PLUS</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" id="articleContainer">
+    <!-- Aquí se inyecta el contenido del artículo -->
+  </div>
+
+  <footer class="footer">
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Función para obtener parámetros de la URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const articleId = getQueryParam('id');
+    if (!articleId) {
+      // Si no se especifica el ID, redirige a Articulos.html
+      window.location.href = 'Articulos.html';
+    }
+
+    // Carga el JSON de artículos
+    async function fetchArticles() {
+      try {
+        const response = await fetch('articulos.json');
+        if (!response.ok) throw new Error('Error al cargar articulos.json');
+        const articles = await response.json();
+        return articles;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
+    // Función para parsear el Markdown con front matter (YAML)
+    function parseMarkdownWithFrontMatter(mdText) {
+      const regex = /^---\s*([\s\S]+?)\s*---\s*([\s\S]*)$/;
+      const match = mdText.match(regex);
+      if (match) {
+        const yamlText = match[1];
+        const content = match[2];
+        const meta = {};
+        yamlText.split('\n').forEach(line => {
+          const [key, ...rest] = line.split(':');
+          if (key && rest) {
+            meta[key.trim()] = rest.join(':').trim().replace(/^"|"$/g, '');
+          }
+        });
+        return { meta, content };
+      }
+      return { meta: {}, content: mdText };
+    }
+
+    async function loadArticle() {
+      const articles = await fetchArticles();
+      const article = articles.find(a => a.id === articleId);
+      if (!article) {
+        window.location.href = 'Articulos.html';
+        return;
+      }
+      try {
+        // Cargar el archivo Markdown
+        const mdResponse = await fetch(article.path);
+        if (!mdResponse.ok) throw new Error('Error al cargar el archivo markdown');
+        const mdText = await mdResponse.text();
+        const { meta, content } = parseMarkdownWithFrontMatter(mdText);
+        const htmlContent = marked(content);
+
+        // Se asume que la imagen "featured.jpg" está en la misma carpeta que el Markdown
+        const basePath = article.path.substring(0, article.path.lastIndexOf('/'));
+        const featuredImage = basePath + '/featured.jpg';
+
+        // Construir el HTML del artículo
+        const container = document.getElementById('articleContainer');
+        container.innerHTML = `
+          <img src="${featuredImage}" alt="${meta.title || article.title}" class="banner">
+          <div class="article-meta">
+            <h1>${meta.title || article.title}</h1>
+            <h2>${meta.subtitle || article.subtitle}</h2>
+            <span>Por ${meta.author || article.author} - ${meta.date || article.date}</span>
+          </div>
+          <div class="article-content">${htmlContent}</div>
+        `;
+      } catch (error) {
+        console.error(error);
+        window.location.href = 'Articulos.html';
+      }
+    }
+
+    loadArticle();
+  </script>
+</body>
+</html>
