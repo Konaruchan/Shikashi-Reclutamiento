@@ -17,6 +17,7 @@
       src: url('ttf/cuerpo.woff2') format('woff2');
       font-display: swap;
     }
+    /* Reducir el zoom global al 75% */
     html { zoom: 0.75; }
   </style>
   <style>
@@ -40,25 +41,17 @@
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .logo-container img {
-      width: 150px;
-      margin-bottom: 0.8rem;
-    }
+    .nav-container { display: flex; flex-direction: column; align-items: center; }
+    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
     .nav-links {
       display: flex;
       gap: 1.2rem;
       flex-wrap: wrap;
       justify-content: center;
     }
-    /* Mejora de los botones de la navegación */
     .nav-link {
-      font-family: sans-serif; /* Sistema, en caso de no cargar la fuente personalizada */
-      font-weight: 600;
+      font-family: 'Botones', sans-serif;
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #fff;
@@ -69,10 +62,7 @@
       border-radius: 4px;
       transition: background 0.3s ease, border-color 0.3s ease;
     }
-    .nav-link:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
+    .nav-link:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
     /* Marquee */
     .marquee-container {
       background: #F4A200;
@@ -88,11 +78,8 @@
       animation: marquee 15s linear infinite;
     }
     .marquee-content span { padding: 0 20px; }
-    @keyframes marquee {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
-    }
-    /* HERO IMAGE */
+    @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    /* HERO IMAGE: contenedor con márgenes laterales pero sin verticales */
     .hero-image-section {
       max-width: 1200px;
       margin: 0 auto; 
@@ -102,7 +89,7 @@
       border: 1px solid #ddd;
       overflow: hidden;
     }
-    /* Overlay */
+    /* Overlay: ocupa toda la hero image */
     .overlay-grid {
       position: absolute;
       top: 0; left: 0;
@@ -117,7 +104,7 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Estructura de Card */
+    /* Estructura de Card para bloques grandes y pequeños */
     .card {
       background: #fff;
       border: 1px solid #ccc;
@@ -147,7 +134,7 @@
       font-size: 1.6rem;
       margin: 0;
     }
-    /* Card Body: contenedor para la imagen */
+    /* Card Body: contenedor fijo para la imagen */
     .card-body {
       width: 100%;
       background: rgba(255,255,255,0.8);
@@ -156,14 +143,18 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Bloque Grande (Portada) */
-    .big-item { position: relative; }
+    /* Para el bloque grande: altura mayor (solo en el bloque grande) */
     .big-item .card-body { height: 510px; }
+    /* Para los pequeños: altura fija */
+    .small-item .card-body { height: 200px; }
     .card-body img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
+    /* Bloque Grande (Portada) */
+    .big-item { position: relative; }
+    /* Botón para el bloque grande, más horizontal y cuadrado */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
@@ -227,6 +218,7 @@
       transition: transform 0.3s ease;
     }
     .carousel-item:hover { transform: translateY(-5px); }
+    /* Información en el carrusel */
     .carousel-info {
       text-align: left;
       font-family: 'Cuerpo', sans-serif;
@@ -279,6 +271,78 @@
     .carousel-button:hover { background: rgba(255,255,255,1); }
     .carousel-button.prev { left: -2rem; }
     .carousel-button.next { right: -2rem; }
+    /* NUEVA SECCIÓN: Carrusel de Imágenes de Obras */
+    .obras-carousel-section {
+      width: 100%;
+      background: #fff;
+      padding: 2rem 0;
+    }
+    .obras-carousel-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .obras-carousel-section h2 {
+      color: #820000;
+      margin-bottom: 1rem;
+      font-family: 'Botones', sans-serif;
+      font-size: 1.8rem;
+      text-align: left;
+      padding-left: 1rem;
+    }
+    .obras-carousel-container {
+      position: relative;
+      overflow: hidden;
+    }
+    .obras-carousel-pages {
+      display: flex;
+      transition: transform 0.8s ease;
+    }
+    .obras-carousel-page {
+      min-width: 100%;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .obras-carousel-item {
+      flex: 1;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: #fff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .obras-carousel-item img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1.42;
+      object-fit: contain;
+      padding: 0.5rem;
+    }
+    .obras-carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #820000;
+      transition: background 0.3s ease;
+      z-index: 2;
+    }
+    .obras-carousel-button:hover { background: rgba(255,255,255,1); }
+    .obras-carousel-button.prev { left: -2rem; }
+    .obras-carousel-button.next { right: -2rem; }
     /* Responsive */
     @media (max-width: 768px) {
       .hero-image-section { max-width: 100%; margin: 0 1rem; }
@@ -290,6 +354,12 @@
       .carousel-button.prev { left: 1rem; }
       .carousel-button.next { right: 1rem; }
       .carousel-section h2 { padding-left: 1rem; text-align: left; }
+      .obras-carousel-button.prev, .obras-carousel-button.next {
+        top: auto; bottom: 1rem; transform: translateY(0);
+      }
+      .obras-carousel-button.prev { left: 1rem; }
+      .obras-carousel-button.next { right: 1rem; }
+      .obras-carousel-section h2 { padding-left: 1rem; text-align: left; }
     }
   </style>
 </head>
@@ -352,10 +422,25 @@
     </div>
   </section>
 
+  <!-- NUEVA SECCIÓN: Carrusel de Obras -->
+  <section class="obras-carousel-section">
+    <div class="obras-carousel-wrapper container">
+      <h2>¡¡Obras Shikashi de Marzo 2025!!</h2>
+      <div class="obras-carousel-container" id="obrasCarouselContainer">
+        <div class="obras-carousel-pages" id="obrasCarouselPages">
+          <!-- Páginas se inyectan dinámicamente -->
+        </div>
+      </div>
+      <button class="obras-carousel-button prev" id="obrasPrevButton">❮</button>
+      <button class="obras-carousel-button next" id="obrasNextButton">❯</button>
+    </div>
+  </section>
+
   <!-- Cargar script externo con window.articlesData -->
   <script src="js/scripts.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Sección Overlay Artículos
       const overlayGrid = document.getElementById('overlayGrid');
       const smallItemsContainer = document.getElementById('smallItemsContainer');
       const carouselPagesContainer = document.getElementById('carouselPages');
@@ -364,7 +449,6 @@
       let currentPage = 0;
       const articlesPerPage = 5;
       
-      // Actualiza los 4 artículos pequeños (el bloque grande es manual)
       function displayFeaturedArticles(articles) {
         if (!articles || articles.length === 0) return;
         let featured = articles.filter(article => article.featured);
@@ -374,7 +458,6 @@
         }
         const displayArticles = featured.slice(0, 5);
         smallItemsContainer.innerHTML = '';
-        // Cada artículo pequeño: título arriba y luego imagen dentro de la card
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
           smallItem.className = 'small-item card';
@@ -391,7 +474,6 @@
         });
       }
       
-      // Construye el carrusel con efecto de deslizado horizontal
       function displayCarouselArticles(articles) {
         articles.sort((a, b) => {
           if(a.new && !b.new) return -1;
@@ -470,6 +552,72 @@
       
       setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
+      
+      // NUEVA SECCIÓN: Carrusel de Obras
+      const obrasCarouselPagesContainer = document.getElementById('obrasCarouselPages');
+      const obrasPrevButton = document.getElementById('obrasPrevButton');
+      const obrasNextButton = document.getElementById('obrasNextButton');
+      let currentObrasPage = 0;
+      const obrasPerPage = 4; // 4 imágenes por página
+      
+      // Array de imágenes fijas para las obras
+      const obrasImages = [
+        'img/obras/1.png',
+        'img/obras/2.png',
+        'img/obras/3.png',
+        'img/obras/4.png',
+        'img/obras/5.png',
+        'img/obras/6.png',
+        'img/obras/7.png',
+        'img/obras/8.png'
+      ];
+      
+      function displayObrasCarousel() {
+        obrasCarouselPagesContainer.innerHTML = '';
+        const numObrasPages = Math.ceil(obrasImages.length / obrasPerPage);
+        for (let i = 0; i < numObrasPages; i++) {
+          const pageContainer = document.createElement('div');
+          pageContainer.className = 'obras-carousel-page';
+          const start = i * obrasPerPage;
+          const pageImages = obrasImages.slice(start, start + obrasPerPage);
+          pageImages.forEach(src => {
+            const obraItem = document.createElement('div');
+            obraItem.className = 'obras-carousel-item';
+            obraItem.innerHTML = `<img src="${src}" alt="Obra Shikashi">`;
+            pageContainer.appendChild(obraItem);
+          });
+          obrasCarouselPagesContainer.appendChild(pageContainer);
+        }
+        updateObrasCarousel();
+      }
+      
+      function updateObrasCarousel() {
+        const offset = -currentObrasPage * 100;
+        obrasCarouselPagesContainer.style.transform = `translateX(${offset}%)`;
+      }
+      
+      obrasPrevButton.onclick = () => {
+        currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPagesContainer.children.length - 1;
+        updateObrasCarousel();
+      };
+      obrasNextButton.onclick = () => {
+        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+        updateObrasCarousel();
+      };
+      
+      let autoObrasInterval = setInterval(() => {
+        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+        updateObrasCarousel();
+      }, 5000);
+      document.getElementById('obrasCarouselContainer').addEventListener('mouseenter', () => clearInterval(autoObrasInterval));
+      document.getElementById('obrasCarouselContainer').addEventListener('mouseleave', () => {
+        autoObrasInterval = setInterval(() => {
+          currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+          updateObrasCarousel();
+        }, 5000);
+      });
+      
+      displayObrasCarousel();
     });
   </script>
 </body>
