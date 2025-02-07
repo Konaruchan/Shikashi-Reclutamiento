@@ -333,7 +333,7 @@
     .obras-carousel-button:hover { background: rgba(255,255,255,1); }
     .obras-carousel-button.prev { left: -2rem; }
     .obras-carousel-button.next { right: -2rem; }
-    /* NUEVA SECCIÓN: Lista de Artículos (agrandada) */
+    /* SECCIÓN: Lista de Artículos (agrandada) */
     .articles-section {
       padding: 3rem 0;
       background: #fff;
@@ -346,25 +346,34 @@
       text-align: left;
       padding-left: 1rem;
     }
+    /* Reestructuramos la grilla a dos columnas:
+       - .articles-main: selector, lista (con altura fija para 5 artículos) y el botón "Mas articulos"
+       - .articles-promo: promos o mensaje de fallback
+    */
     .articles-content {
       display: grid;
-      grid-template-columns: 1fr 2fr 250px;
+      grid-template-columns: 1fr 250px;
       gap: 1rem;
       align-items: start;
     }
-    .articles-selector {
+    .articles-main {
       display: flex;
       flex-direction: column;
+    }
+    .articles-selector {
+      display: flex;
       gap: 0.5rem;
+      margin-bottom: 1rem;
     }
     .selector-btn {
       background: transparent;
       border: 1px solid #ccc;
       padding: 0.75rem 1.5rem;
       cursor: pointer;
-      text-align: left;
+      text-align: center;
       transition: background 0.3s ease;
       font-size: 1.1rem;
+      flex: 1;
     }
     .selector-btn.active {
       background: red;
@@ -372,7 +381,7 @@
       border-color: red;
     }
     .articles-list {
-      max-height: 500px;
+      height: 420px;  /* Altura para mostrar 5 artículos aproximadamente */
       overflow-y: auto;
     }
     .article-item {
@@ -400,6 +409,21 @@
     .article-details span {
       font-size: 0.85rem;
       color: #999;
+    }
+    .more-articles-btn {
+      border: 1px solid #820000;
+      background: transparent;
+      color: #820000;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      align-self: flex-start;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .more-articles-btn:hover {
+      background: #820000;
+      color: #fff;
     }
     .articles-promo {
       display: flex;
@@ -526,17 +550,19 @@
     <div class="container">
       <h2>Shikashi Articulos</h2>
       <div class="articles-content">
-        <!-- Columna 1: Selector de categorías -->
-        <div class="articles-selector">
-          <button class="selector-btn active" data-category="nuevo">Nuevo</button>
-          <button class="selector-btn" data-category="destacado">Destacado</button>
-          <button class="selector-btn" data-category="todos">Todos</button>
+        <!-- Columna 1: Selector, lista y botón "Mas articulos" -->
+        <div class="articles-main">
+          <div class="articles-selector">
+            <button class="selector-btn active" data-category="nuevo">Nuevo</button>
+            <button class="selector-btn" data-category="destacado">Destacado</button>
+            <button class="selector-btn" data-category="todos">Todos</button>
+          </div>
+          <div class="articles-list">
+            <!-- Se inyectarán los artículos según la categoría seleccionada -->
+          </div>
+          <button class="more-articles-btn" onclick="location.href='articulos.html';">Mas articulos</button>
         </div>
-        <!-- Columna 2: Lista de artículos -->
-        <div class="articles-list">
-          <!-- Se inyectarán los artículos según la categoría seleccionada -->
-        </div>
-        <!-- Columna 3: Imágenes/promos de img/mainpromo -->
+        <!-- Columna 2: Imágenes/promos -->
         <div class="articles-promo">
           <!-- Se mostrarán las imágenes o, si no hay, un texto vertical -->
         </div>
@@ -666,9 +692,9 @@
       setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
       
-      // --- NUEVA SECCIÓN: Lista de Artículos ---
-      const articlesSelectorContainer = document.querySelector('.articles-selector');
+      // --- SECCIÓN: Lista de Artículos ---
       const articlesListContainer = document.querySelector('.articles-list');
+      const selectorButtons = document.querySelectorAll('.selector-btn');
       const articlesPromoContainer = document.querySelector('.articles-promo');
 
       // Array de imágenes promocionales en img/mainpromo (agrega o quita según disponibilidad)
@@ -731,7 +757,6 @@
         });
       }
 
-      const selectorButtons = document.querySelectorAll('.selector-btn');
       selectorButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           selectorButtons.forEach(b => b.classList.remove('active'));
@@ -835,4 +860,3 @@
   </script>
 </body>
 </html>
-
