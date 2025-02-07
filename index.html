@@ -48,6 +48,7 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+    /* Agregamos el enlace de ARTÍCULOS */
     .nav-link {
       font-family: 'Botones', sans-serif;
       font-weight: 500;
@@ -389,6 +390,7 @@
       align-items: center;
       padding: 0.75rem 0;
       border-bottom: 1px solid #ddd;
+      cursor: pointer;
     }
     .article-item img {
       width: 80px;
@@ -481,6 +483,7 @@
       </div>
       <div class="nav-links">
         <a href="#" class="nav-link">INICIO</a>
+        <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
         <a href="#" class="nav-link">NOTICIAS</a>
         <a href="#" class="nav-link">RENSAI</a>
         <a href="#" class="nav-link">SMF PLUS</a>
@@ -499,7 +502,7 @@
   <!-- HERO IMAGE con Overlay -->
   <section class="hero-image-section container">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Bloque Grande: Portada (manual) -->
+      <!-- Bloque Grande: Portada (se actualizará dinámicamente) -->
       <div class="big-item card">
         <div class="card-header">
           <span class="accent"></span>
@@ -508,7 +511,7 @@
         <div class="card-body">
           <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         </div>
-        <a href="pagina-lectura.html" class="big-item-btn">¡Quiero leerlo!</a>
+        <a href="Artic-Viewer.html" class="big-item-btn">¡Quiero leerlo!</a>
       </div>
       <!-- Bloque Dinámico: 4 artículos pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
@@ -560,7 +563,7 @@
           <div class="articles-list">
             <!-- Se inyectarán los artículos según la categoría seleccionada -->
           </div>
-          <button class="more-articles-btn" onclick="location.href='articulos.html';">Mas articulos</button>
+          <button class="more-articles-btn" onclick="location.href='Articulos.html';">Mas articulos</button>
         </div>
         <!-- Columna 2: Imágenes/promos -->
         <div class="articles-promo">
@@ -596,6 +599,18 @@
           featured = featured.concat(nonFeatured);
         }
         const displayArticles = featured.slice(0, 5);
+        // Actualizar el enlace del botón del bloque grande
+        const bigItemBtn = document.querySelector('.big-item-btn');
+        if (bigItemBtn && displayArticles[0]) {
+          bigItemBtn.href = 'Artic-Viewer.html?id=' + displayArticles[0].id;
+        }
+        // También se puede hacer clic en todo el bloque grande
+        const bigItemCard = document.querySelector('.big-item');
+        if (bigItemCard && displayArticles[0]) {
+          bigItemCard.onclick = () => {
+            window.location.href = 'Artic-Viewer.html?id=' + displayArticles[0].id;
+          };
+        }
         smallItemsContainer.innerHTML = '';
         displayArticles.slice(1, 5).forEach(article => {
           const smallItem = document.createElement('div');
@@ -609,6 +624,10 @@
               <img src="${article.thumbnail}" alt="${article.title}">
             </div>
           `;
+          // Redirigir al hacer clic en el artículo pequeño
+          smallItem.onclick = () => {
+            window.location.href = 'Artic-Viewer.html?id=' + article.id;
+          };
           smallItemsContainer.appendChild(smallItem);
         });
       }
@@ -647,6 +666,10 @@
                 </div>
               </div>
             `;
+            // Redirigir al hacer clic en el artículo del carrusel
+            articleElement.onclick = () => {
+              window.location.href = 'Artic-Viewer.html?id=' + article.id;
+            };
             pageContainer.appendChild(articleElement);
           });
           carouselPagesContainer.appendChild(pageContainer);
@@ -697,7 +720,7 @@
       const selectorButtons = document.querySelectorAll('.selector-btn');
       const articlesPromoContainer = document.querySelector('.articles-promo');
 
-      // Array de imágenes promocionales en img/mainpromo (agrega o quita según disponibilidad)
+      // Array de imágenes promocionales en img/mainpromo
       const promoImages = [
         'img/mainpromo/promo1.jpg',
         'img/mainpromo/promo2.jpg'
@@ -710,7 +733,6 @@
             const img = document.createElement('img');
             img.src = src;
             img.alt = 'Promoción';
-            // Si ocurre un error al cargar la imagen, se muestra el texto vertical
             img.onerror = function() {
               articlesPromoContainer.innerHTML = '';
               const promoText = document.createElement('div');
@@ -753,6 +775,10 @@
               <span>${article.date}</span>
             </div>
           `;
+          // Redirigir al hacer clic en el artículo del listado
+          articleItem.onclick = () => {
+            window.location.href = 'Artic-Viewer.html?id=' + article.id;
+          };
           articlesListContainer.appendChild(articleItem);
         });
       }
@@ -798,7 +824,6 @@
           pageImages.forEach(src => {
             const obraItem = document.createElement('div');
             obraItem.className = 'obras-carousel-item';
-            // Si falla la carga de la imagen, se usa 'img/placeholder.png'
             obraItem.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.onerror=null; this.src='img/placeholder.png';">`;
             pageContainer.appendChild(obraItem);
           });
