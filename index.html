@@ -168,7 +168,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
     }
-    /* CARRUSEL */
+    /* CARRUSEL de Artículos Recientes */
     .carousel-section {
       width: 100%;
       background: #820000;
@@ -261,7 +261,7 @@
     .carousel-button:hover { background: rgba(255,255,255,1); }
     .carousel-button.prev { left: -2rem; }
     .carousel-button.next { right: -2rem; }
-    /* NUEVA SECCIÓN: Carrusel de Obras */
+    /* CARRUSEL de Obras */
     .obras-carousel-section {
       width: 100%;
       background: #fff;
@@ -333,9 +333,9 @@
     .obras-carousel-button:hover { background: rgba(255,255,255,1); }
     .obras-carousel-button.prev { left: -2rem; }
     .obras-carousel-button.next { right: -2rem; }
-    /* NUEVA SECCIÓN: Lista de Artículos */
+    /* NUEVA SECCIÓN: Lista de Artículos (agrandada) */
     .articles-section {
-      padding: 2rem 0;
+      padding: 3rem 0;
       background: #fff;
     }
     .articles-section .container h2 {
@@ -360,10 +360,11 @@
     .selector-btn {
       background: transparent;
       border: 1px solid #ccc;
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1.5rem;
       cursor: pointer;
       text-align: left;
       transition: background 0.3s ease;
+      font-size: 1.1rem;
     }
     .selector-btn.active {
       background: red;
@@ -377,27 +378,27 @@
     .article-item {
       display: flex;
       align-items: center;
-      padding: 0.5rem 0;
+      padding: 0.75rem 0;
       border-bottom: 1px solid #ddd;
     }
     .article-item img {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       object-fit: cover;
       margin-right: 1rem;
     }
     .article-details h3 {
       margin: 0;
       font-family: 'Botones', sans-serif;
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
     .article-details p {
       margin: 0.25rem 0;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #666;
     }
     .article-details span {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #999;
     }
     .articles-promo {
@@ -416,6 +417,15 @@
       font-family: 'Cuerpo', sans-serif;
       font-size: 1rem;
       color: #820000;
+    }
+    /* Footer */
+    .footer {
+      background: #820000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-family: 'Cuerpo', sans-serif;
+      font-size: 0.9rem;
     }
     /* Responsive */
     @media (max-width: 768px) {
@@ -497,7 +507,7 @@
     </div>
   </section>
 
-  <!-- NUEVA SECCIÓN: Carrusel de Obras -->
+  <!-- CARRUSEL de Obras -->
   <section class="obras-carousel-section">
     <div class="obras-carousel-wrapper container">
       <h2>¡¡Obras Shikashi de Marzo 2025!!</h2>
@@ -511,7 +521,7 @@
     </div>
   </section>
 
-  <!-- NUEVA SECCIÓN: Lista de Artículos -->
+  <!-- SECCIÓN: Lista de Artículos (agrandada) -->
   <section class="articles-section">
     <div class="container">
       <h2>Shikashi Articulos</h2>
@@ -533,6 +543,11 @@
       </div>
     </div>
   </section>
+
+  <!-- Pie de Página -->
+  <footer class="footer">
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
 
   <!-- Cargar script externo con window.articlesData -->
   <script src="js/scripts.js"></script>
@@ -669,6 +684,14 @@
             const img = document.createElement('img');
             img.src = src;
             img.alt = 'Promoción';
+            // Si ocurre un error al cargar la imagen, se muestra el texto vertical
+            img.onerror = function() {
+              articlesPromoContainer.innerHTML = '';
+              const promoText = document.createElement('div');
+              promoText.className = 'no-images';
+              promoText.textContent = '¡Bienvenido a Shikashi Monthly Friday Series! Doshita no?';
+              articlesPromoContainer.appendChild(promoText);
+            };
             articlesPromoContainer.appendChild(img);
           });
         } else {
@@ -721,6 +744,71 @@
       // Mostrar inicialmente la categoría "Nuevo"
       displayArticlesList('nuevo');
       displayPromoImages();
+
+      // --- Ajuste en el Carrusel de Obras: Si la imagen falla, usar placeholder ---
+      const obrasCarouselPagesContainer = document.getElementById('obrasCarouselPages');
+      const obrasPrevButton = document.getElementById('obrasPrevButton');
+      const obrasNextButton = document.getElementById('obrasNextButton');
+      let currentObrasPage = 0;
+      const obrasPerPage = 4;
+      const obrasImages = [
+        'img/obras/1.png',
+        'img/obras/2.png',
+        'img/obras/3.png',
+        'img/obras/4.png',
+        'img/obras/5.png',
+        'img/obras/6.png',
+        'img/obras/7.png',
+        'img/obras/8.png'
+      ];
+      
+      function displayObrasCarousel() {
+        obrasCarouselPagesContainer.innerHTML = '';
+        const numObrasPages = Math.ceil(obrasImages.length / obrasPerPage);
+        for (let i = 0; i < numObrasPages; i++) {
+          const pageContainer = document.createElement('div');
+          pageContainer.className = 'obras-carousel-page';
+          const start = i * obrasPerPage;
+          const pageImages = obrasImages.slice(start, start + obrasPerPage);
+          pageImages.forEach(src => {
+            const obraItem = document.createElement('div');
+            obraItem.className = 'obras-carousel-item';
+            // Si falla la carga de la imagen, se usa 'img/placeholder.png'
+            obraItem.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.onerror=null; this.src='img/placeholder.png';">`;
+            pageContainer.appendChild(obraItem);
+          });
+          obrasCarouselPagesContainer.appendChild(pageContainer);
+        }
+        updateObrasCarousel();
+      }
+      
+      function updateObrasCarousel() {
+        const offset = -currentObrasPage * 100;
+        obrasCarouselPagesContainer.style.transform = `translateX(${offset}%)`;
+      }
+      
+      obrasPrevButton.onclick = () => {
+        currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPagesContainer.children.length - 1;
+        updateObrasCarousel();
+      };
+      obrasNextButton.onclick = () => {
+        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+        updateObrasCarousel();
+      };
+      
+      let autoObrasInterval = setInterval(() => {
+        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+        updateObrasCarousel();
+      }, 5000);
+      document.getElementById('obrasCarouselContainer').addEventListener('mouseenter', () => clearInterval(autoObrasInterval));
+      document.getElementById('obrasCarouselContainer').addEventListener('mouseleave', () => {
+        autoObrasInterval = setInterval(() => {
+          currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
+          updateObrasCarousel();
+        }, 5000);
+      });
+      
+      displayObrasCarousel();
     });
   </script>
   <!-- Cargar artículos desde articulos.json -->
@@ -747,3 +835,4 @@
   </script>
 </body>
 </html>
+
