@@ -19,8 +19,7 @@
     }
     /* Reducir el zoom global al 75% */
     html { zoom: 0.75; }
-  </style>
-  <style>
+
     /* Reset y base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -79,7 +78,7 @@
     }
     .marquee-content span { padding: 0 20px; }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    /* HERO IMAGE: contenedor con márgenes laterales pero sin verticales */
+    /* HERO IMAGE */
     .hero-image-section {
       max-width: 1200px;
       margin: 0 auto; 
@@ -89,7 +88,6 @@
       border: 1px solid #ddd;
       overflow: hidden;
     }
-    /* Overlay: ocupa toda la hero image */
     .overlay-grid {
       position: absolute;
       top: 0; left: 0;
@@ -104,7 +102,7 @@
       transition: opacity 0.5s ease;
     }
     .overlay-grid.active { opacity: 1; visibility: visible; }
-    /* Estructura de Card para bloques grandes y pequeños */
+    /* Estructura de Card */
     .card {
       background: #fff;
       border: 1px solid #ccc;
@@ -134,7 +132,6 @@
       font-size: 1.6rem;
       margin: 0;
     }
-    /* Card Body: contenedor fijo para la imagen */
     .card-body {
       width: 100%;
       background: rgba(255,255,255,0.8);
@@ -143,18 +140,14 @@
       align-items: center;
       padding: 0.5rem;
     }
-    /* Para el bloque grande: altura mayor (solo en el bloque grande) */
     .big-item .card-body { height: 510px; }
-    /* Para los pequeños: altura fija */
     .small-item .card-body { height: 200px; }
     .card-body img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
-    /* Bloque Grande (Portada) */
     .big-item { position: relative; }
-    /* Botón para el bloque grande, más horizontal y cuadrado */
     .big-item-btn {
       display: inline-block;
       margin: 0.5rem auto;
@@ -170,7 +163,6 @@
       transition: background 0.3s ease;
     }
     .big-item-btn:hover { background: #680000; }
-    /* Contenedor para artículos pequeños */
     .small-items-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -218,7 +210,6 @@
       transition: transform 0.3s ease;
     }
     .carousel-item:hover { transform: translateY(-5px); }
-    /* Información en el carrusel */
     .carousel-info {
       text-align: left;
       font-family: 'Cuerpo', sans-serif;
@@ -251,7 +242,6 @@
       border-radius: 4px;
       margin-bottom: 0.5rem;
     }
-    /* Botones del Carrusel */
     .carousel-button {
       position: absolute;
       top: 50%;
@@ -271,7 +261,7 @@
     .carousel-button:hover { background: rgba(255,255,255,1); }
     .carousel-button.prev { left: -2rem; }
     .carousel-button.next { right: -2rem; }
-    /* NUEVA SECCIÓN: Carrusel de Imágenes de Obras */
+    /* NUEVA SECCIÓN: Carrusel de Obras */
     .obras-carousel-section {
       width: 100%;
       background: #fff;
@@ -343,6 +333,90 @@
     .obras-carousel-button:hover { background: rgba(255,255,255,1); }
     .obras-carousel-button.prev { left: -2rem; }
     .obras-carousel-button.next { right: -2rem; }
+    /* NUEVA SECCIÓN: Lista de Artículos */
+    .articles-section {
+      padding: 2rem 0;
+      background: #fff;
+    }
+    .articles-section .container h2 {
+      color: #820000;
+      margin-bottom: 1rem;
+      font-family: 'Botones', sans-serif;
+      font-size: 1.8rem;
+      text-align: left;
+      padding-left: 1rem;
+    }
+    .articles-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr 250px;
+      gap: 1rem;
+      align-items: start;
+    }
+    .articles-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .selector-btn {
+      background: transparent;
+      border: 1px solid #ccc;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s ease;
+    }
+    .selector-btn.active {
+      background: red;
+      color: #fff;
+      border-color: red;
+    }
+    .articles-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .article-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .article-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      margin-right: 1rem;
+    }
+    .article-details h3 {
+      margin: 0;
+      font-family: 'Botones', sans-serif;
+      font-size: 1rem;
+    }
+    .article-details p {
+      margin: 0.25rem 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .article-details span {
+      font-size: 0.8rem;
+      color: #999;
+    }
+    .articles-promo {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .articles-promo img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .articles-promo .no-images {
+      writing-mode: vertical-rl;
+      text-align: center;
+      font-family: 'Cuerpo', sans-serif;
+      font-size: 1rem;
+      color: #820000;
+    }
     /* Responsive */
     @media (max-width: 768px) {
       .hero-image-section { max-width: 100%; margin: 0 1rem; }
@@ -360,6 +434,7 @@
       .obras-carousel-button.prev { left: 1rem; }
       .obras-carousel-button.next { right: 1rem; }
       .obras-carousel-section h2 { padding-left: 1rem; text-align: left; }
+      .articles-content { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -436,11 +511,34 @@
     </div>
   </section>
 
+  <!-- NUEVA SECCIÓN: Lista de Artículos -->
+  <section class="articles-section">
+    <div class="container">
+      <h2>Shikashi Articulos</h2>
+      <div class="articles-content">
+        <!-- Columna 1: Selector de categorías -->
+        <div class="articles-selector">
+          <button class="selector-btn active" data-category="nuevo">Nuevo</button>
+          <button class="selector-btn" data-category="destacado">Destacado</button>
+          <button class="selector-btn" data-category="todos">Todos</button>
+        </div>
+        <!-- Columna 2: Lista de artículos -->
+        <div class="articles-list">
+          <!-- Se inyectarán los artículos según la categoría seleccionada -->
+        </div>
+        <!-- Columna 3: Imágenes/promos de img/mainpromo -->
+        <div class="articles-promo">
+          <!-- Se mostrarán las imágenes o, si no hay, un texto vertical -->
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Cargar script externo con window.articlesData -->
   <script src="js/scripts.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Sección Overlay Artículos
+      // --- Código existente para overlay, carruseles, etc. ---
       const overlayGrid = document.getElementById('overlayGrid');
       const smallItemsContainer = document.getElementById('smallItemsContainer');
       const carouselPagesContainer = document.getElementById('carouselPages');
@@ -553,72 +651,99 @@
       setTimeout(() => { overlayGrid.classList.add('active'); }, 2000);
       displayArticles();
       
-      // NUEVA SECCIÓN: Carrusel de Obras
-      const obrasCarouselPagesContainer = document.getElementById('obrasCarouselPages');
-      const obrasPrevButton = document.getElementById('obrasPrevButton');
-      const obrasNextButton = document.getElementById('obrasNextButton');
-      let currentObrasPage = 0;
-      const obrasPerPage = 4; // 4 imágenes por página
-      
-      // Array de imágenes fijas para las obras
-      const obrasImages = [
-        'img/obras/1.png',
-        'img/obras/2.png',
-        'img/obras/3.png',
-        'img/obras/4.png',
-        'img/obras/5.png',
-        'img/obras/6.png',
-        'img/obras/7.png',
-        'img/obras/8.png'
+      // --- NUEVA SECCIÓN: Lista de Artículos ---
+      const articlesSelectorContainer = document.querySelector('.articles-selector');
+      const articlesListContainer = document.querySelector('.articles-list');
+      const articlesPromoContainer = document.querySelector('.articles-promo');
+
+      // Array de imágenes promocionales en img/mainpromo (agrega o quita según disponibilidad)
+      const promoImages = [
+        'img/mainpromo/promo1.jpg',
+        'img/mainpromo/promo2.jpg'
       ];
-      
-      function displayObrasCarousel() {
-        obrasCarouselPagesContainer.innerHTML = '';
-        const numObrasPages = Math.ceil(obrasImages.length / obrasPerPage);
-        for (let i = 0; i < numObrasPages; i++) {
-          const pageContainer = document.createElement('div');
-          pageContainer.className = 'obras-carousel-page';
-          const start = i * obrasPerPage;
-          const pageImages = obrasImages.slice(start, start + obrasPerPage);
-          pageImages.forEach(src => {
-            const obraItem = document.createElement('div');
-            obraItem.className = 'obras-carousel-item';
-            obraItem.innerHTML = `<img src="${src}" alt="Obra Shikashi">`;
-            pageContainer.appendChild(obraItem);
+
+      function displayPromoImages() {
+        articlesPromoContainer.innerHTML = '';
+        if (promoImages.length > 0) {
+          promoImages.forEach(src => {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = 'Promoción';
+            articlesPromoContainer.appendChild(img);
           });
-          obrasCarouselPagesContainer.appendChild(pageContainer);
+        } else {
+          const promoText = document.createElement('div');
+          promoText.className = 'no-images';
+          promoText.textContent = '¡Bienvenido a Shikashi Monthly Friday Series! Doshita no?';
+          articlesPromoContainer.appendChild(promoText);
         }
-        updateObrasCarousel();
       }
-      
-      function updateObrasCarousel() {
-        const offset = -currentObrasPage * 100;
-        obrasCarouselPagesContainer.style.transform = `translateX(${offset}%)`;
+
+      function displayArticlesList(category) {
+        articlesListContainer.innerHTML = '';
+        if (!window.articlesData || window.articlesData.length === 0) {
+          articlesListContainer.textContent = 'No hay artículos disponibles.';
+          return;
+        }
+        let filteredArticles = [];
+        if (category === 'nuevo') {
+          filteredArticles = window.articlesData.filter(article => article.new);
+        } else if (category === 'destacado') {
+          filteredArticles = window.articlesData.filter(article => article.featured);
+        } else {
+          filteredArticles = window.articlesData;
+        }
+        filteredArticles.forEach(article => {
+          const articleItem = document.createElement('div');
+          articleItem.className = 'article-item';
+          articleItem.innerHTML = `
+            <img src="${article.thumbnail}" alt="${article.title}">
+            <div class="article-details">
+              <h3>${article.title}</h3>
+              <p>${article.subtitle}</p>
+              <span>${article.date}</span>
+            </div>
+          `;
+          articlesListContainer.appendChild(articleItem);
+        });
       }
-      
-      obrasPrevButton.onclick = () => {
-        currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPagesContainer.children.length - 1;
-        updateObrasCarousel();
-      };
-      obrasNextButton.onclick = () => {
-        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-        updateObrasCarousel();
-      };
-      
-      let autoObrasInterval = setInterval(() => {
-        currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-        updateObrasCarousel();
-      }, 5000);
-      document.getElementById('obrasCarouselContainer').addEventListener('mouseenter', () => clearInterval(autoObrasInterval));
-      document.getElementById('obrasCarouselContainer').addEventListener('mouseleave', () => {
-        autoObrasInterval = setInterval(() => {
-          currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-          updateObrasCarousel();
-        }, 5000);
+
+      const selectorButtons = document.querySelectorAll('.selector-btn');
+      selectorButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectorButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const category = btn.getAttribute('data-category');
+          displayArticlesList(category);
+        });
       });
-      
-      displayObrasCarousel();
+
+      // Mostrar inicialmente la categoría "Nuevo"
+      displayArticlesList('nuevo');
+      displayPromoImages();
     });
+  </script>
+  <!-- Cargar artículos desde articulos.json -->
+  <script>
+    async function fetchArticles() {
+      try {
+        console.log('Iniciando carga de artículos...');
+        const response = await fetch('articulos.json');
+        if (!response.ok) {
+          throw new Error(`Error al cargar el archivo 'articulos.json': ${response.status}`);
+        }
+        console.log('articulos.json cargado correctamente.');
+        const articles = await response.json();
+        console.log('Datos parseados:', articles);
+        window.articlesData = articles;
+        console.log('Datos expuestos en window.articlesData:', window.articlesData);
+      } catch (error) {
+        console.error('Error al cargar los artículos:', error);
+        window.articlesData = [];
+      }
+    }
+    console.log('Inicializando fetchArticles...');
+    fetchArticles();
   </script>
 </body>
 </html>
