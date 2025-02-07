@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artículos - Shikashi Monthly Friday Series</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* Estilos generales y de navegación */
+    body {
+      font-family: 'Cuerpo', sans-serif;
+      background-color: #fafafa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    nav {
+      background: #820000;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .nav-container { display: flex; flex-direction: column; align-items: center; }
+    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-link {
+      font-family: 'Botones', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    header {
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-family: 'Botones', sans-serif;
+      color: #820000;
+    }
+    .search-container {
+      margin-bottom: 1.5rem;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .articles-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .article-item {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .article-item:hover {
+      transform: translateY(-5px);
+    }
+    .article-thumb {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .article-info {
+      padding: 0.75rem;
+    }
+    .article-info h3 {
+      margin: 0;
+      font-family: 'Botones', sans-serif;
+      font-size: 1.2rem;
+      color: #820000;
+    }
+    .article-info p {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .article-info span {
+      font-size: 0.85rem;
+      color: #999;
+    }
+    footer {
+      background: #820000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de Navegación -->
+  <nav>
+    <div class="nav-container container">
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">INICIO</a>
+        <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+        <a href="#" class="nav-link">RENSAI</a>
+        <a href="#" class="nav-link">SMF PLUS</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="container">
+    <h1>Artículos</h1>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Buscar artículos por nombre...">
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="articles-list" id="articlesList">
+      <!-- Aquí se inyectarán los artículos -->
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Función para obtener parámetros de la URL (por si se necesita en el futuro)
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Función para cargar artículos desde articulos.json
+    async function fetchArticles() {
+      try {
+        const response = await fetch('articulos.json');
+        if (!response.ok) throw new Error('Error al cargar articulos.json');
+        const articles = await response.json();
+        window.articlesData = articles;
+        displayArticles(articles);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // Muestra los artículos en la lista
+    function displayArticles(articles) {
+      const list = document.getElementById('articlesList');
+      list.innerHTML = '';
+      articles.forEach(article => {
+        const item = document.createElement('div');
+        item.className = 'article-item';
+        item.onclick = () => {
+          window.location.href = `Artic-Viewer.html?id=${article.id}`;
+        };
+        item.innerHTML = `
+          <img src="${article.thumbnail}" alt="${article.title}" class="article-thumb">
+          <div class="article-info">
+            <h3>${article.title}</h3>
+            <p>${article.subtitle}</p>
+            <span>${article.date}</span>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    // Funcionalidad de búsqueda en tiempo real
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const filtered = window.articlesData.filter(article =>
+        article.title.toLowerCase().includes(searchTerm)
+      );
+      displayArticles(filtered);
+    });
+
+    fetchArticles();
+  </script>
+</body>
+</html>
