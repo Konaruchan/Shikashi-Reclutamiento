@@ -6,6 +6,8 @@
   <title>Artículo - Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* Zoom global igual que en index.html */
+    html { zoom: 0.75; }
     body {
       font-family: 'Cuerpo', sans-serif;
       margin: 0;
@@ -14,7 +16,7 @@
       color: #333;
     }
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 1rem;
     }
@@ -23,8 +25,15 @@
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container { display: flex; flex-direction: column; align-items: center; }
-    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
+    .nav-container { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+    }
+    .logo-container img { 
+      width: 150px; 
+      margin-bottom: 0.8rem; 
+    }
     .nav-links {
       display: flex;
       gap: 1.2rem;
@@ -44,7 +53,9 @@
       border-radius: 4px;
       transition: background 0.3s ease;
     }
-    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    .nav-link:hover { 
+      background-color: rgba(255,255,255,0.2); 
+    }
     .banner {
       width: 100%;
       height: 300px;
@@ -170,6 +181,7 @@
         if (!mdResponse.ok) throw new Error('Error al cargar el archivo markdown');
         const mdText = await mdResponse.text();
         const { meta, content } = parseMarkdownWithFrontMatter(mdText);
+        // Usamos marked.parse() según la API actual
         const htmlContent = marked.parse(content);
 
         // Se asume que la imagen "featured.jpg" está en la misma carpeta que el Markdown
