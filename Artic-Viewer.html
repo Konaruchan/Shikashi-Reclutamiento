@@ -6,7 +6,7 @@
   <title>Artículo - Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Zoom global igual que en index.html */
+    /* Aplicar el zoom global igual que en index.html */
     html { zoom: 0.75; }
     body {
       font-family: 'Cuerpo', sans-serif;
@@ -56,6 +56,20 @@
     .nav-link:hover { 
       background-color: rgba(255,255,255,0.2); 
     }
+    /* Layout de la página: dos columnas */
+    .article-layout {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .article-main {
+      flex: 3;
+    }
+    .article-sidebar {
+      flex: 1;
+      border-left: 1px solid #ccc;
+      padding-left: 1rem;
+    }
     .banner {
       width: 100%;
       height: 300px;
@@ -89,6 +103,48 @@
       display: block;
       margin: 1rem auto;
     }
+    /* Estilos para videos */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      padding-top: 25px;
+      height: 0;
+      margin: 1rem 0;
+    }
+    .video-container iframe,
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* Barra lateral */
+    .article-sidebar h3 {
+      font-family: 'Botones', sans-serif;
+      color: #820000;
+      margin-bottom: 1rem;
+    }
+    .sidebar-article {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.5rem;
+    }
+    .sidebar-article img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .sidebar-article h4 {
+      font-family: 'Botones', sans-serif;
+      font-size: 1rem;
+      margin: 0;
+      color: #820000;
+    }
     footer {
       background: #820000;
       color: #fff;
@@ -115,8 +171,15 @@
     </div>
   </nav>
 
-  <div class="container" id="articleContainer">
-    <!-- Aquí se inyecta el contenido del artículo -->
+  <!-- Layout principal: artículo a la izquierda y sidebar a la derecha -->
+  <div class="container article-layout">
+    <div class="article-main" id="articleContainer">
+      <!-- Aquí se inyecta el contenido del artículo -->
+    </div>
+    <div class="article-sidebar" id="articleSidebar">
+      <h3>También te puede interesar</h3>
+      <!-- Aquí se inyectan artículos aleatorios (new/featured) -->
+    </div>
   </div>
 
   <footer class="footer">
@@ -129,14 +192,13 @@
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
-
     const articleId = getQueryParam('id');
     if (!articleId) {
       // Si no se especifica el ID, redirige a Articulos.html
       window.location.href = 'Articulos.html';
     }
 
-    // Carga el JSON de artículos
+    // Función para cargar el JSON de artículos
     async function fetchArticles() {
       try {
         const response = await fetch('articulos.json');
@@ -149,7 +211,34 @@
       }
     }
 
-    // Función para parsear el Markdown con front matter (YAML)
+    // Función para procesar shortcodes [imagen: ...] y [video: ...]
+    function processShortcodes(text, basePath) {
+      // Reemplazar [imagen: filename.png] con la sintaxis Markdown de imagen
+      text = text.replace(/\[imagen:\s*([^\]]+)\]/gi, (match, p1) => {
+        const filename = p1.trim();
+        return `![${filename}](${basePath}/${filename})`;
+      });
+      // Reemplazar [video: link] con un iframe o video HTML5
+      text = text.replace(/\[video:\s*([^\]]+)\]/gi, (match, p1) => {
+        const url = p1.trim();
+        if(url.includes("youtube.com") || url.includes("youtu.be")) {
+          let videoId = "";
+          const ytMatch = url.match(/(youtu\.be\/|v=)([^&\s]+)/);
+          if(ytMatch && ytMatch[2]) {
+            videoId = ytMatch[2];
+          } else {
+            videoId = url;
+          }
+          return `<div class="video-container"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+        } else {
+          // Asumir que es un archivo mp4 local
+          return `<div class="video-container"><video controls><source src="${basePath}/${url}" type="video/mp4">Tu navegador no soporta video.</video></div>`;
+        }
+      });
+      return text;
+    }
+
+    // Función para parsear Markdown con front matter (YAML)
     function parseMarkdownWithFrontMatter(mdText) {
       const regex = /^---\s*([\s\S]+?)\s*---\s*([\s\S]*)$/;
       const match = mdText.match(regex);
@@ -179,13 +268,15 @@
         // Cargar el archivo Markdown
         const mdResponse = await fetch(article.path);
         if (!mdResponse.ok) throw new Error('Error al cargar el archivo markdown');
-        const mdText = await mdResponse.text();
-        const { meta, content } = parseMarkdownWithFrontMatter(mdText);
-        // Usamos marked.parse() según la API actual
-        const htmlContent = marked.parse(content);
-
-        // Se asume que la imagen "featured.jpg" está en la misma carpeta que el Markdown
+        let mdText = await mdResponse.text();
+        // Determinar la ruta base (carpeta del artículo)
         const basePath = article.path.substring(0, article.path.lastIndexOf('/'));
+        // Procesar shortcodes para imágenes y videos
+        mdText = processShortcodes(mdText, basePath);
+        const { meta, content } = parseMarkdownWithFrontMatter(mdText);
+        // Convertir Markdown a HTML
+        const htmlContent = marked.parse(content);
+        // Se asume que la imagen "featured.jpg" está en la misma carpeta que el Markdown
         const featuredImage = basePath + '/featured.jpg';
 
         // Construir el HTML del artículo
@@ -199,10 +290,33 @@
           </div>
           <div class="article-content">${htmlContent}</div>
         `;
+        // Mostrar la barra lateral con artículos aleatorios
+        displaySidebar(articles, article.id);
       } catch (error) {
         console.error(error);
         window.location.href = 'Articulos.html';
       }
+    }
+
+    // Función para mostrar artículos aleatorios (new o featured) en la sidebar
+    function displaySidebar(articles, currentArticleId) {
+      const sidebar = document.getElementById('articleSidebar');
+      // Filtrar artículos marcados como new o featured y que no sean el actual
+      const filtered = articles.filter(a => (a.new || a.featured) && a.id !== currentArticleId);
+      // Barajar y tomar 3 artículos aleatorios
+      const shuffled = filtered.sort(() => 0.5 - Math.random()).slice(0, 3);
+      let html = '';
+      shuffled.forEach(article => {
+        html += `
+          <div class="sidebar-article" onclick="window.location.href='Artic-Viewer.html?id=${article.id}'">
+            <img src="${article.thumbnail}" alt="${article.title}">
+            <div class="sidebar-info">
+              <h4>${article.title}</h4>
+            </div>
+          </div>
+        `;
+      });
+      sidebar.innerHTML += html;
     }
 
     loadArticle();
