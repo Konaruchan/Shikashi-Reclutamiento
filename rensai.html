@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rensai - Shikashi Monthly Friday Series</title>
   <style>
     /* Zoom global (igual que en index.html) */
@@ -53,7 +53,9 @@
       border-radius: 4px;
       transition: background 0.3s ease;
     }
-    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    .nav-link:hover { 
+      background-color: rgba(255,255,255,0.2); 
+    }
     /* Sección principal de Rensai */
     .rensai-main {
       display: flex;
@@ -150,17 +152,18 @@
       color: #fff;
       text-align: center;
       padding: 1rem;
+      font-family: 'Cuerpo', sans-serif;
       font-size: 0.9rem;
       margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <!-- Barra de navegación -->
+  <!-- Barra de Navegación -->
   <nav>
     <div class="nav-container container">
       <div class="logo-container">
-        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" />
       </div>
       <div class="nav-links">
         <a href="index.html" class="nav-link">INICIO</a>
@@ -226,10 +229,11 @@
       const recent = published[0];
       if(recent) {
         const recentContainer = document.getElementById('recentIssueContainer');
-        // Se asume que la portada y el PDF se encuentran en la misma carpeta que Issue.md
+        // Se asume que la portada se encuentra en la misma carpeta que Issue.md
         const basePath = recent.path.substring(0, recent.path.lastIndexOf('/'));
         const portada = basePath + '/Portada.png';
-        const pdfLink = basePath + '/Issue.pdf';
+        // Ahora redirigimos a rensai-details.html en lugar de enlazar al PDF
+        const detailsLink = 'rensai-details.html?id=' + recent.id;
         // Se usa recent.description si existe; si no, se coloca un texto de ejemplo.
         const description = recent.description || "Aquí encontrarás la última edición de nuestra revista digital.";
         recentContainer.innerHTML = `
@@ -240,7 +244,7 @@
             <h1>${recent.title}</h1>
             <p>${description}</p>
             <div class="recent-buttons">
-              <a href="${pdfLink}" class="leer" target="_blank">¡Leer ya!</a>
+              <a href="${detailsLink}" class="leer">¡Leer ya!</a>
               <a href="#" class="comprar">Comprar Fisico</a>
             </div>
           </div>
@@ -255,7 +259,7 @@
         const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
         const portada = basePath + '/Portada.png';
         gridHtml += `
-          <div class="issue-item" onclick="window.location.href='rensai-viewer.html?id=${issue.id}'">
+          <div class="issue-item" onclick="window.location.href='rensai-details.html?id=${issue.id}'">
             <img src="${portada}" alt="${issue.title}">
             <div class="issue-overlay">${issue.title}</div>
           </div>
