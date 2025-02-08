@@ -194,6 +194,7 @@
         const response = await fetch('issues.json');
         if (!response.ok) throw new Error('Error al cargar issues.json');
         const issues = await response.json();
+        console.log("Issues loaded:", issues);
         return issues;
       } catch (error) {
         console.error(error);
@@ -208,9 +209,18 @@
     
     function displayIssues(issues) {
       const sortedIssues = sortIssuesByDate(issues);
-      // Opcional: filtrar solo las issues publicadas (fecha <= hoy)
       const today = new Date();
-      const published = sortedIssues.filter(issue => new Date(issue.date) <= today);
+      // Filtrar issues con fecha <= hoy
+      let published = sortedIssues.filter(issue => {
+        const issueDate = new Date(issue.date);
+        return !isNaN(issueDate) && issueDate <= today;
+      });
+      // Si no se encuentran issues publicados, usar todas (posible que las fechas estén en el futuro)
+      if (published.length === 0) {
+        console.warn("No issues con fecha <= hoy. Mostrando todas las issues.");
+        published = sortedIssues;
+      }
+      console.log("Published issues:", published);
       
       // La revista más reciente es la primera
       const recent = published[0];
@@ -263,4 +273,3 @@
   </script>
 </body>
 </html>
-f
