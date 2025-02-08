@@ -21,7 +21,7 @@
       margin: 0 auto;
       padding: 1rem;
     }
-    /* Top y bottom barras de navegación */
+    /* Barras superior e inferior */
     .nav-bar {
       display: flex;
       justify-content: space-between;
@@ -49,7 +49,7 @@
       background: #fff;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    /* Flechas de navegación (izquierda y derecha) */
+    /* Flechas de navegación */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -66,9 +66,11 @@
       user-select: none;
     }
     .nav-arrow:hover { background: rgba(255,255,255,1); }
+    /* En lectura manga, la flecha izquierda (prevArrow) se usará para avanzar */
     .arrow-left { left: 10px; }
+    /* Y la flecha derecha (nextArrow) para retroceder */
     .arrow-right { right: 10px; }
-    /* Overlay para el mensaje de encuesta */
+    /* Overlay para encuesta */
     .survey-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -97,7 +99,7 @@
       font-size: 1.2rem;
       cursor: pointer;
     }
-    /* Overlay direccional: flecha apuntando a la izquierda */
+    /* Overlay direccional */
     .direction-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -109,7 +111,6 @@
       color: #fff;
       font-size: 3rem;
     }
-    /* Footer */
     footer {
       background: #820000;
       color: #fff;
@@ -129,7 +130,7 @@
     </div>
   </div>
 
-  <!-- Overlay direccional (se mostrará después de cerrar la encuesta) -->
+  <!-- Overlay direccional (flecha a la izquierda) -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">
     <div>←</div>
   </div>
@@ -144,7 +145,7 @@
   <div class="container viewer-container" id="viewerContainer">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Flechas de navegación -->
+    <!-- Flechas: NOTA: para lectura right-to-left, usamos la flecha izquierda para avanzar -->
     <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
     <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
   </div>
@@ -160,24 +161,24 @@
   </footer>
 
   <script>
-    // Función para obtener parámetros de la URL
+    // ---------------------
+    // UTILIDADES
+    // ---------------------
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
     const issueId = getQueryParam('id');
     if (!issueId) {
-      // Si no se especifica la issue, redirigir a rensai.html
       window.location.href = 'rensai.html';
     }
-
-    // Función para cargar issues.json y obtener la ruta del PDF de la issue
+    // ---------------------
+    // OBTENCIÓN DE LA RUTA DEL PDF
     async function fetchIssues() {
       try {
         const response = await fetch('issues.json');
         if (!response.ok) throw new Error('Error al cargar issues.json');
-        const issues = await response.json();
-        return issues;
+        return await response.json();
       } catch (error) {
         console.error(error);
         return [];
@@ -186,58 +187,47 @@
     async function getIssuePDFPath(issueId) {
       const issues = await fetchIssues();
       const issue = issues.find(i => i.id === issueId);
-      if (!issue) {
-        window.location.href = 'rensai.html';
-      }
-      // Se asume que el PDF está en la misma carpeta que Issue.md: basePath/Issue.pdf
+      if (!issue) window.location.href = 'rensai.html';
       const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
       return basePath + '/Issue.pdf';
     }
-
-    // Variables para pdf.js
+    // ---------------------
+    // CONFIGURACIÓN DE PDF.JS
     let pdfDoc = null;
     let totalPages = 0;
-    let currentSpread = 0; // Cada spread muestra dos páginas: la "derecha" y la "izquierda"
+    let currentSpread = 0; // Cada spread: 2 páginas
+    // Ajustamos el scale para optimizar (puedes probar otros valores)
+    const scale = 1.2;
     const canvasLeft = document.getElementById('canvasLeft');
     const canvasRight = document.getElementById('canvasRight');
     const ctxLeft = canvasLeft.getContext('2d');
     const ctxRight = canvasRight.getContext('2d');
 
-    // Renderizar una página en un canvas dado
     async function renderPage(pageNum, canvas, context) {
       const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 1.5 });
+      const viewport = page.getViewport({ scale: scale });
       canvas.height = viewport.height;
       canvas.width = viewport.width;
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport
-      };
+      const renderContext = { canvasContext: context, viewport: viewport };
       await page.render(renderContext).promise;
     }
 
-    // Renderizar el spread actual (dos páginas)
     async function renderSpread() {
-      // En lectura manga (derecha a izquierda), mostramos:
+      // Para lectura right-to-left:
       // Página derecha = totalPages - currentSpread
-      // Página izquierda = totalPages - currentSpread - 1 (si existe)
+      // Página izquierda = totalPages - currentSpread - 1
       const rightPageNum = totalPages - currentSpread;
       const leftPageNum = totalPages - currentSpread - 1;
-      
-      // Actualizar la información de navegación
       const spreadIndex = Math.floor(currentSpread/2) + 1;
       const totalSpreads = Math.ceil(totalPages/2);
       const infoText = `< Pagina ${spreadIndex} de ${totalSpreads} >`;
       document.getElementById('topPageInfo').textContent = infoText;
       document.getElementById('bottomPageInfo').textContent = infoText;
-
-      // Renderizar página derecha (si existe)
       if (rightPageNum >= 1) {
         await renderPage(rightPageNum, canvasRight, ctxRight);
       } else {
         ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
       }
-      // Renderizar página izquierda (si existe)
       if (leftPageNum >= 1) {
         await renderPage(leftPageNum, canvasLeft, ctxLeft);
       } else {
@@ -245,34 +235,34 @@
       }
     }
 
-    // Funciones de navegación: siguiente y anterior spread
-    function nextSpread() {
+    // Para lectura manga (derecha a izquierda):
+    // La flecha izquierda (prevArrow) avanzará (next spread)
+    async function nextSpread() {
       if (currentSpread + 2 < totalPages) {
         currentSpread += 2;
         renderSpread();
       }
     }
-    function prevSpread() {
+    // La flecha derecha (nextArrow) retrocederá (prev spread)
+    async function prevSpread() {
       if (currentSpread - 2 >= 0) {
         currentSpread -= 2;
         renderSpread();
       }
     }
-    document.getElementById('nextArrow').addEventListener('click', nextSpread);
-    document.getElementById('prevArrow').addEventListener('click', prevSpread);
-    // Botones de configuración (por ahora, muestran alerta)
+    // Nota: intercambiamos la asignación de eventos
+    document.getElementById('prevArrow').addEventListener('click', nextSpread);
+    document.getElementById('nextArrow').addEventListener('click', prevSpread);
+    // Botones de configuración (puedes mejorar la funcionalidad)
     document.getElementById('gearBtnTop').addEventListener('click', () => alert("Configuración"));
     document.getElementById('gearBtnBottom').addEventListener('click', () => alert("Configuración"));
 
-    // Lógica de overlay de encuesta y flecha direccional
+    // Encuesta y overlay direccional
     document.getElementById('closeSurvey').addEventListener('click', () => {
       document.getElementById('surveyOverlay').style.display = 'none';
-      // Mostrar overlay direccional por 3 segundos
       const directionOverlay = document.getElementById('directionOverlay');
       directionOverlay.style.display = 'flex';
-      setTimeout(() => {
-        directionOverlay.style.display = 'none';
-      }, 3000);
+      setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
     });
 
     // Inicializar el visor PDF
@@ -281,7 +271,7 @@
       const loadingTask = pdfjsLib.getDocument(pdfPath);
       pdfDoc = await loadingTask.promise;
       totalPages = pdfDoc.numPages;
-      currentSpread = 0; // Comenzamos mostrando las dos últimas páginas (lectura inversa)
+      currentSpread = 0; // Comenzamos mostrando las dos últimas páginas
       renderSpread();
     }
     initViewer();
