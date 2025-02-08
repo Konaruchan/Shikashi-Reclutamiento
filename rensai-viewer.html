@@ -15,35 +15,71 @@
       padding: 0;
       background: #fafafa;
       color: #333;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    /* Barras superior e inferior */
-    .nav-bar {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
+    }
+    /* Barra de navegación superior fija y oculta/visible */
+    .nav-bar {
+      width: 100%;
       background: #820000;
       color: #fff;
       padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: top 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1100;
     }
-    .nav-bar .page-info {
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .nav-link {
       font-family: 'Botones', sans-serif;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background 0.3s;
     }
-    .nav-bar .gear {
+    .nav-link:hover { background: rgba(255,255,255,0.2); }
+    .toggle-nav-btn {
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
       cursor: pointer;
     }
-    /* Contenedor del visor: dos canvas lado a lado */
+    /* Barra inferior para spread info */
+    .bottom-nav-bar {
+      width: 100%;
+      background: #820000;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1100;
+    }
+    /* Contenedor del visor centrado */
     .viewer-container {
-      position: relative;
+      margin-top: 80px; /* espacio para la nav superior fija */
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 1rem;
-      margin: 1rem 0;
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 2rem;
     }
     canvas {
       background: #fff;
@@ -66,11 +102,24 @@
       user-select: none;
     }
     .nav-arrow:hover { background: rgba(255,255,255,1); }
-    /* En lectura manga, la flecha izquierda (prevArrow) se usará para avanzar */
+    /* Para lectura RTL: la flecha izquierda avanza (next spread) */
     .arrow-left { left: 10px; }
-    /* Y la flecha derecha (nextArrow) para retroceder */
+    /* Y la flecha derecha retrocede (prev spread) */
     .arrow-right { right: 10px; }
-    /* Overlay para el mensaje de encuesta */
+    /* Pantalla de carga */
+    .loading-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1200;
+      font-size: 1.5rem;
+      font-family: 'Cuerpo', sans-serif;
+      color: #820000;
+    }
+    /* Survey overlay */
     .survey-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -78,7 +127,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 1100;
     }
     .survey-box {
       background: #fff;
@@ -88,7 +137,6 @@
       position: relative;
       max-width: 400px;
       text-align: center;
-      font-family: 'Cuerpo', sans-serif;
     }
     .survey-box button.close {
       position: absolute;
@@ -99,7 +147,7 @@
       font-size: 1.2rem;
       cursor: pointer;
     }
-    /* Overlay direccional: flecha a la izquierda */
+    /* Overlay direccional (flecha) */
     .direction-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -107,22 +155,20 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 900;
+      z-index: 1000;
       color: #fff;
       font-size: 3rem;
     }
     footer {
-      background: #820000;
-      color: #fff;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-      margin-top: 2rem;
+      margin-top: 60px; /* espacio para la barra inferior fija */
     }
   </style>
 </head>
 <body>
-  <!-- Cuadro de encuesta -->
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay">Cargando PDF, por favor espere...</div>
+
+  <!-- Survey overlay -->
   <div id="surveyOverlay" class="survey-overlay">
     <div class="survey-box">
       <button class="close" id="closeSurvey">X</button>
@@ -130,28 +176,30 @@
     </div>
   </div>
 
-  <!-- Overlay direccional (flecha a la izquierda) -->
-  <div id="directionOverlay" class="direction-overlay" style="display: none;">
-    <div>←</div>
-  </div>
+  <!-- Overlay direccional -->
+  <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
 
-  <!-- Barra superior -->
-  <div class="nav-bar" id="topNavBar">
+  <!-- Barra de navegación superior -->
+  <div id="topNavBar" class="nav-bar">
     <div class="page-info" id="topPageInfo">&lt; Pagina ? de ? &gt;</div>
-    <div class="gear" id="gearBtnTop">⚙</div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">INICIO</a>
+      <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+      <a href="rensai.html" class="nav-link">RENSAI</a>
+    </div>
+    <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
   </div>
 
   <!-- Contenedor del visor -->
-  <div class="container viewer-container" id="viewerContainer">
+  <div class="viewer-container" id="viewerContainer">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Flechas de navegación: para RTL, la flecha izquierda avanza -->
     <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
     <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
   </div>
 
-  <!-- Barra inferior -->
-  <div class="nav-bar" id="bottomNavBar">
+  <!-- Barra inferior fija -->
+  <div id="bottomNavBar" class="bottom-nav-bar">
     <div class="page-info" id="bottomPageInfo">&lt; Pagina ? de ? &gt;</div>
     <div class="gear" id="gearBtnBottom">⚙</div>
   </div>
@@ -161,33 +209,53 @@
   </footer>
 
   <script>
-    // ---------------------
-    // Variables globales
-    // ---------------------
+    // -- Toggle Nav Bar --
+    const toggleNavBtn = document.getElementById('toggleNav');
+    const topNavBar = document.getElementById('topNavBar');
+    let navVisible = true;
+    toggleNavBtn.addEventListener('click', () => {
+      navVisible = !navVisible;
+      if(navVisible) {
+        topNavBar.style.top = '0';
+        toggleNavBtn.textContent = 'Ocultar Nav';
+      } else {
+        topNavBar.style.top = '-80px';
+        toggleNavBtn.textContent = 'Mostrar Nav';
+      }
+    });
+
+    // -- Loading Overlay --
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // -- Survey Overlay --
+    document.getElementById('closeSurvey').addEventListener('click', () => {
+      document.getElementById('surveyOverlay').style.display = 'none';
+      const directionOverlay = document.getElementById('directionOverlay');
+      directionOverlay.style.display = 'flex';
+      setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
+    });
+
+    // -- Variables globales de PDF --
     let pdfDoc = null;
     let totalPages = 0;
-    let currentSpread = 0; // Cada spread muestra 2 páginas
-    const scale = 1.2; // Ajusta la escala según tus necesidades
-    let pageCache = []; // Aquí se almacenarán todas las páginas (indexadas por número)
+    let currentSpread = 0; // cada spread muestra 2 páginas
+    const scale = 1.2;
+    let pageCache = []; // Caché de las páginas (indexadas por número)
 
     const canvasLeft = document.getElementById('canvasLeft');
     const canvasRight = document.getElementById('canvasRight');
     const ctxLeft = canvasLeft.getContext('2d');
     const ctxRight = canvasRight.getContext('2d');
 
-    // ---------------------
-    // Utilidad para parámetros URL
+    // -- Utilidad: obtener parámetros URL --
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
     const issueId = getQueryParam('id');
-    if (!issueId) {
-      window.location.href = 'rensai.html';
-    }
+    if (!issueId) { window.location.href = 'rensai.html'; }
 
-    // ---------------------
-    // Obtener PDF path a partir de issues.json
+    // -- Obtener la ruta del PDF a partir de issues.json --
     async function fetchIssues() {
       try {
         const response = await fetch('issues.json');
@@ -201,13 +269,12 @@
     async function getIssuePDFPath(issueId) {
       const issues = await fetchIssues();
       const issue = issues.find(i => i.id === issueId);
-      if (!issue) window.location.href = 'rensai.html';
+      if (!issue) { window.location.href = 'rensai.html'; }
       const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
       return basePath + '/Issue.pdf';
     }
 
-    // ---------------------
-    // Preload de todas las páginas del PDF
+    // -- Preload: Renderizar todas las páginas y almacenarlas en caché --
     async function preloadAllPages() {
       for (let p = 1; p <= totalPages; p++) {
         const page = await pdfDoc.getPage(p);
@@ -216,22 +283,14 @@
         offscreen.width = viewport.width;
         offscreen.height = viewport.height;
         const offscreenCtx = offscreen.getContext('2d');
-        const renderContext = {
-          canvasContext: offscreenCtx,
-          viewport: viewport
-        };
+        const renderContext = { canvasContext: offscreenCtx, viewport: viewport };
         await page.render(renderContext).promise;
-        // Guardamos el contenido como DataURL
         pageCache[p] = offscreen.toDataURL();
       }
     }
 
-    // ---------------------
-    // Renderizar el spread actual usando el caché
+    // -- Renderizar el spread actual usando la caché --
     async function renderSpread() {
-      // En lectura manga (RTL):
-      // Página derecha = totalPages - currentSpread
-      // Página izquierda = totalPages - currentSpread - 1
       const rightPageNum = totalPages - currentSpread;
       const leftPageNum = totalPages - currentSpread - 1;
       const spreadIndex = Math.floor(currentSpread/2) + 1;
@@ -239,7 +298,7 @@
       const infoText = `< Pagina ${spreadIndex} de ${totalSpreads} >`;
       document.getElementById('topPageInfo').textContent = infoText;
       document.getElementById('bottomPageInfo').textContent = infoText;
-
+      
       if (rightPageNum >= 1 && pageCache[rightPageNum]) {
         let imgRight = new Image();
         imgRight.onload = function() {
@@ -247,11 +306,10 @@
           canvasRight.height = imgRight.height;
           ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
           ctxRight.drawImage(imgRight, 0, 0);
-        }
+        };
         imgRight.src = pageCache[rightPageNum];
-      } else {
-        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-      }
+      } else { ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height); }
+      
       if (leftPageNum >= 1 && pageCache[leftPageNum]) {
         let imgLeft = new Image();
         imgLeft.onload = function() {
@@ -259,15 +317,12 @@
           canvasLeft.height = imgLeft.height;
           ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
           ctxLeft.drawImage(imgLeft, 0, 0);
-        }
+        };
         imgLeft.src = pageCache[leftPageNum];
-      } else {
-        ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-      }
+      } else { ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height); }
     }
 
-    // ---------------------
-    // Navegación: para RTL, la flecha izquierda (prevArrow) avanza y la derecha (nextArrow) retrocede
+    // -- Navegación: Para lectura RTL, la flecha izquierda (prevArrow) avanza y la derecha (nextArrow) retrocede --
     async function nextSpread() {
       if (currentSpread + 2 < totalPages) {
         currentSpread += 2;
@@ -280,23 +335,12 @@
         renderSpread();
       }
     }
-    // Asignamos los eventos invertidos
     document.getElementById('prevArrow').addEventListener('click', nextSpread);
     document.getElementById('nextArrow').addEventListener('click', prevSpread);
     document.getElementById('gearBtnTop').addEventListener('click', () => alert("Configuración"));
     document.getElementById('gearBtnBottom').addEventListener('click', () => alert("Configuración"));
 
-    // ---------------------
-    // Lógica de overlays
-    document.getElementById('closeSurvey').addEventListener('click', () => {
-      document.getElementById('surveyOverlay').style.display = 'none';
-      const directionOverlay = document.getElementById('directionOverlay');
-      directionOverlay.style.display = 'flex';
-      setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
-    });
-
-    // ---------------------
-    // Inicializar el visor
+    // -- Inicializar el visor PDF --
     async function initViewer() {
       const pdfPath = await getIssuePDFPath(issueId);
       const loadingTask = pdfjsLib.getDocument(pdfPath);
@@ -305,6 +349,8 @@
       await preloadAllPages();
       currentSpread = 0;
       renderSpread();
+      // Ocultar la pantalla de carga
+      loadingOverlay.style.display = 'none';
     }
     initViewer();
   </script>
