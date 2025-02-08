@@ -70,7 +70,7 @@
     .arrow-left { left: 10px; }
     /* Y la flecha derecha (nextArrow) para retroceder */
     .arrow-right { right: 10px; }
-    /* Overlay para encuesta */
+    /* Overlay para el mensaje de encuesta */
     .survey-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -99,7 +99,7 @@
       font-size: 1.2rem;
       cursor: pointer;
     }
-    /* Overlay direccional */
+    /* Overlay direccional: flecha a la izquierda */
     .direction-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -145,7 +145,7 @@
   <div class="container viewer-container" id="viewerContainer">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Flechas: NOTA: para lectura right-to-left, usamos la flecha izquierda para avanzar -->
+    <!-- Flechas de navegación: para RTL, la flecha izquierda avanza -->
     <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
     <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
   </div>
@@ -162,8 +162,21 @@
 
   <script>
     // ---------------------
-    // UTILIDADES
+    // Variables globales
     // ---------------------
+    let pdfDoc = null;
+    let totalPages = 0;
+    let currentSpread = 0; // Cada spread muestra 2 páginas
+    const scale = 1.2; // Ajusta la escala según tus necesidades
+    let pageCache = []; // Aquí se almacenarán todas las páginas (indexadas por número)
+
+    const canvasLeft = document.getElementById('canvasLeft');
+    const canvasRight = document.getElementById('canvasRight');
+    const ctxLeft = canvasLeft.getContext('2d');
+    const ctxRight = canvasRight.getContext('2d');
+
+    // ---------------------
+    // Utilidad para parámetros URL
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
@@ -172,8 +185,9 @@
     if (!issueId) {
       window.location.href = 'rensai.html';
     }
+
     // ---------------------
-    // OBTENCIÓN DE LA RUTA DEL PDF
+    // Obtener PDF path a partir de issues.json
     async function fetchIssues() {
       try {
         const response = await fetch('issues.json');
@@ -191,29 +205,31 @@
       const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
       return basePath + '/Issue.pdf';
     }
-    // ---------------------
-    // CONFIGURACIÓN DE PDF.JS
-    let pdfDoc = null;
-    let totalPages = 0;
-    let currentSpread = 0; // Cada spread: 2 páginas
-    // Ajustamos el scale para optimizar (puedes probar otros valores)
-    const scale = 1.2;
-    const canvasLeft = document.getElementById('canvasLeft');
-    const canvasRight = document.getElementById('canvasRight');
-    const ctxLeft = canvasLeft.getContext('2d');
-    const ctxRight = canvasRight.getContext('2d');
 
-    async function renderPage(pageNum, canvas, context) {
-      const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: scale });
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      const renderContext = { canvasContext: context, viewport: viewport };
-      await page.render(renderContext).promise;
+    // ---------------------
+    // Preload de todas las páginas del PDF
+    async function preloadAllPages() {
+      for (let p = 1; p <= totalPages; p++) {
+        const page = await pdfDoc.getPage(p);
+        const viewport = page.getViewport({ scale: scale });
+        const offscreen = document.createElement('canvas');
+        offscreen.width = viewport.width;
+        offscreen.height = viewport.height;
+        const offscreenCtx = offscreen.getContext('2d');
+        const renderContext = {
+          canvasContext: offscreenCtx,
+          viewport: viewport
+        };
+        await page.render(renderContext).promise;
+        // Guardamos el contenido como DataURL
+        pageCache[p] = offscreen.toDataURL();
+      }
     }
 
+    // ---------------------
+    // Renderizar el spread actual usando el caché
     async function renderSpread() {
-      // Para lectura right-to-left:
+      // En lectura manga (RTL):
       // Página derecha = totalPages - currentSpread
       // Página izquierda = totalPages - currentSpread - 1
       const rightPageNum = totalPages - currentSpread;
@@ -223,41 +239,55 @@
       const infoText = `< Pagina ${spreadIndex} de ${totalSpreads} >`;
       document.getElementById('topPageInfo').textContent = infoText;
       document.getElementById('bottomPageInfo').textContent = infoText;
-      if (rightPageNum >= 1) {
-        await renderPage(rightPageNum, canvasRight, ctxRight);
+
+      if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+        let imgRight = new Image();
+        imgRight.onload = function() {
+          canvasRight.width = imgRight.width;
+          canvasRight.height = imgRight.height;
+          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+          ctxRight.drawImage(imgRight, 0, 0);
+        }
+        imgRight.src = pageCache[rightPageNum];
       } else {
         ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
       }
-      if (leftPageNum >= 1) {
-        await renderPage(leftPageNum, canvasLeft, ctxLeft);
+      if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+        let imgLeft = new Image();
+        imgLeft.onload = function() {
+          canvasLeft.width = imgLeft.width;
+          canvasLeft.height = imgLeft.height;
+          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+          ctxLeft.drawImage(imgLeft, 0, 0);
+        }
+        imgLeft.src = pageCache[leftPageNum];
       } else {
         ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
       }
     }
 
-    // Para lectura manga (derecha a izquierda):
-    // La flecha izquierda (prevArrow) avanzará (next spread)
+    // ---------------------
+    // Navegación: para RTL, la flecha izquierda (prevArrow) avanza y la derecha (nextArrow) retrocede
     async function nextSpread() {
       if (currentSpread + 2 < totalPages) {
         currentSpread += 2;
         renderSpread();
       }
     }
-    // La flecha derecha (nextArrow) retrocederá (prev spread)
     async function prevSpread() {
       if (currentSpread - 2 >= 0) {
         currentSpread -= 2;
         renderSpread();
       }
     }
-    // Nota: intercambiamos la asignación de eventos
+    // Asignamos los eventos invertidos
     document.getElementById('prevArrow').addEventListener('click', nextSpread);
     document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    // Botones de configuración (puedes mejorar la funcionalidad)
     document.getElementById('gearBtnTop').addEventListener('click', () => alert("Configuración"));
     document.getElementById('gearBtnBottom').addEventListener('click', () => alert("Configuración"));
 
-    // Encuesta y overlay direccional
+    // ---------------------
+    // Lógica de overlays
     document.getElementById('closeSurvey').addEventListener('click', () => {
       document.getElementById('surveyOverlay').style.display = 'none';
       const directionOverlay = document.getElementById('directionOverlay');
@@ -265,13 +295,15 @@
       setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
     });
 
-    // Inicializar el visor PDF
+    // ---------------------
+    // Inicializar el visor
     async function initViewer() {
       const pdfPath = await getIssuePDFPath(issueId);
       const loadingTask = pdfjsLib.getDocument(pdfPath);
       pdfDoc = await loadingTask.promise;
       totalPages = pdfDoc.numPages;
-      currentSpread = 0; // Comenzamos mostrando las dos últimas páginas
+      await preloadAllPages();
+      currentSpread = 0;
       renderSpread();
     }
     initViewer();
