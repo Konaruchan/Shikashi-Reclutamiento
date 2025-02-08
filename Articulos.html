@@ -6,6 +6,8 @@
   <title>Artículos - Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* Zoom global igual que en index.html */
+    html { zoom: 0.75; }
     /* Estilos generales y de navegación */
     body {
       font-family: 'Cuerpo', sans-serif;
@@ -24,8 +26,15 @@
       padding: 1rem 2rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container { display: flex; flex-direction: column; align-items: center; }
-    .logo-container img { width: 150px; margin-bottom: 0.8rem; }
+    .nav-container { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+    }
+    .logo-container img { 
+      width: 150px; 
+      margin-bottom: 0.8rem; 
+    }
     .nav-links {
       display: flex;
       gap: 1.2rem;
@@ -45,7 +54,9 @@
       border-radius: 4px;
       transition: background 0.3s ease;
     }
-    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    .nav-link:hover { 
+      background-color: rgba(255,255,255,0.2); 
+    }
     header {
       margin-bottom: 2rem;
     }
