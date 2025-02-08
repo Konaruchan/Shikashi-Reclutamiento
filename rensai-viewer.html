@@ -102,9 +102,9 @@
       user-select: none;
     }
     .nav-arrow:hover { background: rgba(255,255,255,1); }
-    /* Para lectura RTL: la flecha izquierda avanza (next spread) */
+    /* Para lectura RTL: la flecha izquierda (prevArrow) se usará para avanzar */
     .arrow-left { left: 10px; }
-    /* Y la flecha derecha retrocede (prev spread) */
+    /* Y la flecha derecha (nextArrow) para retroceder */
     .arrow-right { right: 10px; }
     /* Pantalla de carga */
     .loading-overlay {
@@ -239,8 +239,8 @@
     let pdfDoc = null;
     let totalPages = 0;
     let currentSpread = 0; // cada spread muestra 2 páginas
-    const scale = 1.2;
-    let pageCache = []; // Caché de las páginas (indexadas por número)
+    const scale = 1.2; // Ajusta la escala según tus necesidades
+    let pageCache = []; // Aquí se almacenarán todas las páginas (indexadas por número)
 
     const canvasLeft = document.getElementById('canvasLeft');
     const canvasRight = document.getElementById('canvasRight');
@@ -274,7 +274,7 @@
       return basePath + '/Issue.pdf';
     }
 
-    // -- Preload: Renderizar todas las páginas y almacenarlas en caché --
+    // -- Preload de todas las páginas del PDF --
     async function preloadAllPages() {
       for (let p = 1; p <= totalPages; p++) {
         const page = await pdfDoc.getPage(p);
@@ -289,7 +289,7 @@
       }
     }
 
-    // -- Renderizar el spread actual usando la caché --
+    // -- Renderizar el spread actual usando el caché --
     async function renderSpread() {
       const rightPageNum = totalPages - currentSpread;
       const leftPageNum = totalPages - currentSpread - 1;
@@ -337,7 +337,7 @@
     }
     document.getElementById('prevArrow').addEventListener('click', nextSpread);
     document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    document.getElementById('gearBtnTop').addEventListener('click', () => alert("Configuración"));
+    // Sólo existe gearBtnBottom en este diseño
     document.getElementById('gearBtnBottom').addEventListener('click', () => alert("Configuración"));
 
     // -- Inicializar el visor PDF --
