@@ -170,7 +170,7 @@
         if (!mdResponse.ok) throw new Error('Error al cargar el archivo markdown');
         const mdText = await mdResponse.text();
         const { meta, content } = parseMarkdownWithFrontMatter(mdText);
-        const htmlContent = marked(content);
+        const htmlContent = marked.parse(content);
 
         // Se asume que la imagen "featured.jpg" está en la misma carpeta que el Markdown
         const basePath = article.path.substring(0, article.path.lastIndexOf('/'));
