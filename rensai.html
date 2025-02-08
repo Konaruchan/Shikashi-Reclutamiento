@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rensai - Shikashi Monthly Friday Series</title>
+  <style>
+    /* Zoom global (igual que en index.html) */
+    html { zoom: 0.75; }
+    body {
+      font-family: 'Cuerpo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fafafa;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    /* Navegación */
+    nav {
+      background: #820000;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .nav-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-container img {
+      width: 150px;
+      margin-bottom: 0.8rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-link {
+      font-family: 'Botones', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
+    /* Sección principal de Rensai */
+    .rensai-main {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 1rem;
+    }
+    .recent-issue {
+      flex: 1;
+      display: flex;
+      gap: 2rem;
+    }
+    .recent-issue img {
+      max-width: 100%;
+      border-radius: 4px;
+    }
+    .recent-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .recent-details h1 {
+      font-family: 'Botones', sans-serif;
+      color: #820000;
+      margin: 0 0 1rem;
+    }
+    .recent-details p {
+      font-size: 1rem;
+      margin: 0 0 1.5rem;
+    }
+    .recent-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    .recent-buttons a {
+      text-decoration: none;
+      font-family: 'Botones', sans-serif;
+      font-size: 1rem;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #820000;
+      border-radius: 4px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .recent-buttons a.leer {
+      background: #820000;
+      color: #fff;
+    }
+    .recent-buttons a.comprar {
+      background: transparent;
+      color: #820000;
+    }
+    .recent-buttons a.comprar:hover {
+      background: #820000;
+      color: #fff;
+    }
+    /* Cuadrícula de revistas anteriores */
+    .issues-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .issue-item {
+      position: relative;
+      cursor: pointer;
+    }
+    .issue-item img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+    }
+    .issue-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 0 0 4px 4px;
+      font-family: 'Botones', sans-serif;
+    }
+    .issue-item:hover .issue-overlay {
+      opacity: 1;
+    }
+    footer {
+      background: #820000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de navegación -->
+  <nav>
+    <div class="nav-container container">
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">INICIO</a>
+        <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+        <a href="rensai.html" class="nav-link">RENSAI</a>
+        <a href="#" class="nav-link">SMF PLUS</a>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <!-- Sección principal: revista más reciente -->
+    <div id="recentIssueContainer" class="rensai-main">
+      <!-- Se inyectará la revista más reciente -->
+    </div>
+    
+    <!-- Cuadrícula de revistas anteriores -->
+    <div id="issuesGrid" class="issues-grid">
+      <!-- Se inyectan las revistas anteriores ordenadas de más reciente a más antiguo -->
+    </div>
+  </div>
+  
+  <footer>
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
+  
+  <script>
+    // Función para cargar issues.json (definido en la raíz del proyecto)
+    async function fetchIssues() {
+      try {
+        const response = await fetch('issues.json');
+        if (!response.ok) throw new Error('Error al cargar issues.json');
+        const issues = await response.json();
+        return issues;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+    
+    // Ordenar issues por fecha descendente (más reciente primero)
+    function sortIssuesByDate(issues) {
+      return issues.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+    
+    function displayIssues(issues) {
+      const sortedIssues = sortIssuesByDate(issues);
+      // Opcional: filtrar solo las issues publicadas (fecha <= hoy)
+      const today = new Date();
+      const published = sortedIssues.filter(issue => new Date(issue.date) <= today);
+      
+      // La revista más reciente es la primera
+      const recent = published[0];
+      if(recent) {
+        const recentContainer = document.getElementById('recentIssueContainer');
+        // Se asume que la portada y el PDF se encuentran en la misma carpeta que Issue.md
+        const basePath = recent.path.substring(0, recent.path.lastIndexOf('/'));
+        const portada = basePath + '/Portada.png';
+        const pdfLink = basePath + '/Issue.pdf';
+        // Se usa recent.description si existe; si no, se coloca un texto de ejemplo.
+        const description = recent.description || "Aquí encontrarás la última edición de nuestra revista digital.";
+        recentContainer.innerHTML = `
+          <div style="flex: 1;">
+            <img src="${portada}" alt="${recent.title}" style="max-width: 100%; border-radius: 4px;">
+          </div>
+          <div class="recent-details">
+            <h1>${recent.title}</h1>
+            <p>${description}</p>
+            <div class="recent-buttons">
+              <a href="${pdfLink}" class="leer" target="_blank">¡Leer ya!</a>
+              <a href="#" class="comprar">Comprar Fisico</a>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Mostrar en la cuadrícula las revistas anteriores (excluyendo la más reciente)
+      const grid = document.getElementById('issuesGrid');
+      const previousIssues = published.slice(1);
+      let gridHtml = '';
+      previousIssues.forEach(issue => {
+        const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
+        const portada = basePath + '/Portada.png';
+        gridHtml += `
+          <div class="issue-item" onclick="window.location.href='rensai-viewer.html?id=${issue.id}'">
+            <img src="${portada}" alt="${issue.title}">
+            <div class="issue-overlay">${issue.title}</div>
+          </div>
+        `;
+      });
+      grid.innerHTML = gridHtml;
+    }
+    
+    async function initRensai() {
+      const issues = await fetchIssues();
+      displayIssues(issues);
+    }
+    
+    initRensai();
+  </script>
+</body>
+</html>
+f
