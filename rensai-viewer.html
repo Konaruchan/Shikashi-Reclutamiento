@@ -147,7 +147,7 @@
       font-size: 1.2rem;
       cursor: pointer;
     }
-    /* Overlay direccional (flecha) */
+    /* Overlay direccional */
     .direction-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -165,14 +165,14 @@
   </style>
 </head>
 <body>
-  <!-- Loading overlay -->
+  <!-- Pantalla de carga -->
   <div id="loadingOverlay" class="loading-overlay">Cargando PDF, por favor espere...</div>
 
   <!-- Survey overlay -->
   <div id="surveyOverlay" class="survey-overlay">
     <div class="survey-box">
       <button class="close" id="closeSurvey">X</button>
-      <p>Leer es gratis, pero para ayudarnos a mejorar, por favor completa una breve encuesta de satisfacción al final.</p>
+      <p>¡Gracias por leer! Para ayudarnos a mejorar y seguir creando contenido épico, por favor, completa una breve encuesta de satisfacción.</p>
     </div>
   </div>
 
@@ -209,7 +209,7 @@
   </footer>
 
   <script>
-    // -- Toggle Nav Bar --
+    // --- Toggle Nav Bar ---
     const toggleNavBtn = document.getElementById('toggleNav');
     const topNavBar = document.getElementById('topNavBar');
     let navVisible = true;
@@ -224,10 +224,10 @@
       }
     });
 
-    // -- Loading Overlay --
+    // --- Loading Overlay ---
     const loadingOverlay = document.getElementById('loadingOverlay');
 
-    // -- Survey Overlay --
+    // --- Survey Overlay ---
     document.getElementById('closeSurvey').addEventListener('click', () => {
       document.getElementById('surveyOverlay').style.display = 'none';
       const directionOverlay = document.getElementById('directionOverlay');
@@ -235,19 +235,19 @@
       setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
     });
 
-    // -- Variables globales de PDF --
+    // --- Variables globales de PDF ---
     let pdfDoc = null;
     let totalPages = 0;
     let currentSpread = 0; // cada spread muestra 2 páginas
-    const scale = 1.2; // Ajusta la escala según tus necesidades
-    let pageCache = []; // Aquí se almacenarán todas las páginas (indexadas por número)
+    const scale = 1.2;
+    let pageCache = []; // Caché de páginas
 
     const canvasLeft = document.getElementById('canvasLeft');
     const canvasRight = document.getElementById('canvasRight');
     const ctxLeft = canvasLeft.getContext('2d');
     const ctxRight = canvasRight.getContext('2d');
 
-    // -- Utilidad: obtener parámetros URL --
+    // --- Utilidad: obtener parámetros URL ---
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
@@ -255,7 +255,7 @@
     const issueId = getQueryParam('id');
     if (!issueId) { window.location.href = 'rensai.html'; }
 
-    // -- Obtener la ruta del PDF a partir de issues.json --
+    // --- Obtener la ruta del PDF a partir de issues.json ---
     async function fetchIssues() {
       try {
         const response = await fetch('issues.json');
@@ -274,7 +274,7 @@
       return basePath + '/Issue.pdf';
     }
 
-    // -- Preload de todas las páginas del PDF --
+    // --- Preload de todas las páginas del PDF ---
     async function preloadAllPages() {
       for (let p = 1; p <= totalPages; p++) {
         const page = await pdfDoc.getPage(p);
@@ -289,8 +289,28 @@
       }
     }
 
-    // -- Renderizar el spread actual usando el caché --
+    // --- Renderizar el spread actual usando caché o mostrar encuesta ---
     async function renderSpread() {
+      // Si ya no quedan páginas, mostrar la encuesta de satisfacción
+      if (totalPages - currentSpread < 1) {
+        const container = document.getElementById('viewerContainer');
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <h1>¡Gracias por leer!</h1>
+            <p>Para que podamos mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.<br>
+            ¡Tu opinión es vital y nos ayuda a seguir creando contenido épico!</p>
+            <button onclick="window.location.href='encuestas.html'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+          </div>
+        `;
+        document.getElementById('prevArrow').style.display = 'none';
+        document.getElementById('nextArrow').style.display = 'none';
+        document.getElementById('topPageInfo').textContent = '';
+        document.getElementById('bottomPageInfo').textContent = '';
+        return;
+      }
+      // En lectura manga (RTL):
+      // Página derecha = totalPages - currentSpread
+      // Página izquierda = totalPages - currentSpread - 1
       const rightPageNum = totalPages - currentSpread;
       const leftPageNum = totalPages - currentSpread - 1;
       const spreadIndex = Math.floor(currentSpread/2) + 1;
@@ -298,7 +318,7 @@
       const infoText = `< Pagina ${spreadIndex} de ${totalSpreads} >`;
       document.getElementById('topPageInfo').textContent = infoText;
       document.getElementById('bottomPageInfo').textContent = infoText;
-      
+
       if (rightPageNum >= 1 && pageCache[rightPageNum]) {
         let imgRight = new Image();
         imgRight.onload = function() {
@@ -309,7 +329,7 @@
         };
         imgRight.src = pageCache[rightPageNum];
       } else { ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height); }
-      
+
       if (leftPageNum >= 1 && pageCache[leftPageNum]) {
         let imgLeft = new Image();
         imgLeft.onload = function() {
@@ -322,10 +342,14 @@
       } else { ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height); }
     }
 
-    // -- Navegación: Para lectura RTL, la flecha izquierda (prevArrow) avanza y la derecha (nextArrow) retrocede --
+    // --- Navegación: Para lectura RTL, la flecha izquierda (prevArrow) avanza y la derecha (nextArrow) retrocede ---
     async function nextSpread() {
       if (currentSpread + 2 < totalPages) {
         currentSpread += 2;
+        renderSpread();
+      } else {
+        // Si no hay más páginas, forzamos la visualización de la encuesta
+        currentSpread = totalPages;
         renderSpread();
       }
     }
@@ -337,10 +361,9 @@
     }
     document.getElementById('prevArrow').addEventListener('click', nextSpread);
     document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    // Sólo existe gearBtnBottom en este diseño
     document.getElementById('gearBtnBottom').addEventListener('click', () => alert("Configuración"));
 
-    // -- Inicializar el visor PDF --
+    // --- Inicializar el visor PDF ---
     async function initViewer() {
       const pdfPath = await getIssuePDFPath(issueId);
       const loadingTask = pdfjsLib.getDocument(pdfPath);
