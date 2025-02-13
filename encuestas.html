@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>Encuesta de Satisfacción - Shikashi Monthly Friday Series</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- SurveyJS CSS -->
+  <!-- Cargar KnockoutJS primero -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-min.js"></script>
+  <!-- Incluir SurveyJS CSS -->
   <link href="https://unpkg.com/survey-core/defaultV2.min.css" rel="stylesheet" />
-  <!-- Incluir SurveyJS -->
+  <!-- Incluir SurveyJS Core y Knockout integración -->
   <script src="https://unpkg.com/survey-core/survey.core.min.js"></script>
   <script src="https://unpkg.com/survey-knockout/survey.ko.min.js"></script>
-  <!-- jQuery (necesario para SurveyJS renderizado con jQuery) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
     html { zoom: 0.75; }
     body {
@@ -60,9 +60,7 @@
       border-radius: 4px;
       transition: background 0.3s ease;
     }
-    .nav-link:hover {
-      background-color: rgba(255,255,255,0.2);
-    }
+    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
     /* Título y contenedor de encuesta */
     h1 {
       text-align: center;
@@ -117,7 +115,7 @@
     }
     const issueId = getQueryParam('id');
     if (!issueId) {
-      // Si no se pasa el id, redirige a la página de Rensai
+      // Si no se proporciona el id, redirige a la página de Rensai
       window.location.href = 'rensai.html';
     }
     
@@ -134,13 +132,13 @@
         Survey.StylesManager.applyTheme("defaultV2");
         // Crear el modelo de encuesta
         var survey = new Survey.Model(surveyJSON);
-        // Evento opcional: cuando se completa la encuesta
+        // Evento: al completar la encuesta, mostrar un mensaje de agradecimiento.
         survey.onComplete.add(function(result) {
           document.getElementById("surveyContainer").innerHTML = "<h3>¡Gracias por completar la encuesta!</h3>";
-          // Aquí puedes enviar result.data a tu servidor
+          // Aquí podrías enviar result.data a tu servidor
         });
-        // Renderizar la encuesta en el contenedor
-        $("#surveyContainer").Survey({ model: survey });
+        // Renderizar la encuesta usando SurveyJS con Knockout
+        Survey.KO.render("surveyContainer", { model: survey });
       })
       .catch(error => {
         document.getElementById("surveyContainer").innerHTML = "<h3>No se encontró una encuesta para este número de revista.</h3>";
