@@ -1,0 +1,29 @@
+{
+  "title": "Encuesta de Satisfacción - Test",
+  "showProgressBar": "bottom",
+  "completedHtml": "<h4>¡Gracias por completar la encuesta!</h4>",
+  "pages": [
+    {
+      "name": "page1",
+      "elements": [
+        {
+          "type": "rating",
+          "name": "satisfaction_rating",
+          "title": "¿Qué tan satisfecho estás con la revista?",
+          "isRequired": true,
+          "rateMin": 1,
+          "rateMax": 5,
+          "minRateDescription": "Muy insatisfecho",
+          "maxRateDescription": "Muy satisfecho"
+        },
+        {
+          "type": "comment",
+          "name": "suggestions",
+          "title": "¿Qué mejoras sugieres para la revista?",
+          "isRequired": false,
+          "placeHolder": "Escribe tus sugerencias aquí..."
+        }
+      ]
+    }
+  ]
+}
