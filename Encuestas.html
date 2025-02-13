@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Encuesta de Satisfacción - Shikashi Monthly Friday Series</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SurveyJS CSS -->
+  <link href="https://unpkg.com/survey-core/defaultV2.min.css" rel="stylesheet" />
+  <!-- Incluir SurveyJS -->
+  <script src="https://unpkg.com/survey-core/survey.core.min.js"></script>
+  <script src="https://unpkg.com/survey-knockout/survey.ko.min.js"></script>
+  <!-- jQuery (necesario para SurveyJS renderizado con jQuery) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    html { zoom: 0.75; }
+    body {
+      font-family: 'Cuerpo', sans-serif;
+      background-color: #fafafa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    /* Contenedor general */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    /* Barra de navegación */
+    nav {
+      background: #820000;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .nav-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-container img {
+      width: 150px;
+      margin-bottom: 0.8rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-link {
+      font-family: 'Botones', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.2rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    .nav-link:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    /* Título y contenedor de encuesta */
+    h1 {
+      text-align: center;
+      color: #820000;
+      margin-bottom: 1rem;
+    }
+    #surveyContainer {
+      margin-top: 2rem;
+    }
+    /* Footer */
+    footer {
+      background: #820000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de navegación -->
+  <nav>
+    <div class="nav-container container">
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">INICIO</a>
+        <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+        <a href="rensai.html" class="nav-link">RENSAI</a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Contenedor principal -->
+  <div class="container">
+    <h1>Encuesta de Satisfacción</h1>
+    <div id="surveyContainer"></div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
+  
+  <script>
+    // Función para obtener parámetros de la URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+    const issueId = getQueryParam('id');
+    if (!issueId) {
+      // Si no se pasa el id, redirige a la página de Rensai
+      window.location.href = 'rensai.html';
+    }
+    
+    // Cargar el archivo JSON de encuesta desde la carpeta "encuestas"
+    fetch(`encuestas/${issueId}.json`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Encuesta no encontrada para esta revista.");
+        }
+        return response.json();
+      })
+      .then(surveyJSON => {
+        // Aplicar el tema de SurveyJS
+        Survey.StylesManager.applyTheme("defaultV2");
+        // Crear el modelo de encuesta
+        var survey = new Survey.Model(surveyJSON);
+        // Evento opcional: cuando se completa la encuesta
+        survey.onComplete.add(function(result) {
+          document.getElementById("surveyContainer").innerHTML = "<h3>¡Gracias por completar la encuesta!</h3>";
+          // Aquí puedes enviar result.data a tu servidor
+        });
+        // Renderizar la encuesta en el contenedor
+        $("#surveyContainer").Survey({ model: survey });
+      })
+      .catch(error => {
+        document.getElementById("surveyContainer").innerHTML = "<h3>No se encontró una encuesta para este número de revista.</h3>";
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
