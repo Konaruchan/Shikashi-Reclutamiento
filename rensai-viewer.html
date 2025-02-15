@@ -57,7 +57,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    /* Barra inferior fija (incluye sutil copyright) */
+    /* Barra inferior fija (incluye copyright sutil) */
     .bottom-nav-bar {
       width: 100%;
       background: #820000;
@@ -78,10 +78,10 @@
       font-size: 0.8rem;
       opacity: 0.7;
     }
-    /* Contenedor del visor centrado */
+    /* Contenedor del visor */
     .viewer-container {
-      margin-top: 80px; /* espacio para nav superior */
-      margin-bottom: 80px; /* espacio para nav inferior */
+      margin-top: 80px; /* para la nav superior */
+      margin-bottom: 80px; /* para la nav inferior */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -95,7 +95,7 @@
       background: #fff;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    /* Flechas de navegación (desktop) */
+    /* Flechas de navegación para desktop */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -115,23 +115,13 @@
     .nav-arrow:hover { background: rgba(255,255,255,1); }
     .arrow-left { left: 10px; }
     .arrow-right { right: 10px; }
-    /* Navegación móvil */
-    .mobile-nav {
-      display: none;
-      margin-top: 1rem;
+    /* Hacer la información de página editable */
+    .editable-input {
+      width: 60px;
+      font-size: 1rem;
       text-align: center;
     }
-    .mobile-nav button {
-      font-size: 1.5rem;
-      margin: 0 1rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      background: #820000;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    /* Loading overlay: fondo blanco opaco, logo y GIF */
+    /* Loading overlay: fondo blanco sólido, logo y GIF */
     .loading-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -175,12 +165,6 @@
       color: #fff;
       font-size: 3rem;
     }
-    /* Hacer que los textos de página sean editables */
-    .editable-input {
-      width: 60px;
-      font-size: 1rem;
-      text-align: center;
-    }
     /* Adaptabilidad móvil */
     @media (max-width: 600px) {
       .viewer-container {
@@ -189,8 +173,9 @@
       }
       #canvasLeft { display: none; }
       #canvasRight { width: 100%; }
+      /* Ocultar flechas de desktop */
       .nav-arrow { display: none; }
-      .mobile-nav { display: block; }
+      /* El contenido se ajusta con swipe exclusivamente */
     }
   </style>
 </head>
@@ -202,7 +187,7 @@
     <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
   </div>
 
-  <!-- Direction Overlay (aparece al inicio) -->
+  <!-- Direction Overlay (flecha inicial) -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
 
   <!-- Barra de navegación superior -->
@@ -220,15 +205,12 @@
   <div class="viewer-container" id="viewerContainer">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
+    <!-- Flechas de navegación para desktop -->
     <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
     <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
   </div>
 
-  <!-- Navegación móvil -->
-  <div id="mobileNav" class="mobile-nav">
-    <button id="mobilePrev">&#9664;</button>
-    <button id="mobileNext">&#9654;</button>
-  </div>
+  <!-- No se incluyen botones móviles; se usará swipe para navegación -->
 
   <!-- Barra inferior fija -->
   <div id="bottomNavBar" class="bottom-nav-bar">
@@ -236,9 +218,10 @@
     <div class="copy">&copy; 2025 Shikashi MF</div>
   </div>
 
-  <!-- (No footer separado) -->
-
   <script>
+    // Establecer worker de pdf.js para evitar advertencias
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
     /********** Loading Text Animation **********/
     const loadingMessages = [
       "Vistiendo a las chicas mágicas...",
@@ -275,7 +258,7 @@
     /********** Variables Globales de PDF **********/
     let pdfDoc = null;
     let totalPages = 0;
-    let currentSpread = 0; // Desktop: 2 pages/spread; Mobile: 1 page/spread
+    let currentSpread = 0; // En desktop: 2 páginas por spread; móvil: 1 página por spread
     const scale = 1.2;
     let pageCache = [];
 
@@ -284,7 +267,7 @@
     const ctxLeft = canvasLeft.getContext('2d');
     const ctxRight = canvasRight.getContext('2d');
 
-    /********** Detect Mobile **********/
+    /********** Detectar Mobile **********/
     function isMobile() {
       return window.innerWidth < 600;
     }
@@ -316,7 +299,7 @@
       return basePath + '/Issue.pdf';
     }
 
-    /********** Preload all PDF Pages **********/
+    /********** Preload de todas las páginas del PDF **********/
     async function preloadAllPages() {
       for (let p = 1; p <= totalPages; p++) {
         const page = await pdfDoc.getPage(p);
@@ -331,7 +314,7 @@
       }
     }
 
-    /********** Actualizar Página Info Editable **********/
+    /********** Hacer que la información de página sea editable **********/
     function makePageInfoEditable() {
       const topPageInfo = document.getElementById('topPageInfo');
       const bottomPageInfo = document.getElementById('bottomPageInfo');
@@ -341,7 +324,6 @@
           input.type = "number";
           input.className = "editable-input";
           input.placeholder = "Ir a...";
-          // Reemplazar contenido temporalmente
           let origText = infoElem.textContent;
           infoElem.textContent = "";
           infoElem.appendChild(input);
@@ -363,12 +345,14 @@
                   }
                 }
               }
-              infoElem.removeChild(input);
-              updatePageInfo();
+              if(input.parentNode) {
+                infoElem.removeChild(input);
+                updatePageInfo();
+              }
             }
           });
           input.addEventListener('blur', () => {
-            if(infoElem.contains(input)) {
+            if(input.parentNode) {
               infoElem.removeChild(input);
               updatePageInfo();
             }
@@ -379,18 +363,18 @@
     function updatePageInfo() {
       if (isMobile()) {
         let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
       } else {
         let spreadIndex = Math.floor(currentSpread / 2) + 1;
         let totalSpreads = Math.ceil(totalPages / 2);
         let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
       }
     }
 
-    /********** Swipe for Mobile **********/
+    /********** Agregar Swipe para móviles **********/
     function addSwipeListeners() {
       if (isMobile()) {
         let touchstartX = 0;
@@ -408,10 +392,12 @@
         });
       }
     }
+    addSwipeListeners();
+    makePageInfoEditable();
 
-    /********** Render Spread **********/
+    /********** Renderizar el spread actual usando la caché **********/
     async function renderSpread() {
-      // Si no quedan páginas, mostrar encuesta redireccionada a link de encuesta (desde encuestas/ID.json)
+      // Si ya no quedan páginas, mostrar la encuesta
       if (totalPages - currentSpread < 1) {
         try {
           const response = await fetch(`encuestas/${issueId}.json`);
@@ -428,10 +414,15 @@
               <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
             </div>
           `;
-          document.getElementById('prevArrow').style.display = 'none';
-          document.getElementById('nextArrow').style.display = 'none';
-          document.getElementById('topPageInfo').textContent = '';
-          document.getElementById('bottomPageInfo').textContent = '';
+          // Ocultar flechas y textos
+          const prevArrow = document.getElementById('prevArrow');
+          const nextArrow = document.getElementById('nextArrow');
+          if(prevArrow) prevArrow.style.display = 'none';
+          if(nextArrow) nextArrow.style.display = 'none';
+          const topInfo = document.getElementById('topPageInfo');
+          const bottomInfo = document.getElementById('bottomPageInfo');
+          if(topInfo) topInfo.textContent = '';
+          if(bottomInfo) bottomInfo.textContent = '';
         } catch (error) {
           console.error(error);
           document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
@@ -447,8 +438,8 @@
         canvasRight.style.display = "block";
         const rightPageNum = totalPages - currentSpread;
         const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
         if (rightPageNum >= 1 && pageCache[rightPageNum]) {
           let imgRight = new Image();
           imgRight.onload = function() {
@@ -466,11 +457,11 @@
         canvasRight.style.display = "block";
         const rightPageNum = totalPages - currentSpread;
         const leftPageNum = totalPages - currentSpread - 1;
-        const spreadIndex = Math.floor(currentSpread/2) + 1;
-        const totalSpreads = Math.ceil(totalPages/2);
+        const spreadIndex = Math.floor(currentSpread / 2) + 1;
+        const totalSpreads = Math.ceil(totalPages / 2);
         const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
         if (rightPageNum >= 1 && pageCache[rightPageNum]) {
           let imgRight = new Image();
           imgRight.onload = function() {
@@ -531,13 +522,446 @@
     if (!isMobile()) {
       document.getElementById('prevArrow').addEventListener('click', nextSpread);
       document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    } else {
-      document.getElementById('mobileNav').style.display = 'block';
-      document.getElementById('mobilePrev').addEventListener('click', nextSpread);
-      document.getElementById('mobileNext').addEventListener('click', prevSpread);
     }
-    /********** Hacer que la información de página sea editable **********/
+    // En móviles, se usa swipe exclusivamente (ya no se muestran botones adicionales)
+    
+    /********** Agregar Swipe para móviles **********/
+    function addSwipeListeners() {
+      if (isMobile()) {
+        let touchstartX = 0;
+        let touchendX = 0;
+        const threshold = 50;
+        const container = document.getElementById('viewerContainer');
+        container.addEventListener('touchstart', (e) => {
+          touchstartX = e.changedTouches[0].screenX;
+        });
+        container.addEventListener('touchend', (e) => {
+          touchendX = e.changedTouches[0].screenX;
+          let diff = touchendX - touchstartX;
+          if(diff > threshold) { prevSpread(); }
+          else if(diff < -threshold) { nextSpread(); }
+        });
+      }
+    }
+    addSwipeListeners();
+
+    /********** Inicializar edición de página info **********/
+    function makePageInfoEditable() {
+      const topPageInfo = document.getElementById('topPageInfo');
+      const bottomPageInfo = document.getElementById('bottomPageInfo');
+      [topPageInfo, bottomPageInfo].forEach(infoElem => {
+        infoElem.addEventListener('click', () => {
+          let input = document.createElement("input");
+          input.type = "number";
+          input.className = "editable-input";
+          input.placeholder = "Ir a...";
+          try {
+            let origText = infoElem.textContent;
+            infoElem.textContent = "";
+            infoElem.appendChild(input);
+            input.focus();
+          } catch(err) {
+            console.error(err);
+          }
+          input.addEventListener('keydown', (e) => {
+            if (e.key === "Enter") {
+              let num = parseInt(input.value);
+              if (!isNaN(num)) {
+                if (isMobile()) {
+                  if (num >= 1 && num <= totalPages) {
+                    currentSpread = num - 1;
+                    renderSpread();
+                  }
+                } else {
+                  let totalSpreads = Math.ceil(totalPages / 2);
+                  if (num >= 1 && num <= totalSpreads) {
+                    currentSpread = (num - 1) * 2;
+                    renderSpread();
+                  }
+                }
+              }
+              if(input.parentNode) {
+                try { input.parentNode.removeChild(input); } catch(e){ }
+                updatePageInfo();
+              }
+            }
+          });
+          input.addEventListener('blur', () => {
+            if(input.parentNode) {
+              try { input.parentNode.removeChild(input); } catch(e){ }
+              updatePageInfo();
+            }
+          });
+        });
+      });
+    }
+    function updatePageInfo() {
+      if (isMobile()) {
+        let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+        const topElem = document.getElementById('topPageInfo');
+        const bottomElem = document.getElementById('bottomPageInfo');
+        if(topElem) topElem.textContent = infoText;
+        if(bottomElem) bottomElem.textContent = infoText;
+      } else {
+        let spreadIndex = Math.floor(currentSpread / 2) + 1;
+        let totalSpreads = Math.ceil(totalPages / 2);
+        let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+        const topElem = document.getElementById('topPageInfo');
+        const bottomElem = document.getElementById('bottomPageInfo');
+        if(topElem) topElem.textContent = infoText;
+        if(bottomElem) bottomElem.textContent = infoText;
+      }
+    }
     makePageInfoEditable();
+
+    /********** Renderizar el spread actual usando caché **********/
+    async function renderSpread() {
+      // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
+      if (totalPages - currentSpread < 1) {
+        try {
+          const response = await fetch(`encuestas/${issueId}.json`);
+          if (!response.ok) throw new Error("Encuesta no encontrada.");
+          const surveyData = await response.json();
+          const surveyLink = surveyData.surveyLink;
+          const container = document.getElementById('viewerContainer');
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+              <h1>¡Gracias por leer!</h1>
+              <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
+              <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+              <br><br>
+              <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
+            </div>
+          `;
+          // Ocultar flechas y textos
+          const prevArrow = document.getElementById('prevArrow');
+          const nextArrow = document.getElementById('nextArrow');
+          if(prevArrow) prevArrow.style.display = 'none';
+          if(nextArrow) nextArrow.style.display = 'none';
+          const topInfo = document.getElementById('topPageInfo');
+          const bottomInfo = document.getElementById('bottomPageInfo');
+          if(topInfo) topInfo.textContent = '';
+          if(bottomInfo) bottomInfo.textContent = '';
+        } catch (error) {
+          console.error(error);
+          document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
+            <h1>¡Gracias por leer!</h1>
+            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
+          </div>`;
+        }
+        return;
+      }
+
+      if (isMobile()) {
+        canvasLeft.style.display = "none";
+        canvasRight.style.display = "block";
+        const rightPageNum = totalPages - currentSpread;
+        const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+          let imgRight = new Image();
+          imgRight.onload = function() {
+            canvasRight.width = imgRight.width;
+            canvasRight.height = imgRight.height;
+            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+            ctxRight.drawImage(imgRight, 0, 0);
+          };
+          imgRight.src = pageCache[rightPageNum];
+        } else {
+          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+        }
+      } else {
+        canvasLeft.style.display = "block";
+        canvasRight.style.display = "block";
+        const rightPageNum = totalPages - currentSpread;
+        const leftPageNum = totalPages - currentSpread - 1;
+        const spreadIndex = Math.floor(currentSpread/2) + 1;
+        const totalSpreads = Math.ceil(totalPages/2);
+        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+          let imgRight = new Image();
+          imgRight.onload = function() {
+            canvasRight.width = imgRight.width;
+            canvasRight.height = imgRight.height;
+            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+            ctxRight.drawImage(imgRight, 0, 0);
+          };
+          imgRight.src = pageCache[rightPageNum];
+        } else {
+          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+        }
+        if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+          let imgLeft = new Image();
+          imgLeft.onload = function() {
+            canvasLeft.width = imgLeft.width;
+            canvasLeft.height = imgLeft.height;
+            ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+            ctxLeft.drawImage(imgLeft, 0, 0);
+          };
+          imgLeft.src = pageCache[leftPageNum];
+        } else {
+          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+        }
+      }
+    }
+
+    /********** Navegación **********/
+    async function nextSpread() {
+      if (isMobile()) {
+        if (currentSpread + 1 < totalPages) {
+          currentSpread += 1;
+          renderSpread();
+        }
+      } else {
+        if (currentSpread + 2 < totalPages) {
+          currentSpread += 2;
+          renderSpread();
+        } else {
+          currentSpread = totalPages;
+          renderSpread();
+        }
+      }
+    }
+    async function prevSpread() {
+      if (isMobile()) {
+        if (currentSpread - 1 >= 0) {
+          currentSpread -= 1;
+          renderSpread();
+        }
+      } else {
+        if (currentSpread - 2 >= 0) {
+          currentSpread -= 2;
+          renderSpread();
+        }
+      }
+    }
+    if (!isMobile()) {
+      document.getElementById('prevArrow').addEventListener('click', nextSpread);
+      document.getElementById('nextArrow').addEventListener('click', prevSpread);
+    }
+    // En móviles, solo swipe se usará (los botones están ocultos por CSS)
+
+    /********** Agregar Swipe para móviles **********/
+    function addSwipeListeners() {
+      if (isMobile()) {
+        let touchstartX = 0;
+        let touchendX = 0;
+        const threshold = 50;
+        const container = document.getElementById('viewerContainer');
+        container.addEventListener('touchstart', (e) => {
+          touchstartX = e.changedTouches[0].screenX;
+        });
+        container.addEventListener('touchend', (e) => {
+          touchendX = e.changedTouches[0].screenX;
+          let diff = touchendX - touchstartX;
+          if(diff > threshold) { prevSpread(); }
+          else if(diff < -threshold) { nextSpread(); }
+        });
+      }
+    }
+    addSwipeListeners();
+
+    /********** Inicializar edición de página info **********/
+    function makePageInfoEditable() {
+      const topPageInfo = document.getElementById('topPageInfo');
+      const bottomPageInfo = document.getElementById('bottomPageInfo');
+      [topPageInfo, bottomPageInfo].forEach(infoElem => {
+        infoElem.addEventListener('click', () => {
+          let input = document.createElement("input");
+          input.type = "number";
+          input.className = "editable-input";
+          input.placeholder = "Ir a...";
+          try {
+            let origText = infoElem.textContent;
+            infoElem.textContent = "";
+            infoElem.appendChild(input);
+            input.focus();
+          } catch(err) {
+            console.error(err);
+          }
+          input.addEventListener('keydown', (e) => {
+            if (e.key === "Enter") {
+              let num = parseInt(input.value);
+              if (!isNaN(num)) {
+                if (isMobile()) {
+                  if (num >= 1 && num <= totalPages) {
+                    currentSpread = num - 1;
+                    renderSpread();
+                  }
+                } else {
+                  let totalSpreads = Math.ceil(totalPages / 2);
+                  if (num >= 1 && num <= totalSpreads) {
+                    currentSpread = (num - 1) * 2;
+                    renderSpread();
+                  }
+                }
+              }
+              if(input.parentNode) {
+                try { input.parentNode.removeChild(input); } catch(e){ }
+                updatePageInfo();
+              }
+            }
+          });
+          input.addEventListener('blur', () => {
+            if(input.parentNode) {
+              try { input.parentNode.removeChild(input); } catch(e){ }
+              updatePageInfo();
+            }
+          });
+        });
+      });
+    }
+    function updatePageInfo() {
+      if (isMobile()) {
+        let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+        const topElem = document.getElementById('topPageInfo');
+        const bottomElem = document.getElementById('bottomPageInfo');
+        if(topElem) topElem.textContent = infoText;
+        if(bottomElem) bottomElem.textContent = infoText;
+      } else {
+        let spreadIndex = Math.floor(currentSpread / 2) + 1;
+        let totalSpreads = Math.ceil(totalPages / 2);
+        let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+        const topElem = document.getElementById('topPageInfo');
+        const bottomElem = document.getElementById('bottomPageInfo');
+        if(topElem) topElem.textContent = infoText;
+        if(bottomElem) bottomElem.textContent = infoText;
+      }
+    }
+    makePageInfoEditable();
+
+    /********** Renderizar el spread actual usando caché **********/
+    async function renderSpread() {
+      // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
+      if (totalPages - currentSpread < 1) {
+        try {
+          const response = await fetch(`encuestas/${issueId}.json`);
+          if (!response.ok) throw new Error("Encuesta no encontrada.");
+          const surveyData = await response.json();
+          const surveyLink = surveyData.surveyLink;
+          const container = document.getElementById('viewerContainer');
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+              <h1>¡Gracias por leer!</h1>
+              <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
+              <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+              <br><br>
+              <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
+            </div>
+          `;
+          const prevArrow = document.getElementById('prevArrow');
+          const nextArrow = document.getElementById('nextArrow');
+          if(prevArrow) prevArrow.style.display = 'none';
+          if(nextArrow) nextArrow.style.display = 'none';
+          const topInfo = document.getElementById('topPageInfo');
+          const bottomInfo = document.getElementById('bottomPageInfo');
+          if(topInfo) topInfo.textContent = '';
+          if(bottomInfo) bottomInfo.textContent = '';
+        } catch (error) {
+          console.error(error);
+          document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
+            <h1>¡Gracias por leer!</h1>
+            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
+          </div>`;
+        }
+        return;
+      }
+
+      if (isMobile()) {
+        canvasLeft.style.display = "none";
+        canvasRight.style.display = "block";
+        const rightPageNum = totalPages - currentSpread;
+        const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+          let imgRight = new Image();
+          imgRight.onload = function() {
+            canvasRight.width = imgRight.width;
+            canvasRight.height = imgRight.height;
+            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+            ctxRight.drawImage(imgRight, 0, 0);
+          };
+          imgRight.src = pageCache[rightPageNum];
+        } else {
+          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+        }
+      } else {
+        canvasLeft.style.display = "block";
+        canvasRight.style.display = "block";
+        const rightPageNum = totalPages - currentSpread;
+        const leftPageNum = totalPages - currentSpread - 1;
+        const spreadIndex = Math.floor(currentSpread/2) + 1;
+        const totalSpreads = Math.ceil(totalPages/2);
+        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+          let imgRight = new Image();
+          imgRight.onload = function() {
+            canvasRight.width = imgRight.width;
+            canvasRight.height = imgRight.height;
+            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+            ctxRight.drawImage(imgRight, 0, 0);
+          };
+          imgRight.src = pageCache[rightPageNum];
+        } else {
+          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+        }
+        if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+          let imgLeft = new Image();
+          imgLeft.onload = function() {
+            canvasLeft.width = imgLeft.width;
+            canvasLeft.height = imgLeft.height;
+            ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+            ctxLeft.drawImage(imgLeft, 0, 0);
+          };
+          imgLeft.src = pageCache[leftPageNum];
+        } else {
+          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+        }
+      }
+    }
+
+    /********** Navegación **********/
+    async function nextSpread() {
+      if (isMobile()) {
+        if (currentSpread + 1 < totalPages) {
+          currentSpread += 1;
+          renderSpread();
+        }
+      } else {
+        if (currentSpread + 2 < totalPages) {
+          currentSpread += 2;
+          renderSpread();
+        } else {
+          currentSpread = totalPages;
+          renderSpread();
+        }
+      }
+    }
+    async function prevSpread() {
+      if (isMobile()) {
+        if (currentSpread - 1 >= 0) {
+          currentSpread -= 1;
+          renderSpread();
+        }
+      } else {
+        if (currentSpread - 2 >= 0) {
+          currentSpread -= 2;
+          renderSpread();
+        }
+      }
+    }
+    if (!isMobile()) {
+      document.getElementById('prevArrow').addEventListener('click', nextSpread);
+      document.getElementById('nextArrow').addEventListener('click', prevSpread);
+    }
+    // En móviles, solo swipe se usará
+
     /********** Agregar Swipe para móviles **********/
     function addSwipeListeners() {
       if (isMobile()) {
