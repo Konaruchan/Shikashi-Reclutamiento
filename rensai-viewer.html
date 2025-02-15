@@ -7,7 +7,7 @@
         <!-- pdf.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <style>
-            /* Forzar que la página ocupe siempre 100% de la ventana y sin scroll */
+            /* Forzar 100% de la ventana y sin scroll */
             html, body {
                 width: 100vw;
                 height: 100vh;
@@ -85,8 +85,8 @@
             }
             /* Contenedor del visor centrado */
             .viewer-container {
-                margin-top: 80px; /* para nav superior */
-                margin-bottom: 80px; /* para nav inferior */
+                margin-top: 80px;
+                margin-bottom: 80px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -123,10 +123,10 @@
                 z-index: 1050;
             }
             .nav-arrow:hover { background: rgba(255,255,255,1); }
-            /* En desktop para lectura RTL: botón izquierdo avanza, derecho retrocede */
+            /* En desktop para lectura RTL: botón izquierdo avanza (nextSpread) y derecho retrocede (prevSpread) */
             .arrow-left { left: 10px; }
             .arrow-right { right: 10px; }
-            /* Navegación móvil: dos botones fijos */
+            /* Navegación móvil: dos botones fijos que se ocultan automáticamente */
             .mobile-nav {
                 display: none;
                 position: fixed;
@@ -147,7 +147,7 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
-            /* Loading overlay: fondo blanco, logo y GIF */
+            /* Loading overlay: fondo blanco sólido, logo y GIF */
             .loading-overlay {
                 position: fixed;
                 top: 0; left: 0; right: 0; bottom: 0;
@@ -277,7 +277,7 @@
             /********** Toggle Nav Bar **********/
             const toggleNavBtn = document.getElementById('toggleNav');
             const topNavBar = document.getElementById('topNavBar');
-            let navVisible = false; // En móviles, por defecto oculto
+            let navVisible = false; // Por defecto en móviles la nav está oculta
             toggleNavBtn.addEventListener('click', () => {
                 navVisible = !navVisible;
                 if (navVisible) {
@@ -361,13 +361,14 @@
                     mobileNav.style.opacity = 0;
                 }, 1000);
             }
-            // Agregar event listeners para los botones móviles
             document.getElementById('mobilePrev').addEventListener('click', () => {
-                prevSpread();
+                // En móviles: el botón de la izquierda avanza (nextSpread)
+                nextSpread();
                 showMobileNav();
             });
             document.getElementById('mobileNext').addEventListener('click', () => {
-                nextSpread();
+                // En móviles: el botón de la derecha retrocede (prevSpread)
+                prevSpread();
                 showMobileNav();
             });
             document.getElementById('viewerContainer').addEventListener('touchstart', showMobileNav);
@@ -431,9 +432,14 @@
                     if(topElem) topElem.textContent = infoText;
                     if(bottomElem) bottomElem.textContent = infoText;
                 } else {
-                    let spreadIndex = Math.floor(currentSpread / 2) + 1;
-                    let totalSpreads = Math.ceil(totalPages / 2);
-                    let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                    let rightPage = totalPages - currentSpread;
+                    let leftPage = totalPages - currentSpread - 1;
+                    let infoText;
+                    if (leftPage >= 1) {
+                        infoText = `Páginas ${leftPage} - ${rightPage} de ${totalPages}`;
+                    } else {
+                        infoText = `Página ${rightPage} de ${totalPages}`;
+                    }
                     const topElem = document.getElementById('topPageInfo');
                     const bottomElem = document.getElementById('bottomPageInfo');
                     if(topElem) topElem.textContent = infoText;
@@ -498,9 +504,12 @@
                     canvasRight.style.display = "block";
                     const rightPageNum = totalPages - currentSpread;
                     const leftPageNum = totalPages - currentSpread - 1;
-                    const spreadIndex = Math.floor(currentSpread/2) + 1;
-                    const totalSpreads = Math.ceil(totalPages/2);
-                    const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                    let infoText;
+                    if (leftPageNum >= 1) {
+                        infoText = `Páginas ${leftPageNum} - ${rightPageNum} de ${totalPages}`;
+                    } else {
+                        infoText = `Página ${rightPageNum} de ${totalPages}`;
+                    }
                     if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
                     if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
                     if (rightPageNum >= 1 && pageCache[rightPageNum]) {
@@ -560,9 +569,9 @@
                     }
                 }
             }
-            // En desktop, para lectura RTL: el botón izquierdo (prevArrow) avanza y el derecho (nextArrow) retrocede.
             if (!isMobile()) {
                 document.getElementById('prevArrow').addEventListener('click', () => {
+                    // En desktop, para lectura RTL: botón izquierdo avanza
                     nextSpread();
                 });
                 document.getElementById('nextArrow').addEventListener('click', () => {
@@ -588,3 +597,4 @@
         </script>
     </body>
 </html>
+
