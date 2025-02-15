@@ -527,24 +527,29 @@
     
     /********** Agregar Swipe para móviles **********/
     function addSwipeListeners() {
-      if (isMobile()) {
-        let touchstartX = 0;
-        let touchendX = 0;
-        const threshold = 50;
-        const container = document.getElementById('viewerContainer');
-        container.addEventListener('touchstart', (e) => {
-          touchstartX = e.changedTouches[0].screenX;
-        });
-        container.addEventListener('touchend', (e) => {
-          touchendX = e.changedTouches[0].screenX;
-          let diff = touchendX - touchstartX;
-          if(diff > threshold) { prevSpread(); }
-          else if(diff < -threshold) { nextSpread(); }
-        });
-      }
+        if (isMobile()) {
+            let touchstartX = 0;
+            let touchendX = 0;
+            const threshold = 100; // Aumentamos el umbral para evitar saltos múltiples
+            const container = document.getElementById('viewerContainer');
+            container.addEventListener('touchstart', (e) => {
+                touchstartX = e.changedTouches[0].screenX;
+            });
+            container.addEventListener('touchend', (e) => {
+                touchendX = e.changedTouches[0].screenX;
+                let diff = touchendX - touchstartX;
+                // Si el usuario desliza hacia la derecha (diff > threshold), se avanza una página (nextSpread)
+                if (diff > threshold) {
+                    nextSpread();
+                }
+                // Si desliza hacia la izquierda (diff < -threshold), se retrocede una página (prevSpread)
+                else if (diff < -threshold) {
+                    prevSpread();
+                }
+            });
+        }
     }
     addSwipeListeners();
-
     /********** Inicializar edición de página info **********/
     function makePageInfoEditable() {
       const topPageInfo = document.getElementById('topPageInfo');
