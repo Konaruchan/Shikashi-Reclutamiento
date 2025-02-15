@@ -7,7 +7,7 @@
         <!-- pdf.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <style>
-            /* Forzar 100% de la ventana y sin scroll */
+            /* Forzar que la página ocupe siempre 100% de la ventana y sin scroll */
             html, body {
                 width: 100vw;
                 height: 100vh;
@@ -85,8 +85,8 @@
             }
             /* Contenedor del visor centrado */
             .viewer-container {
-                margin-top: 80px;
-                margin-bottom: 80px;
+                margin-top: 80px; /* para nav superior */
+                margin-bottom: 80px; /* para nav inferior */
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -101,8 +101,11 @@
                 background: #fff;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                 max-width: 100%;
+                max-height: 80vh;
+                width: auto;
+                height: auto;
             }
-            /* Flechas de navegación (desktop) */
+            /* Flechas de navegación para desktop */
             .nav-arrow {
                 position: absolute;
                 top: 50%;
@@ -120,9 +123,10 @@
                 z-index: 1050;
             }
             .nav-arrow:hover { background: rgba(255,255,255,1); }
+            /* En desktop para lectura RTL: botón izquierdo avanza, derecho retrocede */
             .arrow-left { left: 10px; }
             .arrow-right { right: 10px; }
-            /* Navegación móvil simplificada: dos botones fijos */
+            /* Navegación móvil: dos botones fijos */
             .mobile-nav {
                 display: none;
                 position: fixed;
@@ -143,7 +147,7 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
-            /* Loading overlay */
+            /* Loading overlay: fondo blanco, logo y GIF */
             .loading-overlay {
                 position: fixed;
                 top: 0; left: 0; right: 0; bottom: 0;
@@ -203,7 +207,7 @@
                 #canvasRight { width: 100%; }
                 .nav-arrow { display: none; }
                 .mobile-nav { display: block; }
-                /* Ocultar la nav superior por defecto */
+                /* Por defecto, en móviles la nav superior se oculta */
                 #topNavBar { top: -80px; }
             }
         </style>
@@ -252,7 +256,7 @@
         </div>
         
         <script>
-            // Establecer worker de pdf.js
+            // Establecer worker de pdf.js para evitar advertencias
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
             
             /********** Loading Text Animation **********/
@@ -273,7 +277,7 @@
             /********** Toggle Nav Bar **********/
             const toggleNavBtn = document.getElementById('toggleNav');
             const topNavBar = document.getElementById('topNavBar');
-            let navVisible = false; // Por defecto, en móviles, oculta
+            let navVisible = false; // En móviles, por defecto oculto
             toggleNavBtn.addEventListener('click', () => {
                 navVisible = !navVisible;
                 if (navVisible) {
@@ -291,7 +295,7 @@
             /********** Variables Globales de PDF **********/
             let pdfDoc = null;
             let totalPages = 0;
-            let currentSpread = 0; // Desktop: 2 páginas; móvil: 1 página.
+            let currentSpread = 0; // Desktop: 2 páginas; Móvil: 1 página.
             const scale = 1.2;
             let pageCache = [];
             
@@ -357,7 +361,15 @@
                     mobileNav.style.opacity = 0;
                 }, 1000);
             }
-            // Mostrar botones al tocar en el visor
+            // Agregar event listeners para los botones móviles
+            document.getElementById('mobilePrev').addEventListener('click', () => {
+                prevSpread();
+                showMobileNav();
+            });
+            document.getElementById('mobileNext').addEventListener('click', () => {
+                nextSpread();
+                showMobileNav();
+            });
             document.getElementById('viewerContainer').addEventListener('touchstart', showMobileNav);
             document.body.addEventListener('touchstart', showMobileNav);
             
@@ -432,7 +444,7 @@
             
             /********** Renderizar el spread actual usando caché **********/
             async function renderSpread() {
-                // Si ya no quedan páginas, mostrar la encuesta
+                // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
                 if (totalPages - currentSpread < 1) {
                     try {
                         const response = await fetch(`encuestas/${issueId}.json`);
@@ -486,8 +498,8 @@
                     canvasRight.style.display = "block";
                     const rightPageNum = totalPages - currentSpread;
                     const leftPageNum = totalPages - currentSpread - 1;
-                    const spreadIndex = Math.floor(currentSpread / 2) + 1;
-                    const totalSpreads = Math.ceil(totalPages / 2);
+                    const spreadIndex = Math.floor(currentSpread/2) + 1;
+                    const totalSpreads = Math.ceil(totalPages/2);
                     const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
                     if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
                     if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
@@ -548,7 +560,7 @@
                     }
                 }
             }
-            // En desktop, para lectura RTL: queremos que el botón de la izquierda avance y el de la derecha retroceda.
+            // En desktop, para lectura RTL: el botón izquierdo (prevArrow) avanza y el derecho (nextArrow) retrocede.
             if (!isMobile()) {
                 document.getElementById('prevArrow').addEventListener('click', () => {
                     nextSpread();
