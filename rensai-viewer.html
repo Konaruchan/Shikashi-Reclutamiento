@@ -18,6 +18,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      min-height: 100vh;
     }
     /* Barra de navegación superior fija */
     .nav-bar {
@@ -72,7 +74,7 @@
     .page-info {
       font-family: 'Botones', sans-serif;
     }
-    /* Contenedor del visor */
+    /* Contenedor del visor centrado */
     .viewer-container {
       margin-top: 80px; /* espacio para nav superior */
       margin-bottom: 80px; /* espacio para nav inferior */
@@ -108,7 +110,7 @@
     .nav-arrow:hover { background: rgba(255,255,255,1); }
     .arrow-left { left: 10px; }
     .arrow-right { right: 10px; }
-    /* Botón de navegación móvil */
+    /* Navegación móvil */
     .mobile-nav {
       display: none;
       margin-top: 1rem;
@@ -128,14 +130,18 @@
     .loading-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.95);
+      background: #fff;
       z-index: 1200;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-    .loading-overlay img {
+    .loading-overlay img.logo {
+      width: 100px;
+      margin-bottom: 1rem;
+    }
+    .loading-overlay img.loading-gif {
       width: 80px;
       height: 80px;
       margin-bottom: 1rem;
@@ -152,7 +158,7 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
-    /* Direction overlay (flecha) */
+    /* Direction overlay */
     .direction-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -164,41 +170,37 @@
       color: #fff;
       font-size: 3rem;
     }
-    /* Footer */
+    /* Footer fijo (opcional, aquí lo dejamos en la parte inferior de la página) */
     footer {
-      margin-top: 20px;
       width: 100%;
       background: #820000;
       color: #fff;
       text-align: center;
       padding: 1rem;
       font-size: 0.9rem;
+      position: relative;
     }
-    /* Media Query para móviles: ancho menor a 600px */
+    /* Adaptabilidad móvil */
     @media (max-width: 600px) {
       .viewer-container {
         flex-direction: column;
       }
-      /* Solo mostrar el canvas derecho */
       #canvasLeft { display: none; }
       #canvasRight { width: 100%; }
-      /* Ocultar flechas absolutas */
       .nav-arrow { display: none; }
-      /* Mostrar navegación móvil */
       .mobile-nav { display: block; }
-      /* Ajustar barra inferior (opcional) */
-      .bottom-nav-bar { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
-    <img src="img/loading.gif" alt="Cargando...">
+    <img class="logo" src="img/logo.png" alt="Logo">
+    <img class="loading-gif" src="img/loading.gif" alt="Cargando...">
     <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
   </div>
 
-  <!-- (Opcional) Direction Overlay -->
+  <!-- Direction Overlay -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
 
   <!-- Barra de navegación superior -->
@@ -220,7 +222,7 @@
     <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
   </div>
 
-  <!-- Navegación móvil (solo se muestra en pantallas pequeñas) -->
+  <!-- Navegación móvil -->
   <div id="mobileNav" class="mobile-nav">
     <button id="mobilePrev">&#9664;</button>
     <button id="mobileNext">&#9654;</button>
@@ -273,7 +275,7 @@
     // ---------- Variables Globales de PDF ----------
     let pdfDoc = null;
     let totalPages = 0;
-    let currentSpread = 0; // cada spread muestra 2 páginas (desktop) o 1 página (móvil)
+    let currentSpread = 0; // en desktop, cada spread muestra 2 páginas; en móvil, 1 página
     const scale = 1.2;
     let pageCache = []; // caché de páginas
 
@@ -282,7 +284,7 @@
     const ctxLeft = canvasLeft.getContext('2d');
     const ctxRight = canvasRight.getContext('2d');
 
-    // ---------- Detectar Mobile ----------
+    // ---------- Detectar dispositivo móvil ----------
     function isMobile() {
       return window.innerWidth < 600;
     }
@@ -333,7 +335,6 @@
     async function renderSpread() {
       // Si ya no quedan páginas, mostrar la encuesta
       if (totalPages - currentSpread < 1) {
-        // Cargar el JSON de encuesta y redirigir
         try {
           const response = await fetch(`encuestas/${issueId}.json`);
           if (!response.ok) throw new Error("No se encontró la encuesta para esta revista.");
@@ -347,11 +348,15 @@
               <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
             </div>
           `;
-          document.getElementById('prevArrow').style.display = 'none';
-          document.getElementById('nextArrow').style.display = 'none';
-          document.getElementById('mobileNav').style.display = 'none';
-          document.getElementById('topPageInfo').textContent = '';
-          document.getElementById('bottomPageInfo').textContent = '';
+          // Ocultar flechas y textos
+          const prevArrow = document.getElementById('prevArrow');
+          const nextArrow = document.getElementById('nextArrow');
+          if(prevArrow) prevArrow.style.display = 'none';
+          if(nextArrow) nextArrow.style.display = 'none';
+          const topInfo = document.getElementById('topPageInfo');
+          const bottomInfo = document.getElementById('bottomPageInfo');
+          if(topInfo) topInfo.textContent = '';
+          if(bottomInfo) bottomInfo.textContent = '';
         } catch (error) {
           console.error(error);
           document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
@@ -362,17 +367,16 @@
         return;
       }
 
+      // Determinar si es móvil
       if (isMobile()) {
-        // En vista móvil, mostrar solo el canvas derecho
+        // En vista móvil, mostrar solo canvasRight
         canvasLeft.style.display = "none";
         canvasRight.style.display = "block";
-        // Renderizar solo la página derecha: totalPages - currentSpread
         const rightPageNum = totalPages - currentSpread;
         const spreadIndex = currentSpread + 1;
-        const totalSpreads = totalPages;
-        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        const infoText = `Página ${spreadIndex} de ${totalPages}`;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
         if (rightPageNum >= 1 && pageCache[rightPageNum]) {
           let imgRight = new Image();
           imgRight.onload = function() {
@@ -391,11 +395,11 @@
         canvasRight.style.display = "block";
         const rightPageNum = totalPages - currentSpread;
         const leftPageNum = totalPages - currentSpread - 1;
-        const spreadIndex = Math.floor(currentSpread/2) + 1;
-        const totalSpreads = Math.ceil(totalPages/2);
+        const spreadIndex = Math.floor(currentSpread / 2) + 1;
+        const totalSpreads = Math.ceil(totalPages / 2);
         const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        document.getElementById('topPageInfo').textContent = infoText;
-        document.getElementById('bottomPageInfo').textContent = infoText;
+        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
         if (rightPageNum >= 1 && pageCache[rightPageNum]) {
           let imgRight = new Image();
           imgRight.onload = function() {
@@ -453,12 +457,10 @@
         }
       }
     }
-    // Asignamos eventos según dispositivo: en desktop usamos flechas absolutas; en móvil, usamos botones de "mobileNav"
     if (!isMobile()) {
       document.getElementById('prevArrow').addEventListener('click', nextSpread);
       document.getElementById('nextArrow').addEventListener('click', prevSpread);
     } else {
-      // Mostrar navegación móvil
       document.getElementById('mobileNav').style.display = 'block';
       document.getElementById('mobilePrev').addEventListener('click', nextSpread);
       document.getElementById('mobileNext').addEventListener('click', prevSpread);
