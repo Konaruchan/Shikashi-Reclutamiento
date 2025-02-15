@@ -1,1008 +1,838 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rensai Viewer - Shikashi Monthly Friday Series</title>
-  <!-- pdf.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-  <style>
-    /* Zoom global */
-    html { zoom: 0.75; }
-    body {
-      font-family: 'Cuerpo', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      min-height: 100vh;
-    }
-    /* Barra de navegación superior fija */
-    .nav-bar {
-      width: 100%;
-      background: #820000;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1100;
-      transition: top 0.3s;
-    }
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-    }
-    .nav-link {
-      font-family: 'Botones', sans-serif;
-      color: #fff;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-    .nav-link:hover { background: rgba(255,255,255,0.2); }
-    .toggle-nav-btn {
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    /* Barra inferior fija (incluye copyright sutil) */
-    .bottom-nav-bar {
-      width: 100%;
-      background: #820000;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 1100;
-      font-family: 'Botones', sans-serif;
-      font-size: 1rem;
-    }
-    .bottom-nav-bar .copy {
-      margin-left: 1rem;
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-    /* Contenedor del visor */
-    .viewer-container {
-      margin-top: 80px; /* para la nav superior */
-      margin-bottom: 80px; /* para la nav inferior */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      position: relative;
-      width: 100%;
-      max-width: 1000px;
-      padding: 0 1rem;
-    }
-    canvas {
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    /* Flechas de navegación para desktop */
-    .nav-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.8);
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      z-index: 1050;
-    }
-    .nav-arrow:hover { background: rgba(255,255,255,1); }
-    .arrow-left { left: 10px; }
-    .arrow-right { right: 10px; }
-    /* Hacer la información de página editable */
-    .editable-input {
-      width: 60px;
-      font-size: 1rem;
-      text-align: center;
-    }
-    /* Loading overlay: fondo blanco sólido, logo y GIF */
-    .loading-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #fff;
-      z-index: 1200;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .loading-overlay img.logo {
-      width: 150px;
-      margin-bottom: 1rem;
-    }
-    .loading-overlay img.loading-gif {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
-    }
-    .loading-text {
-      font-size: 1.2rem;
-      color: #820000;
-      font-family: 'Cuerpo', sans-serif;
-      text-align: center;
-      min-height: 1.5em;
-      animation: fadeText 1s ease-in-out infinite;
-    }
-    @keyframes fadeText {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    /* Direction overlay (flecha animada) */
-    .direction-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      color: #fff;
-      font-size: 3rem;
-    }
-    /* Adaptabilidad móvil */
-    @media (max-width: 600px) {
-      .viewer-container {
-        flex-direction: column;
-        padding: 0 1rem;
-      }
-      #canvasLeft { display: none; }
-      #canvasRight { width: 100%; }
-      /* Ocultar flechas de desktop */
-      .nav-arrow { display: none; }
-      /* El contenido se ajusta con swipe exclusivamente */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rensai Viewer - Shikashi Monthly Friday Series</title>
+    <!-- pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <style>
+        /* Zoom global */
+        html { zoom: 0.75; }
+        body {
+            font-family: 'Cuerpo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fafafa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-height: 100vh;
+        }
+        /* Barra de navegación superior fija */
+        .nav-bar {
+            width: 100%;
+            background: #820000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1100;
+            transition: top 0.3s;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .nav-link {
+            font-family: 'Botones', sans-serif;
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.2); }
+        .toggle-nav-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* Barra inferior fija (con copyright sutil) */
+        .bottom-nav-bar {
+            width: 100%;
+            background: #820000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1100;
+            font-family: 'Botones', sans-serif;
+            font-size: 1rem;
+        }
+        .bottom-nav-bar .copy {
+            margin-left: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        /* Contenedor del visor centrado */
+        .viewer-container {
+            margin-top: 80px; /* espacio para nav superior */
+            margin-bottom: 80px; /* espacio para nav inferior */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 1rem;
+        }
+        canvas {
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        /* Flechas de navegación (desktop) */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            z-index: 1050;
+        }
+        .nav-arrow:hover { background: rgba(255,255,255,1); }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+        /* Navegación móvil */
+        .mobile-nav {
+            display: none;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .mobile-nav button {
+            font-size: 1.5rem;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #820000;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* Loading overlay: fondo blanco sólido, logo y GIF */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #fff;
+            z-index: 1200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-overlay img.logo {
+            width: 150px;
+            margin-bottom: 1rem;
+        }
+        .loading-overlay img.loading-gif {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+        .loading-text {
+            font-size: 1.2rem;
+            color: #820000;
+            font-family: 'Cuerpo', sans-serif;
+            text-align: center;
+            min-height: 1.5em;
+            animation: fadeText 1s ease-in-out infinite;
+        }
+        @keyframes fadeText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Direction overlay (flecha animada) */
+        .direction-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: #fff;
+            font-size: 3rem;
+        }
+        /* Editable input para la info de página */
+        .editable-input {
+            width: 60px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        /* Adaptabilidad móvil */
+        @media (max-width: 600px) {
+            .viewer-container {
+                flex-direction: column;
+                padding: 0 1rem;
+            }
+            #canvasLeft { display: none; }
+            #canvasRight { width: 100%; }
+            .nav-arrow { display: none; }
+            .mobile-nav { display: block; }
+        }
+    </style>
 </head>
 <body>
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="loading-overlay">
-    <img class="logo" src="img/logo.png" alt="Logo">
-    <img class="loading-gif" src="img/loading.gif" alt="Cargando...">
-    <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
-  </div>
-
-  <!-- Direction Overlay (flecha inicial) -->
-  <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
-
-  <!-- Barra de navegación superior -->
-  <div id="topNavBar" class="nav-bar">
-    <div class="page-info" id="topPageInfo">&lt; Página ? de ? &gt;</div>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">INICIO</a>
-      <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
-      <a href="rensai.html" class="nav-link">RENSAI</a>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <img class="logo" src="img/logo.png" alt="Logo">
+        <img class="loading-gif" src="img/loading.gif" alt="Cargando...">
+        <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
     </div>
-    <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
-  </div>
 
-  <!-- Contenedor del visor -->
-  <div class="viewer-container" id="viewerContainer">
-    <canvas id="canvasLeft"></canvas>
-    <canvas id="canvasRight"></canvas>
-    <!-- Flechas de navegación para desktop -->
-    <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
-    <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
-  </div>
+    <!-- Direction Overlay -->
+    <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
 
-  <!-- No se incluyen botones móviles; se usará swipe para navegación -->
+    <!-- Barra de navegación superior -->
+    <div id="topNavBar" class="nav-bar">
+        <div class="page-info" id="topPageInfo">&lt; Página ? de ? &gt;</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">INICIO</a>
+            <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+            <a href="rensai.html" class="nav-link">RENSAI</a>
+        </div>
+        <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
+    </div>
 
-  <!-- Barra inferior fija -->
-  <div id="bottomNavBar" class="bottom-nav-bar">
-    <div class="page-info" id="bottomPageInfo">Página ? de ?</div>
-    <div class="copy">&copy; 2025 Shikashi MF</div>
-  </div>
+    <!-- Contenedor del visor -->
+    <div class="viewer-container" id="viewerContainer">
+        <canvas id="canvasLeft"></canvas>
+        <canvas id="canvasRight"></canvas>
+        <div class="nav-arrow arrow-left" id="prevArrow">&#9664;</div>
+        <div class="nav-arrow arrow-right" id="nextArrow">&#9654;</div>
+    </div>
 
-  <script>
-    // Establecer worker de pdf.js para evitar advertencias
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+    <!-- Navegación móvil (se usará swipe, pero se puede agregar un espacio extra si se desea) -->
+    <div class="mobile-nav" id="mobileNav" style="display: none;"></div>
 
-    /********** Loading Text Animation **********/
-    const loadingMessages = [
-      "Vistiendo a las chicas mágicas...",
-      "Ajustando viajes en el tiempo...",
-      "Maquillando a Miyuki...",
-      "Preparando los fur-suits...",
-      "Preparando las faldas..."
-    ];
-    let messageIndex = 0;
-    const loadingTextElem = document.getElementById("loadingText");
-    setInterval(() => {
-      messageIndex = (messageIndex + 1) % loadingMessages.length;
-      loadingTextElem.textContent = loadingMessages[messageIndex];
-    }, 10000);
+    <!-- Barra inferior fija -->
+    <div id="bottomNavBar" class="bottom-nav-bar">
+        <div class="page-info" id="bottomPageInfo">Página ? de ?</div>
+        <div class="copy">&copy; 2025 Shikashi MF</div>
+    </div>
 
-    /********** Toggle Nav Bar **********/
-    const toggleNavBtn = document.getElementById('toggleNav');
-    const topNavBar = document.getElementById('topNavBar');
-    let navVisible = true;
-    toggleNavBtn.addEventListener('click', () => {
-      navVisible = !navVisible;
-      if(navVisible) {
-        topNavBar.style.top = '0';
-        toggleNavBtn.textContent = 'Ocultar Nav';
-      } else {
-        topNavBar.style.top = '-80px';
-        toggleNavBtn.textContent = 'Mostrar Nav';
-      }
-    });
+    <script>
+        // Establecer worker de pdf.js para evitar advertencias
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-    /********** Loading Overlay **********/
-    const loadingOverlay = document.getElementById('loadingOverlay');
+        /********** Loading Text Animation **********/
+        const loadingMessages = [
+            "Vistiendo a las chicas mágicas...",
+            "Ajustando viajes en el tiempo...",
+            "Maquillando a Miyuki...",
+            "Preparando los fur-suits...",
+            "Preparando las faldas..."
+        ];
+        let messageIndex = 0;
+        const loadingTextElem = document.getElementById("loadingText");
+        setInterval(() => {
+            messageIndex = (messageIndex + 1) % loadingMessages.length;
+            loadingTextElem.textContent = loadingMessages[messageIndex];
+        }, 10000);
 
-    /********** Variables Globales de PDF **********/
-    let pdfDoc = null;
-    let totalPages = 0;
-    let currentSpread = 0; // En desktop: 2 páginas por spread; móvil: 1 página por spread
-    const scale = 1.2;
-    let pageCache = [];
-
-    const canvasLeft = document.getElementById('canvasLeft');
-    const canvasRight = document.getElementById('canvasRight');
-    const ctxLeft = canvasLeft.getContext('2d');
-    const ctxRight = canvasRight.getContext('2d');
-
-    /********** Detectar Mobile **********/
-    function isMobile() {
-      return window.innerWidth < 600;
-    }
-
-    /********** Obtener parámetros URL **********/
-    function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
-    const issueId = getQueryParam('id');
-    if (!issueId) { window.location.href = 'rensai.html'; }
-
-    /********** Obtener PDF Path de issues.json **********/
-    async function fetchIssues() {
-      try {
-        const response = await fetch('issues.json');
-        if (!response.ok) throw new Error('Error al cargar issues.json');
-        return await response.json();
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
-    }
-    async function getIssuePDFPath(issueId) {
-      const issues = await fetchIssues();
-      const issue = issues.find(i => i.id === issueId);
-      if (!issue) { window.location.href = 'rensai.html'; }
-      const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
-      return basePath + '/Issue.pdf';
-    }
-
-    /********** Preload de todas las páginas del PDF **********/
-    async function preloadAllPages() {
-      for (let p = 1; p <= totalPages; p++) {
-        const page = await pdfDoc.getPage(p);
-        const viewport = page.getViewport({ scale: scale });
-        const offscreen = document.createElement('canvas');
-        offscreen.width = viewport.width;
-        offscreen.height = viewport.height;
-        const offscreenCtx = offscreen.getContext('2d');
-        const renderContext = { canvasContext: offscreenCtx, viewport: viewport };
-        await page.render(renderContext).promise;
-        pageCache[p] = offscreen.toDataURL();
-      }
-    }
-
-    /********** Hacer que la información de página sea editable **********/
-    function makePageInfoEditable() {
-      const topPageInfo = document.getElementById('topPageInfo');
-      const bottomPageInfo = document.getElementById('bottomPageInfo');
-      [topPageInfo, bottomPageInfo].forEach(infoElem => {
-        infoElem.addEventListener('click', () => {
-          let input = document.createElement("input");
-          input.type = "number";
-          input.className = "editable-input";
-          input.placeholder = "Ir a...";
-          let origText = infoElem.textContent;
-          infoElem.textContent = "";
-          infoElem.appendChild(input);
-          input.focus();
-          input.addEventListener('keydown', (e) => {
-            if (e.key === "Enter") {
-              let num = parseInt(input.value);
-              if (!isNaN(num)) {
-                if (isMobile()) {
-                  if (num >= 1 && num <= totalPages) {
-                    currentSpread = num - 1;
-                    renderSpread();
-                  }
-                } else {
-                  let totalSpreads = Math.ceil(totalPages / 2);
-                  if (num >= 1 && num <= totalSpreads) {
-                    currentSpread = (num - 1) * 2;
-                    renderSpread();
-                  }
-                }
-              }
-              if(input.parentNode) {
-                infoElem.removeChild(input);
-                updatePageInfo();
-              }
+        /********** Toggle Nav Bar **********/
+        const toggleNavBtn = document.getElementById('toggleNav');
+        const topNavBar = document.getElementById('topNavBar');
+        let navVisible = true;
+        toggleNavBtn.addEventListener('click', () => {
+            navVisible = !navVisible;
+            if (navVisible) {
+                topNavBar.style.top = '0';
+                toggleNavBtn.textContent = 'Ocultar Nav';
+            } else {
+                topNavBar.style.top = '-80px';
+                toggleNavBtn.textContent = 'Mostrar Nav';
             }
-          });
-          input.addEventListener('blur', () => {
-            if(input.parentNode) {
-              infoElem.removeChild(input);
-              updatePageInfo();
+        });
+
+        /********** Loading Overlay **********/
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        /********** Variables Globales de PDF **********/
+        let pdfDoc = null;
+        let totalPages = 0;
+        let currentSpread = 0; // En desktop: 2 páginas por spread; en móvil: 1 página por spread
+        const scale = 1.2;
+        let pageCache = [];
+
+        const canvasLeft = document.getElementById('canvasLeft');
+        const canvasRight = document.getElementById('canvasRight');
+        const ctxLeft = canvasLeft.getContext('2d');
+        const ctxRight = canvasRight.getContext('2d');
+
+        /********** Detectar Mobile **********/
+        function isMobile() {
+            return window.innerWidth < 600;
+        }
+
+        /********** Obtener parámetros URL **********/
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        const issueId = getQueryParam('id');
+        if (!issueId) { window.location.href = 'rensai.html'; }
+
+        /********** Obtener PDF Path de issues.json **********/
+        async function fetchIssues() {
+            try {
+                const response = await fetch('issues.json');
+                if (!response.ok) throw new Error('Error al cargar issues.json');
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                return [];
             }
-          });
-        });
-      });
-    }
-    function updatePageInfo() {
-      if (isMobile()) {
-        let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-      } else {
-        let spreadIndex = Math.floor(currentSpread / 2) + 1;
-        let totalSpreads = Math.ceil(totalPages / 2);
-        let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-      }
-    }
+        }
+        async function getIssuePDFPath(issueId) {
+            const issues = await fetchIssues();
+            const issue = issues.find(i => i.id === issueId);
+            if (!issue) { window.location.href = 'rensai.html'; }
+            const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
+            return basePath + '/Issue.pdf';
+        }
 
-    /********** Agregar Swipe para móviles **********/
-    function addSwipeListeners() {
-      if (isMobile()) {
-        let touchstartX = 0;
-        let touchendX = 0;
-        const threshold = 50;
-        const container = document.getElementById('viewerContainer');
-        container.addEventListener('touchstart', (e) => {
-          touchstartX = e.changedTouches[0].screenX;
-        });
-        container.addEventListener('touchend', (e) => {
-          touchendX = e.changedTouches[0].screenX;
-          let diff = touchendX - touchstartX;
-          if(diff > threshold) { prevSpread(); }
-          else if(diff < -threshold) { nextSpread(); }
-        });
-      }
-    }
-    addSwipeListeners();
-    makePageInfoEditable();
+        /********** Preload de todas las páginas del PDF **********/
+        async function preloadAllPages() {
+            for (let p = 1; p <= totalPages; p++) {
+                const page = await pdfDoc.getPage(p);
+                const viewport = page.getViewport({ scale: scale });
+                const offscreen = document.createElement('canvas');
+                offscreen.width = viewport.width;
+                offscreen.height = viewport.height;
+                const offscreenCtx = offscreen.getContext('2d');
+                const renderContext = { canvasContext: offscreenCtx, viewport: viewport };
+                await page.render(renderContext).promise;
+                pageCache[p] = offscreen.toDataURL();
+            }
+        }
 
-    /********** Renderizar el spread actual usando la caché **********/
-    async function renderSpread() {
-      // Si ya no quedan páginas, mostrar la encuesta
-      if (totalPages - currentSpread < 1) {
-        try {
-          const response = await fetch(`encuestas/${issueId}.json`);
-          if (!response.ok) throw new Error("Encuesta no encontrada.");
-          const surveyData = await response.json();
-          const surveyLink = surveyData.surveyLink;
-          const container = document.getElementById('viewerContainer');
-          container.innerHTML = `
-            <div style="text-align: center; padding: 2rem;">
-              <h1>¡Gracias por leer!</h1>
-              <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
-              <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
-              <br><br>
-              <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
-            </div>
-          `;
-          // Ocultar flechas y textos
-          const prevArrow = document.getElementById('prevArrow');
-          const nextArrow = document.getElementById('nextArrow');
-          if(prevArrow) prevArrow.style.display = 'none';
-          if(nextArrow) nextArrow.style.display = 'none';
-          const topInfo = document.getElementById('topPageInfo');
-          const bottomInfo = document.getElementById('bottomPageInfo');
-          if(topInfo) topInfo.textContent = '';
-          if(bottomInfo) bottomInfo.textContent = '';
-        } catch (error) {
-          console.error(error);
-          document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
-            <h1>¡Gracias por leer!</h1>
-            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
-          </div>`;
-        }
-        return;
-      }
-
-      if (isMobile()) {
-        canvasLeft.style.display = "none";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-        }
-      } else {
-        canvasLeft.style.display = "block";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const leftPageNum = totalPages - currentSpread - 1;
-        const spreadIndex = Math.floor(currentSpread / 2) + 1;
-        const totalSpreads = Math.ceil(totalPages / 2);
-        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-        }
-        if (leftPageNum >= 1 && pageCache[leftPageNum]) {
-          let imgLeft = new Image();
-          imgLeft.onload = function() {
-            canvasLeft.width = imgLeft.width;
-            canvasLeft.height = imgLeft.height;
-            ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-            ctxLeft.drawImage(imgLeft, 0, 0);
-          };
-          imgLeft.src = pageCache[leftPageNum];
-        } else {
-          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-        }
-      }
-    }
-
-    /********** Navegación **********/
-    async function nextSpread() {
-      if (isMobile()) {
-        if (currentSpread + 1 < totalPages) {
-          currentSpread += 1;
-          renderSpread();
-        }
-      } else {
-        if (currentSpread + 2 < totalPages) {
-          currentSpread += 2;
-          renderSpread();
-        } else {
-          currentSpread = totalPages;
-          renderSpread();
-        }
-      }
-    }
-    async function prevSpread() {
-      if (isMobile()) {
-        if (currentSpread - 1 >= 0) {
-          currentSpread -= 1;
-          renderSpread();
-        }
-      } else {
-        if (currentSpread - 2 >= 0) {
-          currentSpread -= 2;
-          renderSpread();
-        }
-      }
-    }
-    if (!isMobile()) {
-      document.getElementById('prevArrow').addEventListener('click', nextSpread);
-      document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    }
-    // En móviles, se usa swipe exclusivamente (ya no se muestran botones adicionales)
-    
-    /********** Agregar Swipe para móviles **********/
-    function addSwipeListeners() {
-        if (isMobile()) {
-            let touchstartX = 0;
-            let touchendX = 0;
-            const threshold = 100; // Aumentamos el umbral para evitar saltos múltiples
-            const container = document.getElementById('viewerContainer');
-            container.addEventListener('touchstart', (e) => {
-                touchstartX = e.changedTouches[0].screenX;
-            });
-            container.addEventListener('touchend', (e) => {
-                touchendX = e.changedTouches[0].screenX;
-                let diff = touchendX - touchstartX;
-                // Si el usuario desliza hacia la derecha (diff > threshold), se avanza una página (nextSpread)
-                if (diff > threshold) {
-                    nextSpread();
-                }
-                // Si desliza hacia la izquierda (diff < -threshold), se retrocede una página (prevSpread)
-                else if (diff < -threshold) {
-                    prevSpread();
-                }
+        /********** Hacer que la información de página sea editable **********/
+        function makePageInfoEditable() {
+            const topPageInfo = document.getElementById('topPageInfo');
+            const bottomPageInfo = document.getElementById('bottomPageInfo');
+            [topPageInfo, bottomPageInfo].forEach(infoElem => {
+                infoElem.addEventListener('click', () => {
+                    let input = document.createElement("input");
+                    input.type = "number";
+                    input.className = "editable-input";
+                    input.placeholder = "Ir a...";
+                    try {
+                        let origText = infoElem.textContent;
+                        infoElem.textContent = "";
+                        infoElem.appendChild(input);
+                        input.focus();
+                    } catch(err) {
+                        console.error(err);
+                    }
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === "Enter") {
+                            let num = parseInt(input.value);
+                            if (!isNaN(num)) {
+                                if (isMobile()) {
+                                    if (num >= 1 && num <= totalPages) {
+                                        currentSpread = num - 1;
+                                        renderSpread();
+                                    }
+                                } else {
+                                    let totalSpreads = Math.ceil(totalPages / 2);
+                                    if (num >= 1 && num <= totalSpreads) {
+                                        currentSpread = (num - 1) * 2;
+                                        renderSpread();
+                                    }
+                                }
+                            }
+                            if(input.parentNode) {
+                                try { input.parentNode.removeChild(input); } catch(e){ }
+                                updatePageInfo();
+                            }
+                        }
+                    });
+                    input.addEventListener('blur', () => {
+                        if(input.parentNode) {
+                            try { input.parentNode.removeChild(input); } catch(e){ }
+                            updatePageInfo();
+                        }
+                    });
+                });
             });
         }
-    }
-    addSwipeListeners();
-    /********** Inicializar edición de página info **********/
-    function makePageInfoEditable() {
-      const topPageInfo = document.getElementById('topPageInfo');
-      const bottomPageInfo = document.getElementById('bottomPageInfo');
-      [topPageInfo, bottomPageInfo].forEach(infoElem => {
-        infoElem.addEventListener('click', () => {
-          let input = document.createElement("input");
-          input.type = "number";
-          input.className = "editable-input";
-          input.placeholder = "Ir a...";
-          try {
-            let origText = infoElem.textContent;
-            infoElem.textContent = "";
-            infoElem.appendChild(input);
-            input.focus();
-          } catch(err) {
-            console.error(err);
-          }
-          input.addEventListener('keydown', (e) => {
-            if (e.key === "Enter") {
-              let num = parseInt(input.value);
-              if (!isNaN(num)) {
-                if (isMobile()) {
-                  if (num >= 1 && num <= totalPages) {
-                    currentSpread = num - 1;
-                    renderSpread();
-                  }
-                } else {
-                  let totalSpreads = Math.ceil(totalPages / 2);
-                  if (num >= 1 && num <= totalSpreads) {
-                    currentSpread = (num - 1) * 2;
-                    renderSpread();
-                  }
+        function updatePageInfo() {
+            if (isMobile()) {
+                let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+                const topElem = document.getElementById('topPageInfo');
+                const bottomElem = document.getElementById('bottomPageInfo');
+                if(topElem) topElem.textContent = infoText;
+                if(bottomElem) bottomElem.textContent = infoText;
+            } else {
+                let spreadIndex = Math.floor(currentSpread / 2) + 1;
+                let totalSpreads = Math.ceil(totalPages / 2);
+                let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                const topElem = document.getElementById('topPageInfo');
+                const bottomElem = document.getElementById('bottomPageInfo');
+                if(topElem) topElem.textContent = infoText;
+                if(bottomElem) bottomElem.textContent = infoText;
+            }
+        }
+        makePageInfoEditable();
+
+        /********** Agregar Swipe para móviles **********/
+        function addSwipeListeners() {
+            if (isMobile()) {
+                let touchstartX = 0;
+                let touchendX = 0;
+                const threshold = 100;
+                let swipeProcessed = false;
+                const container = document.getElementById('viewerContainer');
+                container.addEventListener('touchstart', (e) => {
+                    touchstartX = e.changedTouches[0].screenX;
+                    swipeProcessed = false;
+                });
+                container.addEventListener('touchend', (e) => {
+                    if (swipeProcessed) return;
+                    touchendX = e.changedTouches[0].screenX;
+                    let diff = touchendX - touchstartX;
+                    // Para lectura RTL, si se desliza hacia la derecha, retrocede; hacia la izquierda, avanza.
+                    if(diff > threshold) {
+                        prevSpread();
+                        swipeProcessed = true;
+                    } else if(diff < -threshold) {
+                        nextSpread();
+                        swipeProcessed = true;
+                    }
+                });
+            }
+        }
+        addSwipeListeners();
+
+        /********** Renderizar el spread actual usando la caché **********/
+        async function renderSpread() {
+            // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
+            if (totalPages - currentSpread < 1) {
+                try {
+                    const response = await fetch(`encuestas/${issueId}.json`);
+                    if (!response.ok) throw new Error("Encuesta no encontrada.");
+                    const surveyData = await response.json();
+                    const surveyLink = surveyData.surveyLink;
+                    const container = document.getElementById('viewerContainer');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <h1>¡Gracias por leer!</h1>
+                            <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
+                            <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+                            <br><br>
+                            <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
+                        </div>
+                    `;
+                    const prevArrow = document.getElementById('prevArrow');
+                    const nextArrow = document.getElementById('nextArrow');
+                    if(prevArrow) prevArrow.style.display = 'none';
+                    if(nextArrow) nextArrow.style.display = 'none';
+                    const topInfo = document.getElementById('topPageInfo');
+                    const bottomInfo = document.getElementById('bottomPageInfo');
+                    if(topInfo) topInfo.textContent = '';
+                    if(bottomInfo) bottomInfo.textContent = '';
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
+                        <h1>¡Gracias por leer!</h1>
+                        <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
+                    </div>`;
                 }
-              }
-              if(input.parentNode) {
-                try { input.parentNode.removeChild(input); } catch(e){ }
-                updatePageInfo();
-              }
+                return;
             }
-          });
-          input.addEventListener('blur', () => {
-            if(input.parentNode) {
-              try { input.parentNode.removeChild(input); } catch(e){ }
-              updatePageInfo();
-            }
-          });
-        });
-      });
-    }
-    function updatePageInfo() {
-      if (isMobile()) {
-        let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        const topElem = document.getElementById('topPageInfo');
-        const bottomElem = document.getElementById('bottomPageInfo');
-        if(topElem) topElem.textContent = infoText;
-        if(bottomElem) bottomElem.textContent = infoText;
-      } else {
-        let spreadIndex = Math.floor(currentSpread / 2) + 1;
-        let totalSpreads = Math.ceil(totalPages / 2);
-        let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        const topElem = document.getElementById('topPageInfo');
-        const bottomElem = document.getElementById('bottomPageInfo');
-        if(topElem) topElem.textContent = infoText;
-        if(bottomElem) bottomElem.textContent = infoText;
-      }
-    }
-    makePageInfoEditable();
-
-    /********** Renderizar el spread actual usando caché **********/
-    async function renderSpread() {
-      // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
-      if (totalPages - currentSpread < 1) {
-        try {
-          const response = await fetch(`encuestas/${issueId}.json`);
-          if (!response.ok) throw new Error("Encuesta no encontrada.");
-          const surveyData = await response.json();
-          const surveyLink = surveyData.surveyLink;
-          const container = document.getElementById('viewerContainer');
-          container.innerHTML = `
-            <div style="text-align: center; padding: 2rem;">
-              <h1>¡Gracias por leer!</h1>
-              <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
-              <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
-              <br><br>
-              <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
-            </div>
-          `;
-          // Ocultar flechas y textos
-          const prevArrow = document.getElementById('prevArrow');
-          const nextArrow = document.getElementById('nextArrow');
-          if(prevArrow) prevArrow.style.display = 'none';
-          if(nextArrow) nextArrow.style.display = 'none';
-          const topInfo = document.getElementById('topPageInfo');
-          const bottomInfo = document.getElementById('bottomPageInfo');
-          if(topInfo) topInfo.textContent = '';
-          if(bottomInfo) bottomInfo.textContent = '';
-        } catch (error) {
-          console.error(error);
-          document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
-            <h1>¡Gracias por leer!</h1>
-            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
-          </div>`;
-        }
-        return;
-      }
-
-      if (isMobile()) {
-        canvasLeft.style.display = "none";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-        }
-      } else {
-        canvasLeft.style.display = "block";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const leftPageNum = totalPages - currentSpread - 1;
-        const spreadIndex = Math.floor(currentSpread/2) + 1;
-        const totalSpreads = Math.ceil(totalPages/2);
-        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-        }
-        if (leftPageNum >= 1 && pageCache[leftPageNum]) {
-          let imgLeft = new Image();
-          imgLeft.onload = function() {
-            canvasLeft.width = imgLeft.width;
-            canvasLeft.height = imgLeft.height;
-            ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-            ctxLeft.drawImage(imgLeft, 0, 0);
-          };
-          imgLeft.src = pageCache[leftPageNum];
-        } else {
-          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-        }
-      }
-    }
-
-    /********** Navegación **********/
-    async function nextSpread() {
-      if (isMobile()) {
-        if (currentSpread + 1 < totalPages) {
-          currentSpread += 1;
-          renderSpread();
-        }
-      } else {
-        if (currentSpread + 2 < totalPages) {
-          currentSpread += 2;
-          renderSpread();
-        } else {
-          currentSpread = totalPages;
-          renderSpread();
-        }
-      }
-    }
-    async function prevSpread() {
-      if (isMobile()) {
-        if (currentSpread - 1 >= 0) {
-          currentSpread -= 1;
-          renderSpread();
-        }
-      } else {
-        if (currentSpread - 2 >= 0) {
-          currentSpread -= 2;
-          renderSpread();
-        }
-      }
-    }
-    if (!isMobile()) {
-      document.getElementById('prevArrow').addEventListener('click', nextSpread);
-      document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    }
-    // En móviles, solo swipe se usará (los botones están ocultos por CSS)
-
-    /********** Agregar Swipe para móviles **********/
-    function addSwipeListeners() {
-      if (isMobile()) {
-        let touchstartX = 0;
-        let touchendX = 0;
-        const threshold = 50;
-        const container = document.getElementById('viewerContainer');
-        container.addEventListener('touchstart', (e) => {
-          touchstartX = e.changedTouches[0].screenX;
-        });
-        container.addEventListener('touchend', (e) => {
-          touchendX = e.changedTouches[0].screenX;
-          let diff = touchendX - touchstartX;
-          if(diff > threshold) { prevSpread(); }
-          else if(diff < -threshold) { nextSpread(); }
-        });
-      }
-    }
-    addSwipeListeners();
-
-    /********** Inicializar edición de página info **********/
-    function makePageInfoEditable() {
-      const topPageInfo = document.getElementById('topPageInfo');
-      const bottomPageInfo = document.getElementById('bottomPageInfo');
-      [topPageInfo, bottomPageInfo].forEach(infoElem => {
-        infoElem.addEventListener('click', () => {
-          let input = document.createElement("input");
-          input.type = "number";
-          input.className = "editable-input";
-          input.placeholder = "Ir a...";
-          try {
-            let origText = infoElem.textContent;
-            infoElem.textContent = "";
-            infoElem.appendChild(input);
-            input.focus();
-          } catch(err) {
-            console.error(err);
-          }
-          input.addEventListener('keydown', (e) => {
-            if (e.key === "Enter") {
-              let num = parseInt(input.value);
-              if (!isNaN(num)) {
-                if (isMobile()) {
-                  if (num >= 1 && num <= totalPages) {
-                    currentSpread = num - 1;
-                    renderSpread();
-                  }
+            if (isMobile()) {
+                canvasLeft.style.display = "none";
+                canvasRight.style.display = "block";
+                const rightPageNum = totalPages - currentSpread;
+                const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+                if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+                if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+                if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+                    let imgRight = new Image();
+                    imgRight.onload = function() {
+                        canvasRight.width = imgRight.width;
+                        canvasRight.height = imgRight.height;
+                        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                        ctxRight.drawImage(imgRight, 0, 0);
+                    };
+                    imgRight.src = pageCache[rightPageNum];
                 } else {
-                  let totalSpreads = Math.ceil(totalPages / 2);
-                  if (num >= 1 && num <= totalSpreads) {
-                    currentSpread = (num - 1) * 2;
-                    renderSpread();
-                  }
+                    ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
                 }
-              }
-              if(input.parentNode) {
-                try { input.parentNode.removeChild(input); } catch(e){ }
-                updatePageInfo();
-              }
+            } else {
+                canvasLeft.style.display = "block";
+                canvasRight.style.display = "block";
+                const rightPageNum = totalPages - currentSpread;
+                const leftPageNum = totalPages - currentSpread - 1;
+                const spreadIndex = Math.floor(currentSpread / 2) + 1;
+                const totalSpreads = Math.ceil(totalPages / 2);
+                const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+                if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+                if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+                    let imgRight = new Image();
+                    imgRight.onload = function() {
+                        canvasRight.width = imgRight.width;
+                        canvasRight.height = imgRight.height;
+                        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                        ctxRight.drawImage(imgRight, 0, 0);
+                    };
+                    imgRight.src = pageCache[rightPageNum];
+                } else {
+                    ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                }
+                if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+                    let imgLeft = new Image();
+                    imgLeft.onload = function() {
+                        canvasLeft.width = imgLeft.width;
+                        canvasLeft.height = imgLeft.height;
+                        ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+                        ctxLeft.drawImage(imgLeft, 0, 0);
+                    };
+                    imgLeft.src = pageCache[leftPageNum];
+                } else {
+                    ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+                }
             }
-          });
-          input.addEventListener('blur', () => {
-            if(input.parentNode) {
-              try { input.parentNode.removeChild(input); } catch(e){ }
-              updatePageInfo();
+        }
+
+        /********** Navegación **********/
+        async function nextSpread() {
+            if (isMobile()) {
+                if (currentSpread + 1 < totalPages) {
+                    currentSpread += 1;
+                    renderSpread();
+                }
+            } else {
+                if (currentSpread + 2 < totalPages) {
+                    currentSpread += 2;
+                    renderSpread();
+                } else {
+                    currentSpread = totalPages;
+                    renderSpread();
+                }
             }
-          });
-        });
-      });
-    }
-    function updatePageInfo() {
-      if (isMobile()) {
-        let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        const topElem = document.getElementById('topPageInfo');
-        const bottomElem = document.getElementById('bottomPageInfo');
-        if(topElem) topElem.textContent = infoText;
-        if(bottomElem) bottomElem.textContent = infoText;
-      } else {
-        let spreadIndex = Math.floor(currentSpread / 2) + 1;
-        let totalSpreads = Math.ceil(totalPages / 2);
-        let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        const topElem = document.getElementById('topPageInfo');
-        const bottomElem = document.getElementById('bottomPageInfo');
-        if(topElem) topElem.textContent = infoText;
-        if(bottomElem) bottomElem.textContent = infoText;
-      }
-    }
-    makePageInfoEditable();
+        }
+        async function prevSpread() {
+            if (isMobile()) {
+                if (currentSpread - 1 >= 0) {
+                    currentSpread -= 1;
+                    renderSpread();
+                }
+            } else {
+                if (currentSpread - 2 >= 0) {
+                    currentSpread -= 2;
+                    renderSpread();
+                }
+            }
+        }
+        if (!isMobile()) {
+            document.getElementById('prevArrow').addEventListener('click', () => {
+                // En versión móvil, invertimos: swipe derecha debe ir a la página anterior
+                prevSpread();
+            });
+            document.getElementById('nextArrow').addEventListener('click', () => {
+                nextSpread();
+            });
+        }
+        /********** Agregar Swipe para móviles **********/
+        function addSwipeListeners() {
+            if (isMobile()) {
+                let touchstartX = 0;
+                let touchendX = 0;
+                const threshold = 100;
+                let swipeProcessed = false;
+                const container = document.getElementById('viewerContainer');
+                container.addEventListener('touchstart', (e) => {
+                    touchstartX = e.changedTouches[0].screenX;
+                    swipeProcessed = false;
+                });
+                container.addEventListener('touchend', (e) => {
+                    if (swipeProcessed) return;
+                    touchendX = e.changedTouches[0].screenX;
+                    let diff = touchendX - touchstartX;
+                    // Para lectura RTL: deslizar hacia la derecha (diff > threshold) debe retroceder (prevSpread),
+                    // deslizar hacia la izquierda (diff < -threshold) debe avanzar (nextSpread)
+                    if (diff > threshold) {
+                        prevSpread();
+                        swipeProcessed = true;
+                    } else if (diff < -threshold) {
+                        nextSpread();
+                        swipeProcessed = true;
+                    }
+                });
+            }
+        }
+        addSwipeListeners();
 
-    /********** Renderizar el spread actual usando caché **********/
-    async function renderSpread() {
-      // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
-      if (totalPages - currentSpread < 1) {
-        try {
-          const response = await fetch(`encuestas/${issueId}.json`);
-          if (!response.ok) throw new Error("Encuesta no encontrada.");
-          const surveyData = await response.json();
-          const surveyLink = surveyData.surveyLink;
-          const container = document.getElementById('viewerContainer');
-          container.innerHTML = `
-            <div style="text-align: center; padding: 2rem;">
-              <h1>¡Gracias por leer!</h1>
-              <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
-              <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
-              <br><br>
-              <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
-            </div>
-          `;
-          const prevArrow = document.getElementById('prevArrow');
-          const nextArrow = document.getElementById('nextArrow');
-          if(prevArrow) prevArrow.style.display = 'none';
-          if(nextArrow) nextArrow.style.display = 'none';
-          const topInfo = document.getElementById('topPageInfo');
-          const bottomInfo = document.getElementById('bottomPageInfo');
-          if(topInfo) topInfo.textContent = '';
-          if(bottomInfo) bottomInfo.textContent = '';
-        } catch (error) {
-          console.error(error);
-          document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
-            <h1>¡Gracias por leer!</h1>
-            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
-          </div>`;
+        /********** Inicializar edición de página info **********/
+        function makePageInfoEditable() {
+            const topPageInfo = document.getElementById('topPageInfo');
+            const bottomPageInfo = document.getElementById('bottomPageInfo');
+            [topPageInfo, bottomPageInfo].forEach(infoElem => {
+                infoElem.addEventListener('click', () => {
+                    let input = document.createElement("input");
+                    input.type = "number";
+                    input.className = "editable-input";
+                    input.placeholder = "Ir a...";
+                    try {
+                        let origText = infoElem.textContent;
+                        infoElem.textContent = "";
+                        infoElem.appendChild(input);
+                        input.focus();
+                    } catch(err) {
+                        console.error(err);
+                    }
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === "Enter") {
+                            let num = parseInt(input.value);
+                            if (!isNaN(num)) {
+                                if (isMobile()) {
+                                    if (num >= 1 && num <= totalPages) {
+                                        currentSpread = num - 1;
+                                        renderSpread();
+                                    }
+                                } else {
+                                    let totalSpreads = Math.ceil(totalPages / 2);
+                                    if (num >= 1 && num <= totalSpreads) {
+                                        currentSpread = (num - 1) * 2;
+                                        renderSpread();
+                                    }
+                                }
+                            }
+                            if(input.parentNode) {
+                                try { input.parentNode.removeChild(input); } catch(e){ }
+                                updatePageInfo();
+                            }
+                        }
+                    });
+                    input.addEventListener('blur', () => {
+                        if(input.parentNode) {
+                            try { input.parentNode.removeChild(input); } catch(e){ }
+                            updatePageInfo();
+                        }
+                    });
+                });
+            });
         }
-        return;
-      }
+        function updatePageInfo() {
+            if (isMobile()) {
+                let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+                const topElem = document.getElementById('topPageInfo');
+                const bottomElem = document.getElementById('bottomPageInfo');
+                if(topElem) topElem.textContent = infoText;
+                if(bottomElem) bottomElem.textContent = infoText;
+            } else {
+                let spreadIndex = Math.floor(currentSpread / 2) + 1;
+                let totalSpreads = Math.ceil(totalPages / 2);
+                let infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                const topElem = document.getElementById('topPageInfo');
+                const bottomElem = document.getElementById('bottomPageInfo');
+                if(topElem) topElem.textContent = infoText;
+                if(bottomElem) bottomElem.textContent = infoText;
+            }
+        }
+        makePageInfoEditable();
 
-      if (isMobile()) {
-        canvasLeft.style.display = "none";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+        /********** Renderizar el spread actual usando caché **********/
+        async function renderSpread() {
+            // Si ya no quedan páginas, mostrar la encuesta redirigiendo al link definido en encuestas/ID.json
+            if (totalPages - currentSpread < 1) {
+                try {
+                    const response = await fetch(`encuestas/${issueId}.json`);
+                    if (!response.ok) throw new Error("Encuesta no encontrada.");
+                    const surveyData = await response.json();
+                    const surveyLink = surveyData.surveyLink;
+                    const container = document.getElementById('viewerContainer');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <h1>¡Gracias por leer!</h1>
+                            <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
+                            <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+                            <br><br>
+                            <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
+                        </div>
+                    `;
+                    const prevArrow = document.getElementById('prevArrow');
+                    const nextArrow = document.getElementById('nextArrow');
+                    if(prevArrow) prevArrow.style.display = 'none';
+                    if(nextArrow) nextArrow.style.display = 'none';
+                    const topInfo = document.getElementById('topPageInfo');
+                    const bottomInfo = document.getElementById('bottomPageInfo');
+                    if(topInfo) topInfo.textContent = '';
+                    if(bottomInfo) bottomInfo.textContent = '';
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
+                        <h1>¡Gracias por leer!</h1>
+                        <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
+                    </div>`;
+                }
+                return;
+            }
+            if (isMobile()) {
+                canvasLeft.style.display = "none";
+                canvasRight.style.display = "block";
+                const rightPageNum = totalPages - currentSpread;
+                const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
+                if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+                if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+                if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+                    let imgRight = new Image();
+                    imgRight.onload = function() {
+                        canvasRight.width = imgRight.width;
+                        canvasRight.height = imgRight.height;
+                        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                        ctxRight.drawImage(imgRight, 0, 0);
+                    };
+                    imgRight.src = pageCache[rightPageNum];
+                } else {
+                    ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                }
+            } else {
+                canvasLeft.style.display = "block";
+                canvasRight.style.display = "block";
+                const rightPageNum = totalPages - currentSpread;
+                const leftPageNum = totalPages - currentSpread - 1;
+                const spreadIndex = Math.floor(currentSpread / 2) + 1;
+                const totalSpreads = Math.ceil(totalPages / 2);
+                const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
+                if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
+                if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
+                if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+                    let imgRight = new Image();
+                    imgRight.onload = function() {
+                        canvasRight.width = imgRight.width;
+                        canvasRight.height = imgRight.height;
+                        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                        ctxRight.drawImage(imgRight, 0, 0);
+                    };
+                    imgRight.src = pageCache[rightPageNum];
+                } else {
+                    ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+                }
+                if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+                    let imgLeft = new Image();
+                    imgLeft.onload = function() {
+                        canvasLeft.width = imgLeft.width;
+                        canvasLeft.height = imgLeft.height;
+                        ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+                        ctxLeft.drawImage(imgLeft, 0, 0);
+                    };
+                    imgLeft.src = pageCache[leftPageNum];
+                } else {
+                    ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+                }
+            }
         }
-      } else {
-        canvasLeft.style.display = "block";
-        canvasRight.style.display = "block";
-        const rightPageNum = totalPages - currentSpread;
-        const leftPageNum = totalPages - currentSpread - 1;
-        const spreadIndex = Math.floor(currentSpread/2) + 1;
-        const totalSpreads = Math.ceil(totalPages/2);
-        const infoText = `Página ${spreadIndex} de ${totalSpreads}`;
-        if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-        if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-        if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-          let imgRight = new Image();
-          imgRight.onload = function() {
-            canvasRight.width = imgRight.width;
-            canvasRight.height = imgRight.height;
-            ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-            ctxRight.drawImage(imgRight, 0, 0);
-          };
-          imgRight.src = pageCache[rightPageNum];
-        } else {
-          ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-        }
-        if (leftPageNum >= 1 && pageCache[leftPageNum]) {
-          let imgLeft = new Image();
-          imgLeft.onload = function() {
-            canvasLeft.width = imgLeft.width;
-            canvasLeft.height = imgLeft.height;
-            ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-            ctxLeft.drawImage(imgLeft, 0, 0);
-          };
-          imgLeft.src = pageCache[leftPageNum];
-        } else {
-          ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-        }
-      }
-    }
 
-    /********** Navegación **********/
-    async function nextSpread() {
-      if (isMobile()) {
-        if (currentSpread + 1 < totalPages) {
-          currentSpread += 1;
-          renderSpread();
+        /********** Navegación **********/
+        async function nextSpread() {
+            if (isMobile()) {
+                if (currentSpread + 1 < totalPages) {
+                    currentSpread += 1;
+                    renderSpread();
+                }
+            } else {
+                if (currentSpread + 2 < totalPages) {
+                    currentSpread += 2;
+                    renderSpread();
+                } else {
+                    currentSpread = totalPages;
+                    renderSpread();
+                }
+            }
         }
-      } else {
-        if (currentSpread + 2 < totalPages) {
-          currentSpread += 2;
-          renderSpread();
-        } else {
-          currentSpread = totalPages;
-          renderSpread();
+        async function prevSpread() {
+            if (isMobile()) {
+                if (currentSpread - 1 >= 0) {
+                    currentSpread -= 1;
+                    renderSpread();
+                }
+            } else {
+                if (currentSpread - 2 >= 0) {
+                    currentSpread -= 2;
+                    renderSpread();
+                }
+            }
         }
-      }
-    }
-    async function prevSpread() {
-      if (isMobile()) {
-        if (currentSpread - 1 >= 0) {
-          currentSpread -= 1;
-          renderSpread();
+        if (!isMobile()) {
+            document.getElementById('prevArrow').addEventListener('click', () => {
+                // En desktop, para lectura RTL: desliza a la derecha (prevArrow) -> retrocede
+                prevSpread();
+            });
+            document.getElementById('nextArrow').addEventListener('click', () => {
+                nextSpread();
+            });
         }
-      } else {
-        if (currentSpread - 2 >= 0) {
-          currentSpread -= 2;
-          renderSpread();
+        /********** Agregar Swipe para móviles **********/
+        function addSwipeListeners() {
+            if (isMobile()) {
+                let touchstartX = 0;
+                let touchendX = 0;
+                const threshold = 100;
+                let swipeProcessed = false;
+                const container = document.getElementById('viewerContainer');
+                container.addEventListener('touchstart', (e) => {
+                    touchstartX = e.changedTouches[0].screenX;
+                    swipeProcessed = false;
+                });
+                container.addEventListener('touchend', (e) => {
+                    if (swipeProcessed) return;
+                    touchendX = e.changedTouches[0].screenX;
+                    let diff = touchendX - touchstartX;
+                    // Para lectura RTL: desliza hacia la derecha -> retrocede; desliza hacia la izquierda -> avanza.
+                    if (diff > threshold) {
+                        prevSpread();
+                        swipeProcessed = true;
+                    } else if (diff < -threshold) {
+                        nextSpread();
+                        swipeProcessed = true;
+                    }
+                });
+            }
         }
-      }
-    }
-    if (!isMobile()) {
-      document.getElementById('prevArrow').addEventListener('click', nextSpread);
-      document.getElementById('nextArrow').addEventListener('click', prevSpread);
-    }
-    // En móviles, solo swipe se usará
+        addSwipeListeners();
 
-    /********** Agregar Swipe para móviles **********/
-    function addSwipeListeners() {
-      if (isMobile()) {
-        let touchstartX = 0;
-        let touchendX = 0;
-        const threshold = 50;
-        const container = document.getElementById('viewerContainer');
-        container.addEventListener('touchstart', (e) => {
-          touchstartX = e.changedTouches[0].screenX;
-        });
-        container.addEventListener('touchend', (e) => {
-          touchendX = e.changedTouches[0].screenX;
-          let diff = touchendX - touchstartX;
-          if(diff > threshold) { prevSpread(); }
-          else if(diff < -threshold) { nextSpread(); }
-        });
-      }
-    }
-    addSwipeListeners();
-
-    /********** Inicializar el visor PDF **********/
-    async function initViewer() {
-      const pdfPath = await getIssuePDFPath(issueId);
-      const loadingTask = pdfjsLib.getDocument(pdfPath);
-      pdfDoc = await loadingTask.promise;
-      totalPages = pdfDoc.numPages;
-      await preloadAllPages();
-      currentSpread = 0;
-      renderSpread();
-      loadingOverlay.style.display = 'none';
-      // Mostrar overlay direccional al inicio por 3 seg
-      const directionOverlay = document.getElementById('directionOverlay');
-      directionOverlay.style.display = 'flex';
-      setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
-    }
-    initViewer();
-  </script>
+        /********** Inicializar el visor PDF **********/
+        async function initViewer() {
+            const pdfPath = await getIssuePDFPath(issueId);
+            const loadingTask = pdfjsLib.getDocument(pdfPath);
+            pdfDoc = await loadingTask.promise;
+            totalPages = pdfDoc.numPages;
+            await preloadAllPages();
+            currentSpread = 0;
+            renderSpread();
+            loadingOverlay.style.display = 'none';
+            // Mostrar overlay direccional al inicio por 3 seg
+            const directionOverlay = document.getElementById('directionOverlay');
+            directionOverlay.style.display = 'flex';
+            setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
+        }
+        initViewer();
+    </script>
 </body>
 </html>
