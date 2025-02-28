@@ -1,532 +1,599 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rensai Viewer - Shikashi Monthly Friday Series</title>
-        <!-- pdf.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-        <style>
-            /* Forzar que la página ocupe el 100% de la ventana y sin scroll */
-            html, body {
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
-                font-family: 'Cuerpo', sans-serif;
-                background: #fafafa;
-                color: #333;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rensai Viewer - Shikashi Monthly Friday Series</title>
+    <!-- pdf.js desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <style>
+        /* Evitar scroll, ocupar 100% la ventana */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Cuerpo', sans-serif;
+            background: #fafafa;
+            color: #333;
+        }
+        /* Barra superior (nav) fija */
+        .nav-bar {
+            width: 100%;
+            height: 80px;
+            background: #820000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1100;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .toggle-nav-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* Barra inferior fija */
+        .bottom-nav-bar {
+            width: 100%;
+            height: 80px;
+            background: #820000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1100;
+            font-family: 'Botones', sans-serif;
+            font-size: 1rem;
+        }
+        .bottom-nav-bar .copy {
+            margin-left: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        /* Contenedor del visor (entre la nav y el bottom) */
+        .viewer-container {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden; /* por si acaso */
+        }
+        #canvasLeft, #canvasRight {
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin: 0 10px; /* Separación entre ambos canvas */
+        }
+        /* Flechas de navegación en desktop */
+        .nav-arrow {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+            font-size: 2rem;
+            z-index: 1050;
+        }
+        .nav-arrow:hover {
+            background: rgba(255,255,255,1);
+        }
+        .arrow-left {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .arrow-right {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        /* Navegación móvil: dos botones fijos (desaparecen tras un tiempo) */
+        .mobile-nav {
+            display: none;
+        }
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            right: 0; bottom: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1200;
+        }
+        .loading-overlay img.logo {
+            width: 200px;
+            margin-bottom: 1rem;
+        }
+        .loading-overlay img.loading-gif {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+        .loading-text {
+            font-size: 1.2rem;
+            color: #820000;
+            animation: fadeText 1s ease-in-out infinite;
+        }
+        @keyframes fadeText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* Direction overlay */
+        .direction-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+            z-index: 1000;
+        }
+        /* Editar páginas */
+        .editable-input {
+            width: 60px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        /* Móvil (<600px): 1 sola página, sin flechas, y con dos botones */
+        @media (max-width: 600px) {
+            #canvasLeft {
+                display: none;
             }
-            /* Estructura de la página: nav superior, visor y nav inferior */
-            .nav-bar, .bottom-nav-bar {
-                flex-shrink: 0;
-                width: 100%;
-                background: #820000;
-                color: #fff;
-                padding: 0.5rem 1rem;
-                display: flex;
-                align-items: center;
-                position: fixed;
-                left: 0;
+            .nav-arrow {
+                display: none;
+            }
+            .mobile-nav {
+                display: block;
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
                 z-index: 1100;
             }
-            .nav-bar {
-                top: 0;
-            }
-            .bottom-nav-bar {
-                bottom: 0;
-                justify-content: center;
-                font-family: 'Botones', sans-serif;
-                font-size: 1rem;
-            }
-            .nav-links {
-                display: flex;
-                gap: 1rem;
-            }
-            .nav-link {
-                color: #fff;
-                text-decoration: none;
+            .mobile-nav button {
+                font-size: 2rem;
+                margin: 0 1rem;
                 padding: 0.5rem 1rem;
-                border-radius: 4px;
-                transition: background 0.3s;
-            }
-            .nav-link:hover {
-                background: rgba(255,255,255,0.2);
-            }
-            .toggle-nav-btn {
-                background: transparent;
-                border: 1px solid #fff;
+                background: #820000;
                 color: #fff;
-                padding: 0.3rem 0.6rem;
+                border: none;
                 border-radius: 4px;
                 cursor: pointer;
             }
-            .bottom-nav-bar .copy {
-                margin-left: 1rem;
-                font-size: 0.8rem;
-                opacity: 0.7;
-            }
-            /* Contenedor del visor ocupa el espacio restante */
-            .viewer-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                height: calc(100vh - 160px); /* 80px nav superior + 80px nav inferior */
-                margin-top: 80px;
-                margin-bottom: 80px;
-                position: relative;
-                box-sizing: border-box;
-            }
-            /* Canvas: se ajustan para mostrar dos páginas sin deformación */
-            canvas {
-                background: #fff;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                /* No forzamos dimensiones fijas: se establecerán dinámicamente */
-            }
-            /* Flechas de navegación para desktop */
-            .nav-arrow {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                background: rgba(255,255,255,0.9);
-                border: 1px solid #ccc;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                user-select: none;
-                z-index: 1050;
-            }
-            .nav-arrow:hover {
-                background: rgba(255,255,255,1);
-            }
-            /* En lectura RTL: el botón izquierdo avanza (nextSpread) y el derecho retrocede (prevSpread) */
-            .arrow-left { left: 20px; }
-            .arrow-right { right: 20px; }
-            /* Indicador de página editable */
-            .editable-input {
-                width: 60px;
-                font-size: 1rem;
-                text-align: center;
-            }
-            /* Direction overlay para indicar el orden de lectura */
-            .direction-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-                color: #fff;
-                font-size: 3rem;
-            }
-            /* Loading overlay */
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: #fff;
-                z-index: 1200;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            .loading-overlay img.logo {
-                width: 200px;
-                margin-bottom: 1rem;
-            }
-            .loading-overlay img.loading-gif {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 1rem;
-            }
-            .loading-text {
-                font-size: 1.2rem;
-                color: #820000;
-                text-align: center;
-                min-height: 1.5em;
-                animation: fadeText 1s ease-in-out infinite;
-            }
-            @keyframes fadeText {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="loading-overlay">
-            <img class="logo" src="img/logo.png" alt="Logo">
-            <img class="loading-gif" src="img/loading.gif" alt="Cargando...">
-            <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <img class="logo" src="img/logo.png" alt="Logo">
+        <img class="loading-gif" src="img/loading.gif" alt="Cargando...">
+        <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
+    </div>
+
+    <!-- Direction Overlay -->
+    <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
+
+    <!-- Barra de navegación superior -->
+    <div id="topNavBar" class="nav-bar">
+        <div class="page-info" id="topPageInfo">&lt; Páginas ? - ? de ? &gt;</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">INICIO</a>
+            <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
+            <a href="rensai.html" class="nav-link">RENSAI</a>
         </div>
-        
-        <!-- Direction Overlay -->
-        <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
-        
-        <!-- Barra de navegación superior -->
-        <div id="topNavBar" class="nav-bar">
-            <div class="page-info" id="topPageInfo">&lt; Páginas ? - ? de ? &gt;</div>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">INICIO</a>
-                <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
-                <a href="rensai.html" class="nav-link">RENSAI</a>
-            </div>
-            <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
+        <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
+    </div>
+
+    <!-- Contenedor del visor -->
+    <div id="viewerContainer" class="viewer-container">
+        <canvas id="canvasLeft"></canvas>
+        <canvas id="canvasRight"></canvas>
+        <div id="prevArrow" class="nav-arrow arrow-left">&#9664;</div>
+        <div id="nextArrow" class="nav-arrow arrow-right">&#9654;</div>
+
+        <!-- Navegación móvil: dos botones -->
+        <div id="mobileNav" class="mobile-nav" style="opacity:1;">
+            <button id="mobilePrev">&#9664;</button>
+            <button id="mobileNext">&#9654;</button>
         </div>
-        
-        <!-- Contenedor del visor -->
-        <div id="viewerContainer" class="viewer-container">
-            <canvas id="canvasLeft"></canvas>
-            <canvas id="canvasRight"></canvas>
-            <div id="prevArrow" class="nav-arrow arrow-left">&#9664;</div>
-            <div id="nextArrow" class="nav-arrow arrow-right">&#9654;</div>
-        </div>
-        
-        <!-- Barra inferior fija -->
-        <div id="bottomNavBar" class="bottom-nav-bar">
-            <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
-            <div class="copy">&copy; 2025 Shikashi MF</div>
-        </div>
-        
-        <script>
-            // Configurar worker de pdf.js
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
-            
-            /********** Loading Text Animation **********/
-            const loadingMessages = [
-                "Vistiendo a las chicas mágicas...",
-                "Ajustando viajes en el tiempo...",
-                "Maquillando a Miyuki...",
-                "Preparando los fur-suits...",
-                "Preparando las faldas..."
-            ];
-            let messageIndex = 0;
-            const loadingTextElem = document.getElementById("loadingText");
-            setInterval(() => {
-                messageIndex = (messageIndex + 1) % loadingMessages.length;
-                loadingTextElem.textContent = loadingMessages[messageIndex];
-            }, 10000);
-            
-            /********** Toggle Nav Bar **********/
-            const toggleNavBtn = document.getElementById('toggleNav');
-            const topNavBar = document.getElementById('topNavBar');
-            let navVisible = true;
-            toggleNavBtn.addEventListener('click', () => {
-                navVisible = !navVisible;
-                if (navVisible) {
-                    topNavBar.style.top = '0';
-                    toggleNavBtn.textContent = 'Ocultar Nav';
-                } else {
-                    topNavBar.style.top = '-80px';
-                    toggleNavBtn.textContent = 'Mostrar Nav';
-                }
-            });
-            
-            /********** Loading Overlay **********/
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            /********** Variables Globales de PDF **********/
-            let pdfDoc = null;
-            let totalPages = 0;
-            let currentSpread = 0; // Desktop: 2 páginas; Móvil: 1 página.
-            const scale = 1.2;
-            let pageCache = [];
-            
-            const canvasLeft = document.getElementById('canvasLeft');
-            const canvasRight = document.getElementById('canvasRight');
-            const ctxLeft = canvasLeft.getContext('2d');
-            const ctxRight = canvasRight.getContext('2d');
-            
-            /********** Detectar Mobile **********/
-            function isMobile() {
-                return window.innerWidth < 600;
+    </div>
+
+    <!-- Barra inferior fija -->
+    <div id="bottomNavBar" class="bottom-nav-bar">
+        <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
+        <div class="copy">&copy; 2025 Shikashi MF</div>
+    </div>
+
+    <script>
+        /********** Config PDF.js **********/
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+        /********** Loading Overlay **********/
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingMessages = [
+            "Vistiendo a las chicas mágicas...",
+            "Ajustando viajes en el tiempo...",
+            "Maquillando a Miyuki...",
+            "Preparando los fur-suits...",
+            "Preparando las faldas..."
+        ];
+        let msgIdx = 0;
+        const loadingTextElem = document.getElementById("loadingText");
+        setInterval(() => {
+            msgIdx = (msgIdx + 1) % loadingMessages.length;
+            loadingTextElem.textContent = loadingMessages[msgIdx];
+        }, 10000);
+
+        /********** Toggle Nav **********/
+        const toggleNavBtn = document.getElementById('toggleNav');
+        const topNavBar = document.getElementById('topNavBar');
+        let navVisible = true;
+        toggleNavBtn.addEventListener('click', () => {
+            navVisible = !navVisible;
+            if (navVisible) {
+                topNavBar.style.top = '0';
+                toggleNavBtn.textContent = 'Ocultar Nav';
+            } else {
+                topNavBar.style.top = '-80px';
+                toggleNavBtn.textContent = 'Mostrar Nav';
             }
-            
-            /********** Obtener parámetros URL **********/
-            function getQueryParam(param) {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get(param);
+        });
+
+        /********** Variables Globales **********/
+        let pdfDoc = null;
+        let totalPages = 0;
+        let currentSpread = 0; // Desktop: salta de 2 en 2, Móvil: 1 en 1
+        let pageCache = [];
+        const canvasLeft = document.getElementById('canvasLeft');
+        const canvasRight = document.getElementById('canvasRight');
+        const ctxLeft = canvasLeft.getContext('2d');
+        const ctxRight = canvasRight.getContext('2d');
+
+        function isMobile() {
+            return window.innerWidth < 600;
+        }
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        const issueId = getQueryParam('id');
+        if (!issueId) {
+            window.location.href = 'rensai.html';
+        }
+
+        /********** Fetch issues.json **********/
+        async function fetchIssues() {
+            try {
+                const resp = await fetch('issues.json');
+                if (!resp.ok) throw new Error('Error al cargar issues.json');
+                return await resp.json();
+            } catch(err) {
+                console.error(err);
+                return [];
             }
-            const issueId = getQueryParam('id');
-            if (!issueId) { window.location.href = 'rensai.html'; }
-            
-            /********** Obtener PDF Path de issues.json **********/
-            async function fetchIssues() {
-                try {
-                    const response = await fetch('issues.json');
-                    if (!response.ok) throw new Error('Error al cargar issues.json');
-                    return await response.json();
-                } catch (error) {
-                    console.error(error);
-                    return [];
-                }
+        }
+        async function getIssuePDFPath(id) {
+            const issues = await fetchIssues();
+            const item = issues.find(i => i.id === id);
+            if (!item) window.location.href = 'rensai.html';
+            const basePath = item.path.substring(0, item.path.lastIndexOf('/'));
+            return basePath + '/Issue.pdf';
+        }
+
+        /********** Preload Pages **********/
+        async function preloadAllPages() {
+            for (let p = 1; p <= totalPages; p++) {
+                const page = await pdfDoc.getPage(p);
+                const viewport = page.getViewport({ scale: 1.2 });
+                const offscreen = document.createElement('canvas');
+                offscreen.width = viewport.width;
+                offscreen.height = viewport.height;
+                const offscreenCtx = offscreen.getContext('2d');
+                await page.render({ canvasContext: offscreenCtx, viewport }).promise;
+                pageCache[p] = offscreen.toDataURL();
             }
-            async function getIssuePDFPath(issueId) {
-                const issues = await fetchIssues();
-                const issue = issues.find(i => i.id === issueId);
-                if (!issue) { window.location.href = 'rensai.html'; }
-                const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
-                return basePath + '/Issue.pdf';
-            }
-            
-            /********** Preload de todas las páginas del PDF **********/
-            async function preloadAllPages() {
-                for (let p = 1; p <= totalPages; p++) {
-                    const page = await pdfDoc.getPage(p);
-                    const viewport = page.getViewport({ scale: scale });
-                    const offscreen = document.createElement('canvas');
-                    offscreen.width = viewport.width;
-                    offscreen.height = viewport.height;
-                    const offscreenCtx = offscreen.getContext('2d');
-                    const renderContext = { canvasContext: offscreenCtx, viewport: viewport };
-                    await page.render(renderContext).promise;
-                    pageCache[p] = offscreen.toDataURL();
-                }
-            }
-            
-            /********** Hacer que la información de página sea editable **********/
-            function makePageInfoEditable() {
-                const topPageInfo = document.getElementById('topPageInfo');
-                const bottomPageInfo = document.getElementById('bottomPageInfo');
-                [topPageInfo, bottomPageInfo].forEach(infoElem => {
-                    infoElem.addEventListener('click', () => {
-                        let input = document.createElement("input");
-                        input.type = "number";
-                        input.className = "editable-input";
-                        input.placeholder = "Ir a...";
-                        try {
-                            let origText = infoElem.textContent;
-                            infoElem.textContent = "";
-                            infoElem.appendChild(input);
-                            input.focus();
-                        } catch(err) {
-                            console.error(err);
-                        }
-                        input.addEventListener('keydown', (e) => {
-                            if (e.key === "Enter") {
-                                let num = parseInt(input.value);
-                                if (!isNaN(num)) {
-                                    if (isMobile()) {
-                                        if (num >= 1 && num <= totalPages) {
-                                            currentSpread = num - 1;
-                                            renderSpread();
-                                        }
-                                    } else {
-                                        let totalSpreads = Math.ceil(totalPages / 2);
-                                        if (num >= 1 && num <= totalSpreads) {
-                                            currentSpread = (num - 1) * 2;
-                                            renderSpread();
-                                        }
+        }
+
+        /********** Editable Info de Página **********/
+        function makePageInfoEditable() {
+            const topInfo = document.getElementById('topPageInfo');
+            const bottomInfo = document.getElementById('bottomPageInfo');
+            [topInfo, bottomInfo].forEach(infoElem => {
+                infoElem.addEventListener('click', () => {
+                    const input = document.createElement("input");
+                    input.type = "number";
+                    input.placeholder = "Ir a...";
+                    input.className = "editable-input";
+                    const oldText = infoElem.textContent;
+                    infoElem.textContent = "";
+                    infoElem.appendChild(input);
+                    input.focus();
+                    input.addEventListener('keydown', e => {
+                        if (e.key === 'Enter') {
+                            let num = parseInt(input.value);
+                            if (!isNaN(num)) {
+                                if (isMobile()) {
+                                    if (num >= 1 && num <= totalPages) {
+                                        currentSpread = num - 1;
+                                        renderSpread();
+                                    }
+                                } else {
+                                    // num = spread => 2 páginas
+                                    const totalSpreads = Math.ceil(totalPages / 2);
+                                    if (num >= 1 && num <= totalSpreads) {
+                                        currentSpread = (num - 1) * 2;
+                                        renderSpread();
                                     }
                                 }
-                                if(input.parentNode) {
-                                    input.parentNode.removeChild(input);
-                                    updatePageInfo();
-                                }
                             }
-                        });
-                        input.addEventListener('blur', () => {
-                            if(input.parentNode) {
-                                input.parentNode.removeChild(input);
-                                updatePageInfo();
-                            }
-                        });
+                            infoElem.removeChild(input);
+                            updatePageInfo();
+                        }
+                    });
+                    input.addEventListener('blur', () => {
+                        if (infoElem.contains(input)) {
+                            infoElem.removeChild(input);
+                            updatePageInfo();
+                        }
                     });
                 });
-            }
-            function updatePageInfo() {
-                if (isMobile()) {
-                    let infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-                    const topElem = document.getElementById('topPageInfo');
-                    const bottomElem = document.getElementById('bottomPageInfo');
-                    if(topElem) topElem.textContent = infoText;
-                    if(bottomElem) bottomElem.textContent = infoText;
+            });
+        }
+        makePageInfoEditable();
+
+        function updatePageInfo() {
+            const topInfo = document.getElementById('topPageInfo');
+            const bottomInfo = document.getElementById('bottomPageInfo');
+            if (isMobile()) {
+                // Pág. N de Z
+                const pageNum = currentSpread + 1;
+                topInfo.textContent = `Página ${pageNum} de ${totalPages}`;
+                bottomInfo.textContent = `Página ${pageNum} de ${totalPages}`;
+            } else {
+                const rightPage = totalPages - currentSpread;
+                const leftPage = totalPages - currentSpread - 1;
+                let info;
+                if (leftPage >= 1) {
+                    info = `Páginas ${leftPage} - ${rightPage} de ${totalPages}`;
                 } else {
-                    let rightPage = totalPages - currentSpread;
-                    let leftPage = totalPages - currentSpread - 1;
-                    let infoText;
-                    if (leftPage >= 1) {
-                        infoText = `Páginas ${leftPage} - ${rightPage} de ${totalPages}`;
-                    } else {
-                        infoText = `Página ${rightPage} de ${totalPages}`;
-                    }
-                    const topElem = document.getElementById('topPageInfo');
-                    const bottomElem = document.getElementById('bottomPageInfo');
-                    if(topElem) topElem.textContent = infoText;
-                    if(bottomElem) bottomElem.textContent = infoText;
+                    info = `Página ${rightPage} de ${totalPages}`;
                 }
+                topInfo.textContent = info;
+                bottomInfo.textContent = info;
             }
-            makePageInfoEditable();
-            
-            /********** Renderizar el spread actual usando caché **********/
-            async function renderSpread() {
-                // Si ya no quedan páginas, mostrar la encuesta (redirigiendo al link definido en encuestas/ID.json)
-                if (totalPages - currentSpread < 1) {
-                    try {
-                        const response = await fetch(`encuestas/${issueId}.json`);
-                        if (!response.ok) throw new Error("Encuesta no encontrada.");
-                        const surveyData = await response.json();
-                        const surveyLink = surveyData.surveyLink;
-                        const container = document.getElementById('viewerContainer');
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: 2rem;">
-                                <h1>¡Gracias por leer!</h1>
-                                <p>Para ayudarnos a mejorar nuestras obras y asegurar su continuación, te invitamos a completar una encuesta de satisfacción.</p>
-                                <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
-                                <br><br>
-                                <button onclick="window.history.back()" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
-                            </div>
-                        `;
-                        const topInfo = document.getElementById('topPageInfo');
-                        const bottomInfo = document.getElementById('bottomPageInfo');
-                        if(topInfo) topInfo.textContent = '';
-                        if(bottomInfo) bottomInfo.textContent = '';
-                    } catch (error) {
-                        console.error(error);
-                        document.getElementById('viewerContainer').innerHTML = `<div style="text-align: center; padding: 2rem;">
-                            <h1>¡Gracias por leer!</h1>
-                            <p>Por favor, completa la encuesta de satisfacción para ayudarnos a mejorar.</p>
-                        </div>`;
-                    }
-                    return;
-                }
-                if (isMobile()) {
-                    canvasLeft.style.display = "none";
-                    canvasRight.style.display = "block";
-                    const rightPageNum = totalPages - currentSpread;
-                    const infoText = `Página ${currentSpread + 1} de ${totalPages}`;
-                    if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-                    if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-                    if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-                        let imgRight = new Image();
-                        imgRight.onload = function() {
-                            let container = document.getElementById('viewerContainer');
-                            let availableWidth = container.clientWidth;
-                            let availableHeight = container.clientHeight;
-                            canvasRight.width = availableWidth;
-                            canvasRight.height = availableHeight;
-                            ctxRight.clearRect(0, 0, availableWidth, availableHeight);
-                            ctxRight.drawImage(imgRight, 0, 0, availableWidth, availableHeight);
-                        };
-                        imgRight.src = pageCache[rightPageNum];
-                    } else {
-                        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-                    }
-                } else {
-                    // Desktop: Calcular dimensiones para dos páginas
-                    let container = document.getElementById('viewerContainer');
-                    let availableWidth = container.clientWidth;
-                    let availableHeight = container.clientHeight;
-                    let canvasWidth = (availableWidth - 20) / 2; // 20px de margen entre canvas
-                    let canvasHeight = availableHeight;
-                    canvasLeft.style.display = "block";
-                    canvasRight.style.display = "block";
-                    const rightPageNum = totalPages - currentSpread;
-                    const leftPageNum = totalPages - currentSpread - 1;
-                    let infoText;
-                    if (leftPageNum >= 1) {
-                        infoText = `Páginas ${leftPageNum} - ${rightPageNum} de ${totalPages}`;
-                    } else {
-                        infoText = `Página ${rightPageNum} de ${totalPages}`;
-                    }
-                    if(document.getElementById('topPageInfo')) document.getElementById('topPageInfo').textContent = infoText;
-                    if(document.getElementById('bottomPageInfo')) document.getElementById('bottomPageInfo').textContent = infoText;
-                    if (rightPageNum >= 1 && pageCache[rightPageNum]) {
-                        let imgRight = new Image();
-                        imgRight.onload = function() {
-                            canvasRight.width = canvasWidth;
-                            canvasRight.height = canvasHeight;
-                            ctxRight.clearRect(0, 0, canvasWidth, canvasHeight);
-                            ctxRight.drawImage(imgRight, 0, 0, canvasWidth, canvasHeight);
-                        };
-                        imgRight.src = pageCache[rightPageNum];
-                    } else {
-                        ctxRight.clearRect(0, 0, canvasWidth, canvasHeight);
-                    }
-                    if (leftPageNum >= 1 && pageCache[leftPageNum]) {
-                        let imgLeft = new Image();
-                        imgLeft.onload = function() {
-                            canvasLeft.width = canvasWidth;
-                            canvasLeft.height = canvasHeight;
-                            ctxLeft.clearRect(0, 0, canvasWidth, canvasHeight);
-                            ctxLeft.drawImage(imgLeft, 0, 0, canvasWidth, canvasHeight);
-                        };
-                        imgLeft.src = pageCache[leftPageNum];
-                    } else {
-                        ctxLeft.clearRect(0, 0, canvasWidth, canvasHeight);
-                    }
-                }
+        }
+
+        /********** Render Spread **********/
+        async function renderSpread() {
+            // Final -> Encuesta
+            if (totalPages - currentSpread < 1) {
+                // No hay más páginas
+                showSurvey();
+                return;
             }
-            
-            /********** Navegación **********/
-            async function nextSpread() {
-                if (isMobile()) {
-                    if (currentSpread + 1 < totalPages) {
-                        currentSpread += 1;
-                        renderSpread();
-                    }
-                } else {
-                    if (currentSpread + 2 < totalPages) {
-                        currentSpread += 2;
-                        renderSpread();
-                    } else {
-                        currentSpread = totalPages;
-                        renderSpread();
-                    }
-                }
-            }
-            async function prevSpread() {
-                if (isMobile()) {
-                    if (currentSpread - 1 >= 0) {
-                        currentSpread -= 1;
-                        renderSpread();
-                    }
-                } else {
-                    if (currentSpread - 2 >= 0) {
-                        currentSpread -= 2;
-                        renderSpread();
-                    }
-                }
-            }
-            // En desktop, para lectura RTL: el botón izquierdo (prevArrow) avanza (nextSpread)
-            // y el botón derecho (nextArrow) retrocede (prevSpread)
+
+            // Desktop
             if (!isMobile()) {
-                document.getElementById('prevArrow').addEventListener('click', () => {
-                    nextSpread();
-                });
-                document.getElementById('nextArrow').addEventListener('click', () => {
-                    prevSpread();
-                });
+                canvasLeft.style.display = 'block';
+                canvasRight.style.display = 'block';
+                const container = document.getElementById('viewerContainer');
+                const availableW = container.clientWidth;
+                const availableH = container.clientHeight;
+
+                // 20px gap -> se reparte en 2 canvas
+                const halfW = (availableW - 20) / 2;
+                const leftPageNum = totalPages - currentSpread - 1;
+                const rightPageNum = totalPages - currentSpread;
+
+                if (rightPageNum >= 1 && pageCache[rightPageNum]) {
+                    const imgRight = new Image();
+                    imgRight.onload = () => {
+                        canvasRight.width = halfW;
+                        canvasRight.height = availableH;
+                        const ctx = canvasRight.getContext('2d');
+                        ctx.clearRect(0, 0, halfW, availableH);
+                        ctx.drawImage(imgRight, 0, 0, halfW, availableH);
+                    };
+                    imgRight.src = pageCache[rightPageNum];
+                } else {
+                    canvasRight.getContext('2d').clearRect(0,0,canvasRight.width,canvasRight.height);
+                }
+
+                if (leftPageNum >= 1 && pageCache[leftPageNum]) {
+                    const imgLeft = new Image();
+                    imgLeft.onload = () => {
+                        canvasLeft.width = halfW;
+                        canvasLeft.height = availableH;
+                        const ctx = canvasLeft.getContext('2d');
+                        ctx.clearRect(0, 0, halfW, availableH);
+                        ctx.drawImage(imgLeft, 0, 0, halfW, availableH);
+                    };
+                    imgLeft.src = pageCache[leftPageNum];
+                } else {
+                    canvasLeft.getContext('2d').clearRect(0,0,canvasLeft.width,canvasLeft.height);
+                }
+            } else {
+                // Móvil: 1 sola página
+                canvasLeft.style.display = 'none';
+                canvasRight.style.display = 'block';
+                const container = document.getElementById('viewerContainer');
+                const w = container.clientWidth;
+                const h = container.clientHeight;
+
+                const pageNum = totalPages - currentSpread; 
+                if (pageNum >= 1 && pageCache[pageNum]) {
+                    const img = new Image();
+                    img.onload = () => {
+                        canvasRight.width = w;
+                        canvasRight.height = h;
+                        const ctx = canvasRight.getContext('2d');
+                        ctx.clearRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                    };
+                    img.src = pageCache[pageNum];
+                } else {
+                    canvasRight.getContext('2d').clearRect(0, 0, canvasRight.width, canvasRight.height);
+                }
             }
-            
-            /********** Inicializar el visor PDF **********/
-            async function initViewer() {
-                const pdfPath = await getIssuePDFPath(issueId);
-                const loadingTask = pdfjsLib.getDocument(pdfPath);
-                pdfDoc = await loadingTask.promise;
-                totalPages = pdfDoc.numPages;
-                await preloadAllPages();
-                currentSpread = 0;
-                renderSpread();
-                loadingOverlay.style.display = 'none';
-                const directionOverlay = document.getElementById('directionOverlay');
-                directionOverlay.style.display = 'flex';
-                setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
+
+            updatePageInfo();
+        }
+
+        /********** Navegación **********/
+        function nextSpread() {
+            if (isMobile()) {
+                // Avanza 1 página
+                if (currentSpread + 1 < totalPages) {
+                    currentSpread += 1;
+                    renderSpread();
+                } else {
+                    currentSpread = totalPages;
+                    renderSpread();
+                }
+            } else {
+                // Avanza 2 páginas
+                if (currentSpread + 2 < totalPages) {
+                    currentSpread += 2;
+                    renderSpread();
+                } else {
+                    currentSpread = totalPages;
+                    renderSpread();
+                }
             }
-            initViewer();
-        </script>
-    </body>
+        }
+        function prevSpread() {
+            if (isMobile()) {
+                if (currentSpread - 1 >= 0) {
+                    currentSpread -= 1;
+                    renderSpread();
+                }
+            } else {
+                if (currentSpread - 2 >= 0) {
+                    currentSpread -= 2;
+                    renderSpread();
+                }
+            }
+        }
+
+        // Desktop flechas: botón izquierdo -> nextSpread, derecho -> prevSpread
+        const prevArrow = document.getElementById('prevArrow');
+        const nextArrow = document.getElementById('nextArrow');
+        prevArrow.addEventListener('click', nextSpread);
+        nextArrow.addEventListener('click', prevSpread);
+
+        // Móviles: Botón izquierdo -> prevSpread, derecho -> nextSpread
+        const mobilePrev = document.getElementById('mobilePrev');
+        const mobileNext = document.getElementById('mobileNext');
+        mobilePrev.addEventListener('click', prevSpread);
+        mobileNext.addEventListener('click', nextSpread);
+
+        /********** Encuesta al final **********/
+        function showSurvey() {
+            fetch(`encuestas/${issueId}.json`)
+                .then(r => {
+                    if (!r.ok) throw new Error("No se encontró la encuesta");
+                    return r.json();
+                })
+                .then(data => {
+                    const surveyLink = data.surveyLink;
+                    const container = document.getElementById('viewerContainer');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; width:100%;">
+                            <h1>¡Gracias por leer!</h1>
+                            <p>Para ayudarnos a mejorar y asegurar la continuación de nuestras obras, por favor completa esta encuesta de satisfacción.</p>
+                            <button onclick="window.location.href='${surveyLink}'" 
+                                style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; 
+                                background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">
+                                Realizar Encuesta
+                            </button>
+                            <br><br>
+                            <button onclick="window.history.back()" 
+                                style="font-size: 1rem; padding: 0.5rem 1rem; border: none; 
+                                background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">
+                                Volver
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('topPageInfo').textContent = '';
+                    document.getElementById('bottomPageInfo').textContent = '';
+                })
+                .catch(e => {
+                    console.error(e);
+                    const container = document.getElementById('viewerContainer');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; width:100%;">
+                            <h1>¡Gracias por leer!</h1>
+                            <p>No se encontró la encuesta. Revisa de nuevo más tarde.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        /********** Iniciar Lector PDF **********/
+        async function initViewer() {
+            const pdfPath = await getIssuePDFPath(issueId);
+            const task = pdfjsLib.getDocument(pdfPath);
+            pdfDoc = await task.promise;
+            totalPages = pdfDoc.numPages;
+            await preloadAllPages();
+            currentSpread = 0;
+            renderSpread();
+            loadingOverlay.style.display = 'none';
+            // Flecha direccional al inicio
+            const directionOverlay = document.getElementById('directionOverlay');
+            directionOverlay.style.display = 'flex';
+            setTimeout(() => {
+                directionOverlay.style.display = 'none';
+            }, 3000);
+        }
+        initViewer();
+    </script>
+</body>
 </html>
