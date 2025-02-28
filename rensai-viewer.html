@@ -7,7 +7,7 @@
         <!-- pdf.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <style>
-            /* Forzar 100% de la ventana y sin scroll */
+            /* Forzar 100% de la ventana sin scroll y distribución en flex */
             html, body {
                 width: 100vw;
                 height: 100vh;
@@ -18,8 +18,8 @@
                 background: #fafafa;
                 color: #333;
             }
-            /* Barra superior delgada (40px de alto) con fondo oscuro */
-            .top-bar {
+            /* Barra superior delgada (40px) */
+            .nav-bar {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -27,18 +27,18 @@
                 height: 40px;
                 background: #820000;
                 color: #fff;
+                padding: 0 1rem;
+                box-sizing: border-box;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding: 0 1rem;
-                box-sizing: border-box;
                 z-index: 1100;
             }
-            .top-bar .page-info {
+            .nav-bar .page-info {
                 font-family: 'Botones', sans-serif;
                 font-size: 1rem;
             }
-            .top-bar button {
+            .nav-bar button {
                 background: transparent;
                 border: 1px solid #fff;
                 color: #fff;
@@ -47,12 +47,34 @@
                 cursor: pointer;
                 font-size: 0.9rem;
             }
-            /* (Eliminamos la barra inferior para un look más minimalista) */
-            /* Contenedor del visor: ocupa el espacio restante entre la top-bar y el final */
+            /* Barra inferior delgada (40px) */
+            .bottom-nav-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 40px;
+                background: #820000;
+                color: #fff;
+                padding: 0 1rem;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1100;
+                font-family: 'Botones', sans-serif;
+                font-size: 1rem;
+            }
+            .bottom-nav-bar .copy {
+                margin-left: 1rem;
+                font-size: 0.8rem;
+                opacity: 0.7;
+            }
+            /* Contenedor del visor: ocupa el espacio restante */
             .viewer-container {
                 position: absolute;
                 top: 40px;
-                bottom: 0;
+                bottom: 40px;
                 left: 0;
                 right: 0;
                 display: flex;
@@ -61,12 +83,14 @@
                 box-sizing: border-box;
                 padding: 0 1rem;
                 overflow: hidden;
+                transition: opacity 0.5s ease;
             }
-            /* Los canvas se dibujan manteniendo la relación de aspecto original */
+            /* Los canvas se mostrarán con su aspecto original (sin forzar deformación) */
             canvas {
                 background: #fff;
+                transition: opacity 0.5s ease;
             }
-            /* Flechas de navegación para desktop */
+            /* Flechas de navegación en desktop */
             .nav-arrow {
                 position: absolute;
                 width: 50px;
@@ -75,23 +99,21 @@
                 border: 1px solid #ccc;
                 border-radius: 50%;
                 display: flex;
-                justify-content: center;
                 align-items: center;
+                justify-content: center;
                 cursor: pointer;
                 user-select: none;
                 font-size: 2rem;
                 z-index: 1050;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
             }
             .nav-arrow:hover {
-                background: rgba(255,255,255,1);
+                transform: scale(1.1);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             }
-            /* En lectura RTL: botón izquierdo avanza (nextSpread) y botón derecho retrocede (prevSpread) */
-            .arrow-left {
-                left: 20px;
-            }
-            .arrow-right {
-                right: 20px;
-            }
+            /* En Desktop (lectura japonesa RTL): el botón izquierdo avanza (nextSpread) y el derecho retrocede (prevSpread) */
+            .arrow-left { left: 20px; }
+            .arrow-right { right: 20px; }
             /* Loading overlay */
             .loading-overlay {
                 position: fixed;
@@ -133,8 +155,8 @@
                 bottom: 0;
                 background: rgba(0,0,0,0.5);
                 display: flex;
-                justify-content: center;
                 align-items: center;
+                justify-content: center;
                 font-size: 3rem;
                 color: #fff;
                 z-index: 1000;
@@ -144,6 +166,45 @@
                 width: 60px;
                 font-size: 1rem;
                 text-align: center;
+            }
+            /* Navegación móvil: 1 sola página, 2 botones fijos */
+            @media (max-width: 600px) {
+                .viewer-container {
+                    flex-direction: column;
+                    padding: 0 1rem;
+                }
+                #canvasLeft {
+                    display: none;
+                }
+                #canvasRight {
+                    width: 100%;
+                }
+                .nav-arrow {
+                    display: none;
+                }
+                .mobile-nav {
+                    display: flex;
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    z-index: 1100;
+                    opacity: 1;
+                    transition: opacity 0.3s ease;
+                }
+                .mobile-nav button {
+                    font-size: 2rem;
+                    margin: 0 1rem;
+                    padding: 0.5rem 1rem;
+                    background: #820000;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                #topNavBar {
+                    top: -40px;
+                }
             }
         </style>
     </head>
@@ -158,10 +219,10 @@
         <!-- Direction Overlay -->
         <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
         
-        <!-- Barra superior: solo contador de páginas y botón "Volver" -->
-        <div id="topNavBar" class="top-bar">
+        <!-- Barra superior (top) -->
+        <div id="topNavBar" class="nav-bar">
             <div class="page-info" id="topPageInfo">&lt; Páginas ? - ? de ? &gt;</div>
-            <button id="backButton">Volver</button>
+            <button id="backButton" onclick="window.location.href='rensai-details.html?id=' + issueId">Volver</button>
         </div>
         
         <!-- Contenedor del visor -->
@@ -170,6 +231,17 @@
             <canvas id="canvasRight"></canvas>
             <div id="prevArrow" class="nav-arrow arrow-left">&#9664;</div>
             <div id="nextArrow" class="nav-arrow arrow-right">&#9654;</div>
+            <!-- Navegación móvil: dos botones -->
+            <div id="mobileNav" class="mobile-nav">
+                <button id="mobilePrev">&#9664;</button>
+                <button id="mobileNext">&#9654;</button>
+            </div>
+        </div>
+        
+        <!-- Barra inferior (opcional, se muestra sutilmente) -->
+        <div id="bottomNavBar" class="bottom-nav-bar">
+            <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
+            <div class="copy">&copy; 2025 Shikashi MF</div>
         </div>
         
         <script>
@@ -194,7 +266,7 @@
             /********** Variables Globales de PDF **********/
             let pdfDoc = null;
             let totalPages = 0;
-            let currentSpread = 0; // Desktop: 2 páginas por spread; Móvil: 1 página por spread
+            let currentSpread = 0; // Desktop: 2 páginas; Móvil: 1 página.
             const pdfScale = 1.2;
             let pageCache = [];
             
@@ -237,7 +309,7 @@
                 return base + '/Issue.pdf';
             }
             
-            /********** Preload de páginas **********/
+            /********** Preload de todas las páginas del PDF **********/
             async function preloadAllPages() {
                 for (let p = 1; p <= totalPages; p++) {
                     const page = await pdfDoc.getPage(p);
@@ -255,15 +327,15 @@
                 }
             }
             
-            /********** Mantener Aspect Ratio Original **********/
-            function getScaledDimensions(cacheObj, availableW, availableH) {
+            /********** Escalar imagen manteniendo aspecto original **********/
+            function getScaledDimensions(cacheObj, availW, availH) {
                 const origW = cacheObj.width;
                 const origH = cacheObj.height;
-                const scaleFactor = Math.min(availableW / origW, availableH / origH);
+                const scaleFactor = Math.min(availW / origW, availH / origH);
                 return { width: origW * scaleFactor, height: origH * scaleFactor };
             }
             
-            /********** Indicador de Página Editable **********/
+            /********** Indicador Editable **********/
             function makePageInfoEditable() {
                 const topInfo = document.getElementById('topPageInfo');
                 topInfo.addEventListener('click', () => {
@@ -271,7 +343,7 @@
                     input.type = 'number';
                     input.className = 'editable-input';
                     input.placeholder = 'Ir a...';
-                    topInfo.textContent = '';
+                    topInfo.textContent = "";
                     topInfo.appendChild(input);
                     input.focus();
                     input.addEventListener('keydown', (e) => {
@@ -280,12 +352,14 @@
                             if (!isNaN(num)) {
                                 if (isMobile()) {
                                     if (num >= 1 && num <= totalPages) {
+                                        // En móvil, la primera página mostrada es la última del PDF
                                         currentSpread = totalPages - num;
                                         renderSpread();
                                     }
                                 } else {
                                     const totalSpreads = Math.ceil(totalPages / 2);
                                     if (num >= 1 && num <= totalSpreads) {
+                                        // En desktop, la primera spread mostrada es la última
                                         currentSpread = totalPages - (num * 2) + 1;
                                         if (currentSpread < 0) currentSpread = 0;
                                         renderSpread();
@@ -309,11 +383,11 @@
             function updatePageInfo() {
                 const topInfo = document.getElementById('topPageInfo');
                 if (isMobile()) {
-                    const pageNum = totalPages - currentSpread;
-                    topInfo.textContent = `Página ${pageNum} de ${totalPages}`;
+                    const disp = totalPages - currentSpread;
+                    topInfo.textContent = `Página ${disp} de ${totalPages}`;
                 } else {
-                    const leftPage = totalPages - currentSpread - 1;
                     const rightPage = totalPages - currentSpread;
+                    const leftPage = totalPages - currentSpread - 1;
                     let info;
                     if (leftPage >= 1) {
                         info = `Páginas ${leftPage} - ${rightPage} de ${totalPages}`;
@@ -357,8 +431,8 @@
                     const availH = container.clientHeight;
                     const gap = 20;
                     const halfW = (availW - gap) / 2;
-                    const pdfRight = totalPages - currentSpread; // Página derecha (se muestra primero)
-                    const pdfLeft = totalPages - currentSpread - 1; // Página izquierda
+                    const pdfRight = totalPages - currentSpread;
+                    const pdfLeft = totalPages - currentSpread - 1;
                     if (pdfRight >= 1 && pageCache[pdfRight]) {
                         const dims = getScaledDimensions(pageCache[pdfRight], halfW, availH);
                         canvasRight.width = dims.width;
@@ -419,12 +493,12 @@
                     }
                 }
             }
-            // En desktop, para lectura RTL: el botón izquierdo avanza (nextSpread) y el derecho retrocede (prevSpread)
+            // En Desktop (lectura RTL): botón izquierdo avanza (nextSpread) y derecho retrocede (prevSpread)
             if (!isMobile()) {
                 document.getElementById('prevArrow').addEventListener('click', nextSpread);
                 document.getElementById('nextArrow').addEventListener('click', prevSpread);
             }
-            // En móvil, asignar botones: botón izquierdo para retroceder y derecho para avanzar
+            // En Móvil: asignar botones (botón izquierdo retrocede, derecho avanza)
             else {
                 document.getElementById('mobilePrev').addEventListener('click', prevSpread);
                 document.getElementById('mobileNext').addEventListener('click', nextSpread);
@@ -443,10 +517,16 @@
                         container.innerHTML = `
                             <div style="text-align: center; padding: 2rem; width: 100%;">
                                 <h1>¡Gracias por leer!</h1>
-                                <p>Para ayudarnos a mejorar nuestras obras, por favor completa la encuesta de satisfacción.</p>
-                                <button onclick="window.location.href='${surveyLink}'" style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">Realizar Encuesta</button>
+                                <p>Para ayudarnos a mejorar, por favor completa la encuesta de satisfacción.</p>
+                                <button onclick="window.location.href='${surveyLink}'" 
+                                    style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">
+                                    Realizar Encuesta
+                                </button>
                                 <br><br>
-                                <button onclick="window.location.href='rensai-details.html?id=${issueId}'" style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">Volver</button>
+                                <button onclick="window.location.href='rensai-details.html?id=${issueId}'" 
+                                    style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">
+                                    Volver
+                                </button>
                             </div>
                         `;
                         document.getElementById('topPageInfo').textContent = '';
@@ -466,8 +546,8 @@
             /********** Inicializar Lector PDF **********/
             async function initViewer() {
                 const pdfPath = await getIssuePDFPath(issueId);
-                const loadingTask = pdfjsLib.getDocument(pdfPath);
-                pdfDoc = await loadingTask.promise;
+                const task = pdfjsLib.getDocument(pdfPath);
+                pdfDoc = await task.promise;
                 totalPages = pdfDoc.numPages;
                 await preloadAllPages();
                 currentSpread = 0;
