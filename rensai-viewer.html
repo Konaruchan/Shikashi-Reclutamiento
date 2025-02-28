@@ -7,7 +7,7 @@
         <!-- pdf.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <style>
-            /* Forzar 100% de la ventana sin scroll y distribución en flex */
+            /* Forzar que la página ocupe el 100% de la ventana y sin scroll */
             html, body {
                 width: 100vw;
                 height: 100vh;
@@ -19,7 +19,7 @@
                 color: #333;
             }
             /* Barra superior delgada (40px) */
-            .nav-bar {
+            .top-bar {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -34,11 +34,11 @@
                 justify-content: space-between;
                 z-index: 1100;
             }
-            .nav-bar .page-info {
+            .top-bar .page-info {
                 font-family: 'Botones', sans-serif;
                 font-size: 1rem;
             }
-            .nav-bar button {
+            .top-bar button {
                 background: transparent;
                 border: 1px solid #fff;
                 color: #fff;
@@ -70,7 +70,7 @@
                 font-size: 0.8rem;
                 opacity: 0.7;
             }
-            /* Contenedor del visor: ocupa el espacio restante */
+            /* Contenedor del visor: ocupa el espacio entre la barra superior e inferior */
             .viewer-container {
                 position: absolute;
                 top: 40px;
@@ -85,12 +85,11 @@
                 overflow: hidden;
                 transition: opacity 0.5s ease;
             }
-            /* Los canvas se mostrarán con su aspecto original (sin forzar deformación) */
+            /* Canvas: se dibujan sin forzar deformación (manteniendo su aspect ratio original) */
             canvas {
                 background: #fff;
-                transition: opacity 0.5s ease;
             }
-            /* Flechas de navegación en desktop */
+            /* Flechas de navegación para Desktop (solo aparecen al hacer hover sobre el contenedor) */
             .nav-arrow {
                 position: absolute;
                 width: 50px;
@@ -105,69 +104,23 @@
                 user-select: none;
                 font-size: 2rem;
                 z-index: 1050;
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                opacity: 0;
+                transition: opacity 0.3s ease, transform 0.2s ease;
             }
             .nav-arrow:hover {
                 transform: scale(1.1);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                opacity: 1;
             }
-            /* En Desktop (lectura japonesa RTL): el botón izquierdo avanza (nextSpread) y el derecho retrocede (prevSpread) */
+            .viewer-container:hover .nav-arrow {
+                opacity: 1;
+            }
+            /* En Desktop para lectura RTL: botón izquierdo avanza (nextSpread) y botón derecho retrocede (prevSpread) */
             .arrow-left { left: 20px; }
             .arrow-right { right: 20px; }
-            /* Loading overlay */
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: #fff;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                z-index: 1200;
+            /* Navegación móvil: dos botones fijos en la parte inferior, siempre visibles */
+            .mobile-nav {
+                display: none;
             }
-            .loading-overlay img.logo {
-                width: 200px;
-                margin-bottom: 1rem;
-            }
-            .loading-overlay img.loading-gif {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 1rem;
-            }
-            .loading-text {
-                font-size: 1.2rem;
-                color: #820000;
-                animation: fadeText 1s ease-in-out infinite;
-            }
-            @keyframes fadeText {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-            /* Direction overlay */
-            .direction-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 3rem;
-                color: #fff;
-                z-index: 1000;
-            }
-            /* Editable input para el contador */
-            .editable-input {
-                width: 60px;
-                font-size: 1rem;
-                text-align: center;
-            }
-            /* Navegación móvil: 1 sola página, 2 botones fijos */
             @media (max-width: 600px) {
                 .viewer-container {
                     flex-direction: column;
@@ -202,9 +155,63 @@
                     border-radius: 4px;
                     cursor: pointer;
                 }
+                /* Ocultar la barra superior en móvil */
                 #topNavBar {
                     top: -40px;
                 }
+            }
+            /* Loading Overlay */
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 1200;
+            }
+            .loading-overlay img.logo {
+                width: 200px;
+                margin-bottom: 1rem;
+            }
+            .loading-overlay img.loading-gif {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
+            }
+            .loading-text {
+                font-size: 1.2rem;
+                color: #820000;
+                animation: fadeText 1s ease-in-out infinite;
+            }
+            @keyframes fadeText {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+            /* Direction Overlay */
+            .direction-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                color: #fff;
+                z-index: 1000;
+            }
+            /* Editable Input para el indicador */
+            .editable-input {
+                width: 60px;
+                font-size: 1rem;
+                text-align: center;
             }
         </style>
     </head>
@@ -219,8 +226,8 @@
         <!-- Direction Overlay -->
         <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
         
-        <!-- Barra superior (top) -->
-        <div id="topNavBar" class="nav-bar">
+        <!-- Barra Superior: solo indicador y botón "Volver" -->
+        <div id="topNavBar" class="top-bar">
             <div class="page-info" id="topPageInfo">&lt; Páginas ? - ? de ? &gt;</div>
             <button id="backButton" onclick="window.location.href='rensai-details.html?id=' + issueId">Volver</button>
         </div>
@@ -229,16 +236,17 @@
         <div id="viewerContainer" class="viewer-container">
             <canvas id="canvasLeft"></canvas>
             <canvas id="canvasRight"></canvas>
+            <!-- Flechas de navegación Desktop -->
             <div id="prevArrow" class="nav-arrow arrow-left">&#9664;</div>
             <div id="nextArrow" class="nav-arrow arrow-right">&#9654;</div>
-            <!-- Navegación móvil: dos botones -->
+            <!-- Navegación Móvil: dos botones -->
             <div id="mobileNav" class="mobile-nav">
                 <button id="mobilePrev">&#9664;</button>
                 <button id="mobileNext">&#9654;</button>
             </div>
         </div>
         
-        <!-- Barra inferior (opcional, se muestra sutilmente) -->
+        <!-- Barra Inferior: indicador sutil -->
         <div id="bottomNavBar" class="bottom-nav-bar">
             <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
             <div class="copy">&copy; 2025 Shikashi MF</div>
@@ -246,7 +254,8 @@
         
         <script>
             // Configurar pdf.js
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
             
             /********** Loading Text Animation **********/
             const loadingMessages = [
@@ -266,7 +275,7 @@
             /********** Variables Globales de PDF **********/
             let pdfDoc = null;
             let totalPages = 0;
-            let currentSpread = 0; // Desktop: 2 páginas; Móvil: 1 página.
+            let currentSpread = 0; // Desktop: 2 páginas por spread; Móvil: 1 página por spread
             const pdfScale = 1.2;
             let pageCache = [];
             
@@ -309,7 +318,7 @@
                 return base + '/Issue.pdf';
             }
             
-            /********** Preload de todas las páginas del PDF **********/
+            /********** Preload de páginas **********/
             async function preloadAllPages() {
                 for (let p = 1; p <= totalPages; p++) {
                     const page = await pdfDoc.getPage(p);
@@ -327,7 +336,7 @@
                 }
             }
             
-            /********** Escalar imagen manteniendo aspecto original **********/
+            /********** Escalar imagen manteniendo el aspect ratio original **********/
             function getScaledDimensions(cacheObj, availW, availH) {
                 const origW = cacheObj.width;
                 const origH = cacheObj.height;
@@ -352,14 +361,12 @@
                             if (!isNaN(num)) {
                                 if (isMobile()) {
                                     if (num >= 1 && num <= totalPages) {
-                                        // En móvil, la primera página mostrada es la última del PDF
                                         currentSpread = totalPages - num;
                                         renderSpread();
                                     }
                                 } else {
                                     const totalSpreads = Math.ceil(totalPages / 2);
                                     if (num >= 1 && num <= totalSpreads) {
-                                        // En desktop, la primera spread mostrada es la última
                                         currentSpread = totalPages - (num * 2) + 1;
                                         if (currentSpread < 0) currentSpread = 0;
                                         renderSpread();
@@ -493,15 +500,15 @@
                     }
                 }
             }
-            // En Desktop (lectura RTL): botón izquierdo avanza (nextSpread) y derecho retrocede (prevSpread)
+            // En Desktop (lectura RTL): botón izquierdo (prevArrow) avanza y derecho (nextArrow) retrocede
             if (!isMobile()) {
                 document.getElementById('prevArrow').addEventListener('click', nextSpread);
                 document.getElementById('nextArrow').addEventListener('click', prevSpread);
             }
-            // En Móvil: asignar botones (botón izquierdo retrocede, derecho avanza)
+            // En Móvil: invertir la asignación para que el botón izquierdo avance y el derecho retroceda
             else {
-                document.getElementById('mobilePrev').addEventListener('click', prevSpread);
-                document.getElementById('mobileNext').addEventListener('click', nextSpread);
+                document.getElementById('mobilePrev').addEventListener('click', nextSpread);
+                document.getElementById('mobileNext').addEventListener('click', prevSpread);
             }
             
             /********** Mostrar Encuesta al Final **********/
@@ -555,7 +562,9 @@
                 loadingOverlay.style.display = 'none';
                 const directionOverlay = document.getElementById('directionOverlay');
                 directionOverlay.style.display = 'flex';
-                setTimeout(() => { directionOverlay.style.display = 'none'; }, 3000);
+                setTimeout(() => {
+                    directionOverlay.style.display = 'none';
+                }, 3000);
             }
             initViewer();
         </script>
