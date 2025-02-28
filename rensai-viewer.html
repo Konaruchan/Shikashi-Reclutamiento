@@ -7,45 +7,44 @@
         <!-- pdf.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <style>
-            /* Forzar 100% de la ventana y sin scroll, y usar flex para distribuir la altura */
+            /* Forzar que la página ocupe el 100% de la ventana y sin scroll */
             html, body {
                 margin: 0;
                 padding: 0;
                 width: 100vw;
                 height: 100vh;
                 overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            }
-            /* Body se estira para ocupar todo el ancho */
-            body {
-                align-items: stretch;
+                font-family: 'Cuerpo', sans-serif;
                 background: #fafafa;
                 color: #333;
-                font-family: 'Cuerpo', sans-serif;
             }
-            /* Barra de navegación superior fija */
-            .nav-bar {
+            /* Estructura de la página: nav superior, visor y nav inferior */
+            .nav-bar, .bottom-nav-bar {
                 flex-shrink: 0;
                 width: 100%;
                 background: #820000;
                 color: #fff;
                 padding: 0.5rem 1rem;
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
                 position: fixed;
-                top: 0;
                 left: 0;
                 z-index: 1100;
-                transition: top 0.3s;
+            }
+            .nav-bar {
+                top: 0;
+            }
+            .bottom-nav-bar {
+                bottom: 0;
+                justify-content: center;
+                font-family: 'Botones', sans-serif;
+                font-size: 1rem;
             }
             .nav-links {
                 display: flex;
                 gap: 1rem;
             }
             .nav-link {
-                font-family: 'Botones', sans-serif;
                 color: #fff;
                 text-decoration: none;
                 padding: 0.5rem 1rem;
@@ -63,56 +62,39 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
-            /* Barra inferior fija con copyright sutil */
-            .bottom-nav-bar {
-                flex-shrink: 0;
-                width: 100%;
-                background: #820000;
-                color: #fff;
-                padding: 0.5rem 1rem;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                z-index: 1100;
-                font-family: 'Botones', sans-serif;
-                font-size: 1rem;
-            }
             .bottom-nav-bar .copy {
                 margin-left: 1rem;
                 font-size: 0.8rem;
                 opacity: 0.7;
             }
-            /* Contenedor del visor: ocupar el espacio restante entre nav y bottom */
+            /* Contenedor del visor ocupa el espacio restante */
             .viewer-container {
-                flex: 1;
-                margin-top: 80px;  /* altura de la nav superior */
-                margin-bottom: 80px;  /* altura de la nav inferior */
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                position: relative;
                 width: 100%;
-                max-width: 1000px;
-                padding: 0 1rem;
+                height: calc(100vh - 160px); /* 80px nav superior + 80px nav inferior */
+                margin-top: 80px;
+                margin-bottom: 80px;
+                position: relative;
+                box-sizing: border-box;
             }
-            /* Los canvas se escalan para llenar el contenedor sin deformar */
+            /* Canvas: se ajustan para mostrar dos páginas sin deformación */
             canvas {
                 background: #fff;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                /* No forzamos dimensiones fijas: se establecerán dinámicamente */
             }
             /* Flechas de navegación para desktop */
             .nav-arrow {
                 position: absolute;
                 top: 50%;
                 transform: translateY(-50%);
-                background: rgba(255,255,255,0.8);
+                background: rgba(255,255,255,0.9);
                 border: 1px solid #ccc;
                 border-radius: 50%;
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -120,67 +102,19 @@
                 user-select: none;
                 z-index: 1050;
             }
-            .nav-arrow:hover { background: rgba(255,255,255,1); }
-            /* En desktop para lectura RTL: botón izquierdo avanza (nextSpread) y derecho retrocede (prevSpread) */
-            .arrow-left { left: 10px; }
-            .arrow-right { right: 10px; }
-            /* Navegación móvil: dos botones fijos que se ocultan automáticamente */
-            .mobile-nav {
-                display: none;
-                position: fixed;
-                bottom: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1100;
-                opacity: 1;
-                transition: opacity 0.3s ease;
+            .nav-arrow:hover {
+                background: rgba(255,255,255,1);
             }
-            .mobile-nav button {
-                font-size: 2rem;
-                margin: 0 1rem;
-                padding: 0.5rem 1rem;
-                border: none;
-                background: #820000;
-                color: #fff;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-            /* Loading overlay: fondo blanco sólido, logo y GIF */
-            .loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: #fff;
-                z-index: 1200;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            .loading-overlay img.logo {
-                width: 150px;
-                margin-bottom: 1rem;
-            }
-            .loading-overlay img.loading-gif {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 1rem;
-            }
-            .loading-text {
-                font-size: 1.2rem;
-                color: #820000;
-                font-family: 'Cuerpo', sans-serif;
+            /* En lectura RTL: el botón izquierdo avanza (nextSpread) y el derecho retrocede (prevSpread) */
+            .arrow-left { left: 20px; }
+            .arrow-right { right: 20px; }
+            /* Indicador de página editable */
+            .editable-input {
+                width: 60px;
+                font-size: 1rem;
                 text-align: center;
-                min-height: 1.5em;
-                animation: fadeText 1s ease-in-out infinite;
             }
-            @keyframes fadeText {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-            /* Direction overlay */
+            /* Direction overlay para indicar el orden de lectura */
             .direction-overlay {
                 position: fixed;
                 top: 0;
@@ -195,24 +129,39 @@
                 color: #fff;
                 font-size: 3rem;
             }
-            /* Editable input para info de página */
-            .editable-input {
-                width: 60px;
-                font-size: 1rem;
-                text-align: center;
+            /* Loading overlay */
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff;
+                z-index: 1200;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
-            /* Adaptabilidad móvil */
-            @media (max-width: 600px) {
-                .viewer-container {
-                    flex-direction: column;
-                    padding: 0 1rem;
-                }
-                #canvasLeft { display: none; }
-                #canvasRight { width: 100%; }
-                .nav-arrow { display: none; }
-                .mobile-nav { display: block; }
-                /* En móviles, por defecto, la nav superior se oculta */
-                #topNavBar { top: -80px; }
+            .loading-overlay img.logo {
+                width: 200px;
+                margin-bottom: 1rem;
+            }
+            .loading-overlay img.loading-gif {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
+            }
+            .loading-text {
+                font-size: 1.2rem;
+                color: #820000;
+                text-align: center;
+                min-height: 1.5em;
+                animation: fadeText 1s ease-in-out infinite;
+            }
+            @keyframes fadeText {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
             }
         </style>
     </head>
@@ -235,22 +184,15 @@
                 <a href="Articulos.html" class="nav-link">ARTÍCULOS</a>
                 <a href="rensai.html" class="nav-link">RENSAI</a>
             </div>
-            <button id="toggleNav" class="toggle-nav-btn">Mostrar Nav</button>
+            <button id="toggleNav" class="toggle-nav-btn">Ocultar Nav</button>
         </div>
         
         <!-- Contenedor del visor -->
         <div id="viewerContainer" class="viewer-container">
             <canvas id="canvasLeft"></canvas>
             <canvas id="canvasRight"></canvas>
-            <!-- Flechas de navegación para desktop -->
             <div id="prevArrow" class="nav-arrow arrow-left">&#9664;</div>
             <div id="nextArrow" class="nav-arrow arrow-right">&#9654;</div>
-        </div>
-        
-        <!-- Navegación móvil: dos botones fijos -->
-        <div id="mobileNav" class="mobile-nav">
-            <button id="mobilePrev">&#9664;</button>
-            <button id="mobileNext">&#9654;</button>
         </div>
         
         <!-- Barra inferior fija -->
@@ -260,7 +202,7 @@
         </div>
         
         <script>
-            // Establecer worker de pdf.js para evitar advertencias
+            // Configurar worker de pdf.js
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
             
             /********** Loading Text Animation **********/
@@ -281,7 +223,7 @@
             /********** Toggle Nav Bar **********/
             const toggleNavBtn = document.getElementById('toggleNav');
             const topNavBar = document.getElementById('topNavBar');
-            let navVisible = false;
+            let navVisible = true;
             toggleNavBtn.addEventListener('click', () => {
                 navVisible = !navVisible;
                 if (navVisible) {
@@ -354,29 +296,6 @@
                     pageCache[p] = offscreen.toDataURL();
                 }
             }
-            
-            /********** Navegación móvil: Botones con auto-hide **********/
-            let mobileNavTimeout;
-            const mobileNav = document.getElementById('mobileNav');
-            function showMobileNav() {
-                mobileNav.style.opacity = 1;
-                clearTimeout(mobileNavTimeout);
-                mobileNavTimeout = setTimeout(() => {
-                    mobileNav.style.opacity = 0;
-                }, 1000);
-            }
-            document.getElementById('mobilePrev').addEventListener('click', () => {
-                // En móviles: el botón izquierdo ahora retrocede (prevSpread)
-                prevSpread();
-                showMobileNav();
-            });
-            document.getElementById('mobileNext').addEventListener('click', () => {
-                // En móviles: el botón derecho ahora avanza (nextSpread)
-                nextSpread();
-                showMobileNav();
-            });
-            document.getElementById('viewerContainer').addEventListener('touchstart', showMobileNav);
-            document.body.addEventListener('touchstart', showMobileNav);
             
             /********** Hacer que la información de página sea editable **********/
             function makePageInfoEditable() {
@@ -494,7 +413,6 @@
                     if (rightPageNum >= 1 && pageCache[rightPageNum]) {
                         let imgRight = new Image();
                         imgRight.onload = function() {
-                            // Ajustar la imagen al tamaño del contenedor
                             let container = document.getElementById('viewerContainer');
                             let availableWidth = container.clientWidth;
                             let availableHeight = container.clientHeight;
@@ -508,11 +426,11 @@
                         ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
                     }
                 } else {
-                    // Desktop: repartir el espacio del contenedor para dos canvas
+                    // Desktop: Calcular dimensiones para dos páginas
                     let container = document.getElementById('viewerContainer');
                     let availableWidth = container.clientWidth;
                     let availableHeight = container.clientHeight;
-                    let canvasWidth = (availableWidth - 10) / 2; // 10px de gap
+                    let canvasWidth = (availableWidth - 20) / 2; // 20px de margen entre canvas
                     let canvasHeight = availableHeight;
                     canvasLeft.style.display = "block";
                     canvasRight.style.display = "block";
@@ -583,7 +501,8 @@
                     }
                 }
             }
-            // En desktop, para lectura RTL: el botón izquierdo (prevArrow) avanza (nextSpread) y el derecho (nextArrow) retrocede (prevSpread)
+            // En desktop, para lectura RTL: el botón izquierdo (prevArrow) avanza (nextSpread)
+            // y el botón derecho (nextArrow) retrocede (prevSpread)
             if (!isMobile()) {
                 document.getElementById('prevArrow').addEventListener('click', () => {
                     nextSpread();
