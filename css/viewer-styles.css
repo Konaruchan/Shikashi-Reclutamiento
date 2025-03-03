@@ -10,7 +10,7 @@ html, body {
   color: #333;
 }
 
-/* Barra superior */
+/* Barra Superior */
 .top-bar {
   position: fixed;
   top: 0;
@@ -20,7 +20,6 @@ html, body {
   background: #820000;
   color: #fff;
   padding: 0 1rem;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -31,7 +30,7 @@ html, body {
   font-size: 1rem;
   cursor: pointer;
 }
-.top-bar button {
+.top-bar .nav-buttons button {
   background: transparent;
   border: 1px solid #fff;
   color: #fff;
@@ -39,9 +38,10 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
+  margin-left: 0.5rem;
 }
 
-/* Barra inferior */
+/* Barra Inferior */
 .bottom-nav-bar {
   position: fixed;
   bottom: 0;
@@ -51,7 +51,6 @@ html, body {
   background: #820000;
   color: #fff;
   padding: 0 1rem;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,16 +74,17 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
   padding: 0 1rem;
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  background-color: #fafafa; /* modificable vía configuración */
+  transition: background-color 0.3s;
 }
 canvas {
   background: #fff;
+  transition: transform 0.3s;
 }
 
-/* Flechas de navegación Desktop */
+/* Flechas de Navegación (Desktop) */
 .nav-arrow {
   position: absolute;
   width: 50px;
@@ -96,7 +96,6 @@ canvas {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  user-select: none;
   font-size: 2rem;
   z-index: 1050;
   opacity: 0;
@@ -112,48 +111,35 @@ canvas {
 .arrow-left { left: 20px; }
 .arrow-right { right: 20px; }
 
-/* Navegación móvil */
-.mobile-nav {
+/* Menú de Configuraciones */
+.settings-menu {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  z-index: 1200;
   display: none;
+  width: 200px;
+  transition: opacity 0.3s ease;
 }
-@media (max-width: 600px) {
-  .viewer-container {
-    flex-direction: column;
-    padding: 0 1rem;
-  }
-  #canvasLeft {
-    display: none;
-  }
-  #canvasRight {
-    width: 100%;
-  }
-  .nav-arrow {
-    display: none;
-  }
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1100;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-  .mobile-nav button {
-    font-size: 2rem;
-    margin: 0 1rem;
-    padding: 0.5rem 1rem;
-    background: #820000;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  /* Ocultar la barra superior en móvil */
-  #topNavBar {
-    top: -40px;
-  }
+.settings-menu h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+.settings-menu label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.settings-menu input[type="range"],
+.settings-menu select,
+.settings-menu input[type="color"] {
+  width: 100%;
+  margin-top: 0.3rem;
 }
 
 /* Loading Overlay */
@@ -166,8 +152,8 @@ canvas {
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1200;
 }
 .loading-overlay img.logo {
@@ -205,9 +191,21 @@ canvas {
   z-index: 1000;
 }
 
-/* Editable Input para el indicador */
-.editable-input {
-  width: 60px;
-  font-size: 1rem;
-  text-align: center;
+/* Estilos para Móviles */
+@media (max-width: 600px) {
+  .top-bar .nav-buttons button {
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+  }
+  .viewer-container {
+    padding: 0;
+  }
+  canvas {
+    width: 100%;
+    height: auto;
+  }
+  /* Se ocultan las flechas en móviles, se usa swipe */
+  .nav-arrow {
+    display: none;
+  }
 }
