@@ -1,0 +1,388 @@
+/* Base y Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #fafafa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Contenedor general */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* NAV: Inspirado en 3DS, con gradiente y sombra */
+.main-nav {
+  background: linear-gradient(45deg, #820000, #F4A200);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.nav-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo-container img {
+  width: 150px;
+  margin-bottom: 0.8rem;
+}
+.nav-links {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.nav-link {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.2rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: background 0.3s, border-color 0.3s;
+}
+.nav-link:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* Marquee */
+.marquee-container {
+  background: #F4A200;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.8rem 2rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-content {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+}
+.marquee-content span {
+  padding: 0 20px;
+}
+@keyframes marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+/* HERO IMAGE con Overlay Glass */
+.hero-image-section {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: url('img/hero-image.jpg') center/cover no-repeat;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.overlay-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Efecto cristal (glassmorphism) */
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+}
+.overlay-grid.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Cards: Efecto de profundidad y bordes suaves */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 2px solid #F4A200;
+  background: #fff;
+}
+.card-header .accent {
+  width: 6px;
+  height: 100%;
+  background: #F4A200;
+  margin-right: 0.5rem;
+}
+.card-header h3 {
+  font-size: 1.6rem;
+}
+.card-body {
+  padding: 0.5rem;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.big-item-btn {
+  display: inline-block;
+  margin: 0.5rem auto;
+  padding: 0.8rem 1.8rem;
+  background: #820000;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.3s;
+}
+.big-item-btn:hover {
+  background: #680000;
+}
+
+/* Small Items */
+.small-items-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Carousel y Carrusel de Obras: Estilo moderno y minimalista */
+.carousel-section, .obras-carousel-section {
+  width: 100%;
+  padding: 2rem 0;
+}
+.carousel-wrapper, .obras-carousel-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.carousel-section h2, .obras-carousel-section h2 {
+  color: #fff;
+  text-align: left;
+  font-size: 1.8rem;
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+}
+.carousel-container, .obras-carousel-container {
+  overflow: hidden;
+  position: relative;
+}
+.carousel-pages, .obras-carousel-pages {
+  display: flex;
+  transition: transform 0.8s ease;
+}
+.carousel-page, .obras-carousel-page {
+  min-width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+.carousel-item, .obras-carousel-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  transition: transform 0.3s ease;
+}
+.carousel-item:hover, .obras-carousel-item:hover {
+  transform: translateY(-5px);
+}
+.carousel-button, .obras-carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-size: 1.5rem;
+  color: #820000;
+  transition: background 0.3s ease;
+  z-index: 2;
+}
+.carousel-button:hover, .obras-carousel-button:hover {
+  background: rgba(255,255,255,1);
+}
+.carousel-button.prev { left: -2rem; }
+.carousel-button.next { right: -2rem; }
+.obras-carousel-button.prev { left: -2rem; }
+.obras-carousel-button.next { right: -2rem; }
+
+/* Articles Section */
+.articles-section {
+  padding: 3rem 0;
+  background: #fff;
+}
+.articles-section .container h2 {
+  color: #820000;
+  text-align: left;
+  font-size: 1.8rem;
+  padding-left: 1rem;
+  margin-bottom: 1rem;
+}
+.articles-content {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 1rem;
+  align-items: start;
+}
+.articles-main {
+  display: flex;
+  flex-direction: column;
+}
+.articles-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.selector-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 1.1rem;
+  flex: 1;
+}
+.selector-btn.active {
+  background: #820000;
+  color: #fff;
+  border-color: #820000;
+}
+.articles-list {
+  height: 420px;
+  overflow-y: auto;
+}
+.article-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+.article-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+.article-details h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.article-details p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+.article-details span {
+  font-size: 0.85rem;
+  color: #999;
+}
+.more-articles-btn {
+  border: 1px solid #820000;
+  background: transparent;
+  color: #820000;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  align-self: flex-start;
+  transition: background 0.3s, color 0.3s;
+}
+.more-articles-btn:hover {
+  background: #820000;
+  color: #fff;
+}
+.articles-promo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.articles-promo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.articles-promo .no-images {
+  writing-mode: vertical-rl;
+  text-align: center;
+  font-size: 1rem;
+  color: #820000;
+}
+
+/* Footer */
+.footer {
+  background: #820000;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Toast de Salida */
+.exit-toast {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  z-index: 1400;
+  font-size: 0.9rem;
+  display: none;
+}
+
+/* Small Loading Indicator (para cambio de página en móvil) */
+.small-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100;
+  width: 50px;
+  height: 50px;
+  display: none;
+}
+.small-loading img {
+  width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-image-section { max-width: 100%; margin: 0 1rem; }
+  .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
+  .small-items-container { grid-template-columns: 1fr 1fr; }
+  .carousel-button.prev, .carousel-button.next,
+  .obras-carousel-button.prev, .obras-carousel-button.next {
+    top: auto; bottom: 1rem; transform: translateY(0);
+  }
+  .carousel-button.prev { left: 1rem; }
+  .carousel-button.next { right: 1rem; }
+  .obras-carousel-button.prev { left: 1rem; }
+  .obras-carousel-button.next { right: 1rem; }
+  .articles-content { grid-template-columns: 1fr; }
+}
