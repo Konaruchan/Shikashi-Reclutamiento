@@ -85,7 +85,6 @@ html, body {
 }
 canvas {
   background: #fff;
-  /* Transición para animar cambios de posición en swipe */
   transition: transform 0.3s;
 }
 
@@ -209,7 +208,6 @@ canvas {
     width: 100%;
     height: auto;
   }
-  /* Oculta flechas en móviles (se usa swipe) */
   .nav-arrow {
     display: none;
   }
