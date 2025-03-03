@@ -85,7 +85,6 @@ html, body {
 }
 canvas {
   background: #fff;
-  /* Se usará para dibujar la imagen pre-renderizada escalada */
   transition: transform 0.3s;
 }
 
@@ -145,6 +144,46 @@ canvas {
 .settings-menu input[type="color"] {
   width: 100%;
   margin-top: 0.3rem;
+}
+
+/* Banner de encuesta (estilo logro) */
+.survey-banner {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2ecc71;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1300;
+  text-align: center;
+}
+.survey-banner p {
+  margin: 0.5rem 0;
+}
+.survey-banner button {
+  background: #fff;
+  color: #2ecc71;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+/* Toast de salida */
+.exit-toast {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  z-index: 1400;
+  font-size: 0.9rem;
 }
 
 /* Loading Overlay */
@@ -209,7 +248,6 @@ canvas {
     width: 100%;
     height: auto;
   }
-  /* Se ocultan las flechas en móvil */
   .nav-arrow {
     display: none;
   }
