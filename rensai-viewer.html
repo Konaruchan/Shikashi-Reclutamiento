@@ -17,19 +17,19 @@
     <div id="loadingText" class="loading-text">Vistiendo a las chicas mágicas...</div>
   </div>
   
-  <!-- Direction Overlay -->
+  <!-- Direction Overlay (se muestra brevemente al iniciar) -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
   
-  <!-- Barra Superior: Indicador, botón Volver y Configuración -->
+  <!-- Barra Superior: Contador, botón Volver y botón Configuraciones -->
   <div id="topNavBar" class="top-bar">
-    <div class="page-info" id="topPageInfo" aria-label="Información de página">&lt;  de  &gt;</div>
+    <div class="page-info" id="topPageInfo" aria-label="Información de página">1 de ?</div>
     <div class="nav-buttons">
       <button id="backButton" aria-label="Volver" type="button">Volver</button>
       <button id="settingsButton" aria-label="Configuraciones" type="button">⚙️</button>
     </div>
   </div>
   
-  <!-- Menú de Configuraciones (oculto por defecto) -->
+  <!-- Menú de Configuraciones (inicialmente oculto) -->
   <div id="settingsMenu" class="settings-menu">
     <h3>Configuraciones</h3>
     <label>
@@ -56,16 +56,17 @@
   
   <!-- Contenedor del visor -->
   <div id="viewerContainer" class="viewer-container">
+    <!-- En modo doble se usarán dos canvas; en móvil o modo simple, solo se muestra uno -->
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Botones de navegación Desktop (en móviles se usa swipe) -->
+    <!-- Botones de navegación en Desktop (en móviles se usará swipe) -->
     <div id="prevArrow" class="nav-arrow arrow-left" aria-label="Avanzar">&#9664;</div>
     <div id="nextArrow" class="nav-arrow arrow-right" aria-label="Retroceder">&#9654;</div>
   </div>
   
-  <!-- Barra Inferior: Indicador y Copyright -->
+  <!-- Barra Inferior: Contador y Copyright -->
   <div id="bottomNavBar" class="bottom-nav-bar">
-    <div class="page-info" id="bottomPageInfo"> de </div>
+    <div class="page-info" id="bottomPageInfo">1 de ?</div>
     <div class="copy">&copy; 2025 Shikashi MF</div>
   </div>
   
