@@ -1,52 +1,30 @@
-/***********************
- * Configuración Global
- ***********************/
+/**********************************
+ * CONFIGURACIÓN Y VARIABLES GLOBALES
+ **********************************/
+const preRenderScale = 3; // Factor alto para pre-renderizar (garantiza alta resolución)
 let config = {
-  readingMode: 2, // 2 = doble página, 1 = una página
-  zoom: 1,        // 1 = ajuste exacto al contenedor; se multiplica sobre el "fit"
+  readingMode: 2,  // 2 = doble página, 1 = una página (en móvil se fuerza 1)
+  zoom: 1,         // 1 = “fit-to-container”. El zoom se aplica multiplicando sobre el fit
   bgColor: '#fafafa',
-  animSpeed: 1    // multiplicador para la duración de la animación
+  animSpeed: 1     // Multiplicador para la duración de la animación (en segundos)
 };
 
-/***********************
- * Inicialización de PDF.js
- ***********************/
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-/***********************
- * Loading Text Animation
- ***********************/
-const loadingMessages = [
-  "Vistiendo a las chicas mágicas...",
-  "Ajustando viajes en el tiempo...",
-  "Maquillando a Miyuki...",
-  "Preparando los fur-suits...",
-  "Preparando las faldas..."
-];
-let messageIndex = 0;
-const loadingTextElem = document.getElementById("loadingText");
-setInterval(() => {
-  messageIndex = (messageIndex + 1) % loadingMessages.length;
-  loadingTextElem.textContent = loadingMessages[messageIndex];
-}, 10000);
-
-/***********************
- * Variables Globales del PDF
- ***********************/
 let pdfDoc = null,
     totalPages = 0,
-    currentSpread = 0; // 0 = primer spread leído
-let pdfPages = [];    // Almacenamos los objetos de página (sin render)
+    currentSpread = 0; // Índice de lectura (0 = primer spread)
+let pageCache = [];   // Aquí se almacenan los datos pre-renderizados (objetos con dataURL, width, height)
 
-// Elementos Canvas y contextos
+// Elementos de canvas
 const canvasLeft = document.getElementById('canvasLeft');
 const canvasRight = document.getElementById('canvasRight');
 const ctxLeft = canvasLeft.getContext('2d');
 const ctxRight = canvasRight.getContext('2d');
 
-/***********************
- * Elementos de Configuración
- ***********************/
+/**********************************
+ * ELEMENTOS DE CONFIGURACIÓN
+ **********************************/
 const settingsButton = document.getElementById('settingsButton');
 const settingsMenu = document.getElementById('settingsMenu');
 const closeSettings = document.getElementById('closeSettings');
@@ -55,9 +33,9 @@ const zoomRange = document.getElementById('zoomRange');
 const bgColorPicker = document.getElementById('bgColorPicker');
 const animSpeedInput = document.getElementById('animSpeed');
 
-/***********************
- * Eventos del Menú de Configuración
- ***********************/
+/**********************************
+ * EVENTOS DEL MENÚ DE CONFIGURACIÓN
+ **********************************/
 settingsButton.addEventListener('click', () => {
   settingsMenu.style.display = 'block';
 });
@@ -68,9 +46,8 @@ readingModeSelect.addEventListener('change', () => {
   config.readingMode = parseInt(readingModeSelect.value);
   renderSpread();
 });
-zoomRange.addEventListener('input', async () => {
+zoomRange.addEventListener('input', () => {
   config.zoom = parseFloat(zoomRange.value);
-  // Al cambiar zoom, re-renderizamos sin necesidad de recargar las páginas
   renderSpread();
 });
 bgColorPicker.addEventListener('input', () => {
@@ -81,29 +58,31 @@ animSpeedInput.addEventListener('input', () => {
   config.animSpeed = parseFloat(animSpeedInput.value);
 });
 
-/***********************
- * Actualizar Indicadores de Página
- * Se muestran en orden de lectura: spreadDisplay = currentSpread+1, total = (modo simple: totalPages, doble: Math.ceil(totalPages/2))
- ***********************/
+/**********************************
+ * ACTUALIZAR CONTADORES (MOSTRAR NÚMERO DE PÁGINA)
+ * Se muestran en orden de lectura natural: 
+ * - En modo simple: contador = currentSpread+1, total = totalPages.
+ * - En modo doble: contador = currentSpread+1, total = Math.ceil(totalPages/2).
+ **********************************/
 function updatePageInfo() {
   const topInfo = document.getElementById('topPageInfo');
   const bottomInfo = document.getElementById('bottomPageInfo');
-  let spreadDisplay, totalSpreads;
+  let displayNum, totalDisplay;
   if (window.innerWidth < 600 || config.readingMode === 1) {
-    spreadDisplay = currentSpread + 1;
-    totalSpreads = totalPages;
+    displayNum = currentSpread + 1;
+    totalDisplay = totalPages;
   } else {
-    spreadDisplay = currentSpread + 1;
-    totalSpreads = Math.ceil(totalPages / 2);
+    displayNum = currentSpread + 1;
+    totalDisplay = Math.ceil(totalPages / 2);
   }
-  let info = `Página ${spreadDisplay} de ${totalSpreads}`;
+  let info = `Página ${displayNum} de ${totalDisplay}`;
   topInfo.textContent = info;
   bottomInfo.textContent = info;
 }
 
-/***********************
- * Edición del Indicador (al hacer click)
- ***********************/
+/**********************************
+ * EDITAR CONTADOR AL HACER CLICK (Saltar a un número específico)
+ **********************************/
 function makePageInfoEditable() {
   const topInfo = document.getElementById('topPageInfo');
   topInfo.addEventListener('click', () => {
@@ -124,8 +103,8 @@ function makePageInfoEditable() {
               renderSpread();
             }
           } else {
-            let totalSpreads = Math.ceil(totalPages / 2);
-            if (num >= 1 && num <= totalSpreads) {
+            let tot = Math.ceil(totalPages / 2);
+            if (num >= 1 && num <= tot) {
               currentSpread = num - 1;
               renderSpread();
             }
@@ -145,9 +124,9 @@ function makePageInfoEditable() {
 }
 makePageInfoEditable();
 
-/***********************
- * Obtener Parámetros de URL
- ***********************/
+/**********************************
+ * OBTENCIÓN DE PARÁMETROS URL (issueId)
+ **********************************/
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
   return params.get(param);
@@ -157,9 +136,9 @@ if (!issueId) {
   window.location.href = 'rensai.html';
 }
 
-/***********************
- * Cargar PDF (issues.json)
- ***********************/
+/**********************************
+ * CARGAR PDF DESDE issues.json
+ **********************************/
 async function fetchIssues() {
   try {
     const resp = await fetch('issues.json');
@@ -178,42 +157,69 @@ async function getIssuePDFPath(id) {
   return base + '/Issue.pdf';
 }
 
-/***********************
- * Preload de Páginas: Almacenamos los objetos PDF sin renderizar
- ***********************/
-async function preloadAllPages() {
-  pdfPages = [];
+/**********************************
+ * PRE-RENDERIZADO DE TODAS LAS PÁGINAS
+ * Se renderiza cada página a un alto preRenderScale para asegurar alta calidad.
+ **********************************/
+async function preRenderAllPages() {
+  pageCache = [];
+  const promises = [];
   for (let p = 1; p <= totalPages; p++) {
-    pdfPages[p] = await pdfDoc.getPage(p);
+    promises.push(
+      pdfDoc.getPage(p).then(page => {
+        const viewport = page.getViewport({ scale: preRenderScale });
+        const offscreen = document.createElement('canvas');
+        offscreen.width = viewport.width;
+        offscreen.height = viewport.height;
+        const offCtx = offscreen.getContext('2d');
+        return page.render({ canvasContext: offCtx, viewport: viewport }).promise.then(() => {
+          return {
+            dataURL: offscreen.toDataURL(),
+            width: offscreen.width,
+            height: offscreen.height
+          };
+        });
+      })
+    );
   }
+  const results = await Promise.all(promises);
+  results.forEach((data, i) => {
+    pageCache[i + 1] = data;
+  });
 }
 
-/***********************
- * Función para Renderizar una Página en un Canvas con “fit-to-container”
- * Calcula el factor base para que la página se ajuste y luego lo multiplica por config.zoom.
- ***********************/
-async function renderPage(pageObj, canvas, context, availW, availH) {
-  // Reiniciar transformaciones
-  context.setTransform(1, 0, 0, 1, 0, 0);
-  // Obtener dimensiones originales de la página (escala 1)
-  let baseViewport = pageObj.getViewport({ scale: 1 });
-  // Para doble página, el ancho disponible se pasa ya reducido
-  let baseScale = Math.min(availW / baseViewport.width, availH / baseViewport.height);
-  let finalScale = baseScale * config.zoom;
-  let viewport = pageObj.getViewport({ scale: finalScale });
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  await pageObj.render({ canvasContext: context, viewport: viewport }).promise;
+/**********************************
+ * FUNCION PARA RENDERIZAR UNA PÁGINA EN UN CANVAS
+ * Se calcula el “fit scale” para que la imagen (pre-renderizada a alta resolución)
+ * se ajuste completamente al contenedor sin deformar.
+ **********************************/
+function renderImageOnCanvas(imageData, canvas, availW, availH) {
+  let img = new Image();
+  img.onload = () => {
+    // Resetear transformaciones
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // Calcular factor para ajustar la imagen (fit-to-container)
+    let scaleFit = Math.min(availW / imageData.width, availH / imageData.height);
+    let finalScale = scaleFit * config.zoom;
+    let drawW = imageData.width * finalScale;
+    let drawH = imageData.height * finalScale;
+    canvas.width = drawW;
+    canvas.height = drawH;
+    ctx.clearRect(0, 0, drawW, drawH);
+    ctx.drawImage(img, 0, 0, drawW, drawH);
+  };
+  img.src = imageData.dataURL;
 }
 
-/***********************
- * Renderizar Spread
- * En modo simple (o móvil): se muestra la página: PDF page = totalPages - currentSpread.
- * En modo doble: se muestran dos páginas: derecha = totalPages - (currentSpread*2) y izquierda = (totalPages - (currentSpread*2)) - 1.
- ***********************/
-async function renderSpread() {
-  // Condición de final: si se han leído todas las páginas, se muestra la encuesta.
+/**********************************
+ * RENDERIZAR SPREAD
+ * - En modo simple (o en móvil): se muestra una única página.
+ * - En modo doble: se muestran dos páginas (derecha e izquierda) usando la lectura invertida.
+ **********************************/
+function renderSpread() {
+  // En modo simple, la condición de final es currentSpread >= totalPages
+  // En modo doble, es currentSpread >= Math.ceil(totalPages / 2)
   if ((window.innerWidth < 600 || config.readingMode === 1) && currentSpread >= totalPages) {
     showSurvey();
     return;
@@ -227,41 +233,45 @@ async function renderSpread() {
   const availH = container.clientHeight;
   
   if (window.innerWidth < 600 || config.readingMode === 1) {
-    // Modo simple / móvil: se renderiza una sola página
+    // Modo simple: mostrar la página: número = totalPages - currentSpread
     canvasLeft.style.display = 'none';
     canvasRight.style.display = 'block';
-    let pdfPageNum = totalPages - currentSpread; // Lectura invertida
-    if (pdfPageNum >= 1 && pdfPages[pdfPageNum]) {
-      await renderPage(pdfPages[pdfPageNum], canvasRight, ctxRight, availW, availH);
+    let pdfPageNum = totalPages - currentSpread;
+    if (pdfPageNum >= 1 && pageCache[pdfPageNum]) {
+      renderImageOnCanvas(pageCache[pdfPageNum], canvasRight, availW, availH);
     } else {
-      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      const ctx = canvasRight.getContext('2d');
+      ctx.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
   } else {
-    // Modo doble página:
+    // Modo doble: 
     canvasLeft.style.display = 'block';
     canvasRight.style.display = 'block';
     let gap = 20;
     let availableWForEach = (availW - gap) / 2;
     let rightPdf = totalPages - (currentSpread * 2);
     let leftPdf = rightPdf - 1;
-    if (rightPdf >= 1 && pdfPages[rightPdf]) {
-      await renderPage(pdfPages[rightPdf], canvasRight, ctxRight, availableWForEach, availH);
+    if (rightPdf >= 1 && pageCache[rightPdf]) {
+      renderImageOnCanvas(pageCache[rightPdf], canvasRight, availableWForEach, availH);
     } else {
-      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      const ctx = canvasRight.getContext('2d');
+      ctx.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
-    if (leftPdf >= 1 && pdfPages[leftPdf]) {
-      await renderPage(pdfPages[leftPdf], canvasLeft, ctxLeft, availableWForEach, availH);
+    if (leftPdf >= 1 && pageCache[leftPdf]) {
+      renderImageOnCanvas(pageCache[leftPdf], canvasLeft, availableWForEach, availH);
     } else {
-      ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+      const ctx = canvasLeft.getContext('2d');
+      ctx.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
     }
   }
   updatePageInfo();
 }
 
-/***********************
- * Navegación (Desktop)
- * En sistema japonés: el botón izquierdo AVANZA (pasa a la siguiente lectura)
- ***********************/
+/**********************************
+ * NAVEGACIÓN (Desktop)
+ * Debido a la lectura japonesa, el botón izquierdo (prevArrow) avanza (suma currentSpread)
+ * y el botón derecho (nextArrow) retrocede (resta currentSpread)
+ **********************************/
 function nextSpread() {
   if (window.innerWidth < 600 || config.readingMode === 1) {
     if (currentSpread < totalPages - 1) {
@@ -283,18 +293,17 @@ function prevSpread() {
   }
 }
 
-/***********************
- * Asignar Eventos a Botones (Desktop)
- * En escritorio: la flecha izquierda llama a nextSpread y la derecha a prevSpread
- ***********************/
+/**********************************
+ * ASIGNAR EVENTOS A LOS BOTONES (Desktop)
+ **********************************/
 if (window.innerWidth >= 600) {
   document.getElementById('prevArrow').addEventListener('click', nextSpread);
   document.getElementById('nextArrow').addEventListener('click', prevSpread);
 }
 
-/***********************
- * Mostrar Encuesta al Final
- ***********************/
+/**********************************
+ * MOSTRAR ENCUESTA AL FINAL
+ **********************************/
 function showSurvey() {
   fetch(`encuestas/${issueId}.json`)
     .then(resp => {
@@ -333,16 +342,16 @@ function showSurvey() {
     });
 }
 
-/***********************
- * Inicializar Lector PDF
- ***********************/
+/**********************************
+ * INICIALIZAR EL VISOR PDF
+ **********************************/
 async function initViewer() {
   try {
     const pdfPath = await getIssuePDFPath(issueId);
     const task = pdfjsLib.getDocument(pdfPath);
     pdfDoc = await task.promise;
     totalPages = pdfDoc.numPages;
-    await preloadAllPages();
+    await preRenderAllPages();
     currentSpread = 0;
     renderSpread();
     document.getElementById('loadingOverlay').style.display = 'none';
@@ -357,18 +366,18 @@ async function initViewer() {
 }
 initViewer();
 
-// Acción del botón "Volver"
+// Botón "Volver"
 document.getElementById('backButton').addEventListener('click', () => {
   window.location.href = 'rensai-details.html?id=' + issueId;
 });
 
-/***********************
- * Swipe en Móviles con Animación de Paso de Página
- * Se anima el canvasRight según el gesto; al soltar, se determina si se avanza o retrocede.
- ***********************/
+/**********************************
+ * SWIPE EN MÓVILES CON ANIMACIÓN
+ * Se utiliza touch events para mover el canvasRight; al soltar se decide si se avanza o retrocede.
+ **********************************/
 if (window.innerWidth < 600) {
   let touchStartX = 0, touchCurrentX = 0, isSwiping = false;
-  const swipeThreshold = 50; // píxeles para disparar el cambio
+  const swipeThreshold = 50; // píxeles para disparar cambio
   const viewerContainer = document.getElementById('viewerContainer');
   
   viewerContainer.addEventListener('touchstart', (e) => {
@@ -381,8 +390,7 @@ if (window.innerWidth < 600) {
     if (!isSwiping) return;
     touchCurrentX = e.touches[0].clientX;
     let deltaX = touchCurrentX - touchStartX;
-    // Solo movimientos de derecha a izquierda (deltaX negativo)
-    if (deltaX < 0) {
+    if (deltaX < 0) {  // sólo para swipe de derecha a izquierda
       canvasRight.style.transform = `translateX(${deltaX}px)`;
     }
   });
@@ -405,5 +413,5 @@ if (window.innerWidth < 600) {
   });
 }
 
-// Re-renderizar al cambiar el tamaño de la ventana
+// Re-renderizar en resize
 window.addEventListener('resize', renderSpread);
