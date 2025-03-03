@@ -23,8 +23,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 1100;
   box-sizing: border-box;
+  z-index: 1100;
 }
 .top-bar .page-info {
   font-family: 'Botones', sans-serif;
@@ -75,16 +75,17 @@ html, body {
   bottom: 40px;
   left: 0;
   right: 0;
+  overflow: hidden;
+  background-color: #fafafa;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 1rem;
-  overflow: hidden;
-  background-color: #fafafa;
   transition: background-color 0.3s;
 }
 canvas {
   background: #fff;
+  /* Se usará para dibujar la imagen pre-renderizada escalada */
   transition: transform 0.3s;
 }
 
@@ -195,7 +196,7 @@ canvas {
   z-index: 1000;
 }
 
-/* Móviles */
+/* Adaptaciones para móviles */
 @media (max-width: 600px) {
   .top-bar .nav-buttons button {
     font-size: 1rem;
@@ -208,6 +209,7 @@ canvas {
     width: 100%;
     height: auto;
   }
+  /* Se ocultan las flechas en móvil */
   .nav-arrow {
     display: none;
   }
