@@ -1,15 +1,21 @@
-/* Configurar pdf.js */
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
-
-/********** Configuración Global **********/
+/***********************
+ * Configuración Global
+ ***********************/
 let config = {
   readingMode: 2, // 2 = doble página, 1 = una página
-  zoom: 1.2,
+  zoom: 2,        // zoom por defecto (máxima resolución)
   bgColor: '#fafafa',
-  animSpeed: 1 // multiplicador para la duración de la animación
+  animSpeed: 1    // multiplicador para animación (segundos)
 };
 
-/********** Loading Text Animation **********/
+/***********************
+ * Inicialización PDF.js
+ ***********************/
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+/***********************
+ * Loading Text Animation
+ ***********************/
 const loadingMessages = [
   "Vistiendo a las chicas mágicas...",
   "Ajustando viajes en el tiempo...",
@@ -24,18 +30,23 @@ setInterval(() => {
   loadingTextElem.textContent = loadingMessages[messageIndex];
 }, 10000);
 
-/********** Variables Globales de PDF **********/
-let pdfDoc = null;
-let totalPages = 0;
-let currentSpread = 0; // se calcula desde el final (lectura inversa)
-let pageCache = [];
+/***********************
+ * Variables Globales PDF
+ ***********************/
+let pdfDoc = null,
+    totalPages = 0,
+    currentSpread = 0; // Contador de spreads (0 = primero leído)
+let pdfPages = [];    // Array para almacenar objetos de página
 
+// Elementos Canvas
 const canvasLeft = document.getElementById('canvasLeft');
 const canvasRight = document.getElementById('canvasRight');
 const ctxLeft = canvasLeft.getContext('2d');
 const ctxRight = canvasRight.getContext('2d');
 
-/********** Elementos de Configuración **********/
+/***********************
+ * Elementos de Configuración
+ ***********************/
 const settingsButton = document.getElementById('settingsButton');
 const settingsMenu = document.getElementById('settingsMenu');
 const closeSettings = document.getElementById('closeSettings');
@@ -44,7 +55,9 @@ const zoomRange = document.getElementById('zoomRange');
 const bgColorPicker = document.getElementById('bgColorPicker');
 const animSpeedInput = document.getElementById('animSpeed');
 
-/********** Eventos del Menú de Configuración **********/
+/***********************
+ * Eventos del Menú de Configuración
+ ***********************/
 settingsButton.addEventListener('click', () => {
   settingsMenu.style.display = 'block';
 });
@@ -53,10 +66,13 @@ closeSettings.addEventListener('click', () => {
 });
 readingModeSelect.addEventListener('change', (e) => {
   config.readingMode = parseInt(e.target.value);
+  // Si estamos en desktop, re-renderiza según modo
   renderSpread();
 });
-zoomRange.addEventListener('input', (e) => {
+zoomRange.addEventListener('input', async (e) => {
   config.zoom = parseFloat(e.target.value);
+  // Re-renderizamos todas las páginas con el nuevo zoom
+  await preloadAllPages();
   renderSpread();
 });
 bgColorPicker.addEventListener('input', (e) => {
@@ -67,25 +83,75 @@ animSpeedInput.addEventListener('input', (e) => {
   config.animSpeed = parseFloat(e.target.value);
 });
 
-/********** Actualizar Indicadores (Superior e Inferior) **********/
+/***********************
+ * Actualizar Indicadores
+ * Se muestran según el orden de lectura:
+ * Modo 1: spreadDisplay = currentSpread+1, total = totalPages
+ * Modo 2: spreadDisplay = currentSpread+1, total = Math.ceil(totalPages/2)
+ ***********************/
 function updatePageInfo() {
   const topInfo = document.getElementById('topPageInfo');
   const bottomInfo = document.getElementById('bottomPageInfo');
-  if (config.readingMode === 1) {
-    let pageNum = totalPages - currentSpread;
-    let info = `Página ${pageNum} de ${totalPages}`;
-    topInfo.textContent = info;
-    bottomInfo.textContent = info;
+  let spreadDisplay, totalSpreads;
+  if (window.innerWidth < 600 || config.readingMode === 1) {
+    spreadDisplay = currentSpread + 1;
+    totalSpreads = totalPages;
   } else {
-    let rightPage = totalPages - currentSpread;
-    let leftPage = totalPages - currentSpread - 1;
-    let info = leftPage >= 1 ? `Páginas ${leftPage} - ${rightPage} de ${totalPages}` : `Página ${rightPage} de ${totalPages}`;
-    topInfo.textContent = info;
-    bottomInfo.textContent = info;
+    spreadDisplay = currentSpread + 1;
+    totalSpreads = Math.ceil(totalPages / 2);
   }
+  let info = `Página ${spreadDisplay} de ${totalSpreads}`;
+  topInfo.textContent = info;
+  bottomInfo.textContent = info;
 }
 
-/********** Obtener Parámetros de URL **********/
+/***********************
+ * Edición del Indicador (al hacer click)
+ ***********************/
+function makePageInfoEditable() {
+  const topInfo = document.getElementById('topPageInfo');
+  topInfo.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.className = 'editable-input';
+    input.placeholder = 'Ir a...';
+    topInfo.textContent = "";
+    topInfo.appendChild(input);
+    input.focus();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        let num = parseInt(input.value);
+        if (!isNaN(num)) {
+          if (window.innerWidth < 600 || config.readingMode === 1) {
+            if (num >= 1 && num <= totalPages) {
+              currentSpread = num - 1;
+              renderSpread();
+            }
+          } else {
+            let totalSpreads = Math.ceil(totalPages / 2);
+            if (num >= 1 && num <= totalSpreads) {
+              currentSpread = num - 1;
+              renderSpread();
+            }
+          }
+        }
+        topInfo.removeChild(input);
+        updatePageInfo();
+      }
+    });
+    input.addEventListener('blur', () => {
+      if (topInfo.contains(input)) {
+        topInfo.removeChild(input);
+        updatePageInfo();
+      }
+    });
+  });
+}
+makePageInfoEditable();
+
+/***********************
+ * Obtener Parámetros de URL
+ ***********************/
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
   return params.get(param);
@@ -95,7 +161,9 @@ if (!issueId) {
   window.location.href = 'rensai.html';
 }
 
-/********** Cargar PDF (issues.json) **********/
+/***********************
+ * Cargar PDF (issues.json)
+ ***********************/
 async function fetchIssues() {
   try {
     const resp = await fetch('issues.json');
@@ -114,157 +182,113 @@ async function getIssuePDFPath(id) {
   return base + '/Issue.pdf';
 }
 
-/********** Preload de Páginas (Carga Concurrente) **********/
+/***********************
+ * Preload de Páginas: Guardamos los objetos PDF
+ ***********************/
 async function preloadAllPages() {
-  const promises = [];
+  pdfPages = [];
   for (let p = 1; p <= totalPages; p++) {
-    promises.push(
-      pdfDoc.getPage(p).then(page => {
-        const viewport = page.getViewport({ scale: config.zoom });
-        const offscreen = document.createElement('canvas');
-        offscreen.width = viewport.width;
-        offscreen.height = viewport.height;
-        const offscreenCtx = offscreen.getContext('2d');
-        return page.render({ canvasContext: offscreenCtx, viewport: viewport }).promise.then(() => ({
-          dataURL: offscreen.toDataURL(),
-          width: offscreen.width,
-          height: offscreen.height
-        }));
-      })
-    );
+    pdfPages[p] = await pdfDoc.getPage(p);
   }
-  const pagesData = await Promise.all(promises);
-  pagesData.forEach((data, index) => {
-    pageCache[index + 1] = data;
-  });
 }
 
-/********** Escalar Imagen sin Deformar **********/
-function getScaledDimensions(cacheObj, availW, availH) {
-  const origW = cacheObj.width;
-  const origH = cacheObj.height;
-  const scaleFactor = Math.min(availW / origW, availH / origH);
-  return { width: origW * scaleFactor, height: origH * scaleFactor };
+/***********************
+ * Función para Renderizar una Página en un Canvas
+ ***********************/
+async function renderPage(pageObj, canvas, context) {
+  const viewport = pageObj.getViewport({ scale: config.zoom });
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  await pageObj.render({ canvasContext: context, viewport: viewport }).promise;
 }
 
-/********** Renderizar Spread **********/
+/***********************
+ * Renderizar Spread
+ * Se basa en currentSpread (índice en orden de lectura)
+ * En modo simple (o móvil): se muestra la página: PDF page = totalPages - currentSpread
+ * En modo doble: se muestran dos páginas: derecha = totalPages - (currentSpread*2) y izquierda = totalPages - (currentSpread*2 + 1)
+ ***********************/
 async function renderSpread() {
-  if (currentSpread >= totalPages) {
+  // Evitar ir más allá del total
+  if ((window.innerWidth < 600 || config.readingMode === 1) && currentSpread >= totalPages) {
+    showSurvey();
+    return;
+  }
+  if (config.readingMode === 2 && currentSpread >= Math.ceil(totalPages / 2)) {
     showSurvey();
     return;
   }
   const container = document.getElementById('viewerContainer');
   const availW = container.clientWidth;
   const availH = container.clientHeight;
-  
-  // En móviles se usa siempre el modo de una página (para swipe)
-  if (window.innerWidth < 600) {
+
+  // Modo móvil o simple: se renderiza una página
+  if (window.innerWidth < 600 || config.readingMode === 1) {
     canvasLeft.style.display = 'none';
     canvasRight.style.display = 'block';
-    const pdfPage = totalPages - currentSpread;
-    if (pdfPage >= 1 && pageCache[pdfPage]) {
-      const dims = getScaledDimensions(pageCache[pdfPage], availW, availH);
-      canvasRight.width = dims.width;
-      canvasRight.height = dims.height;
-      ctxRight.clearRect(0, 0, dims.width, dims.height);
-      let img = new Image();
-      img.onload = () => {
-        ctxRight.drawImage(img, 0, 0, dims.width, dims.height);
-      };
-      img.src = pageCache[pdfPage].dataURL;
+    let pdfPageNum = totalPages - currentSpread; // lectura invertida
+    if (pdfPageNum >= 1 && pdfPages[pdfPageNum]) {
+      await renderPage(pdfPages[pdfPageNum], canvasRight, ctxRight);
     } else {
       ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
   } else {
-    // En Desktop: respetar el modo configurado
-    if (config.readingMode === 1) {
-      canvasLeft.style.display = 'none';
-      canvasRight.style.display = 'block';
-      const pdfPage = totalPages - currentSpread;
-      if (pdfPage >= 1 && pageCache[pdfPage]) {
-        const dims = getScaledDimensions(pageCache[pdfPage], availW, availH);
-        canvasRight.width = dims.width;
-        canvasRight.height = dims.height;
-        ctxRight.clearRect(0, 0, dims.width, dims.height);
-        let img = new Image();
-        img.onload = () => {
-          ctxRight.drawImage(img, 0, 0, dims.width, dims.height);
-        };
-        img.src = pageCache[pdfPage].dataURL;
-      } else {
-        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-      }
+    // Modo doble página
+    canvasLeft.style.display = 'block';
+    canvasRight.style.display = 'block';
+    let rightPdf = totalPages - (currentSpread * 2);
+    let leftPdf = rightPdf - 1;
+    if (rightPdf >= 1 && pdfPages[rightPdf]) {
+      await renderPage(pdfPages[rightPdf], canvasRight, ctxRight);
     } else {
-      // Modo doble página
-      canvasLeft.style.display = 'block';
-      canvasRight.style.display = 'block';
-      const gap = 20;
-      const halfW = (availW - gap) / 2;
-      const pdfRight = totalPages - currentSpread;
-      const pdfLeft = totalPages - currentSpread - 1;
-      if (pdfRight >= 1 && pageCache[pdfRight]) {
-        const dims = getScaledDimensions(pageCache[pdfRight], halfW, availH);
-        canvasRight.width = dims.width;
-        canvasRight.height = dims.height;
-        ctxRight.clearRect(0, 0, dims.width, dims.height);
-        let imgR = new Image();
-        imgR.onload = () => {
-          ctxRight.drawImage(imgR, 0, 0, dims.width, dims.height);
-        };
-        imgR.src = pageCache[pdfRight].dataURL;
-      } else {
-        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-      }
-      if (pdfLeft >= 1 && pageCache[pdfLeft]) {
-        const dims = getScaledDimensions(pageCache[pdfLeft], halfW, availH);
-        canvasLeft.width = dims.width;
-        canvasLeft.height = dims.height;
-        ctxLeft.clearRect(0, 0, dims.width, dims.height);
-        let imgL = new Image();
-        imgL.onload = () => {
-          ctxLeft.drawImage(imgL, 0, 0, dims.width, dims.height);
-        };
-        imgL.src = pageCache[pdfLeft].dataURL;
-      } else {
-        ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
-      }
+      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+    }
+    if (leftPdf >= 1 && pdfPages[leftPdf]) {
+      await renderPage(pdfPages[leftPdf], canvasLeft, ctxLeft);
+    } else {
+      ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
     }
   }
   updatePageInfo();
 }
 
-/********** Navegación (Desktop) **********/
+/***********************
+ * Navegación (Desktop)
+ * En sistema japonés: el botón izquierdo AVANZA (pasa a la siguiente lectura)
+ ***********************/
 function nextSpread() {
-  if (config.readingMode === 1) {
-    if (currentSpread + 1 < totalPages) {
+  if (window.innerWidth < 600 || config.readingMode === 1) {
+    if (currentSpread < totalPages - 1) {
       currentSpread++;
       renderSpread();
     }
   } else {
-    if (currentSpread + 2 < totalPages) {
-      currentSpread += 2;
-      renderSpread();
-    } else {
-      currentSpread = totalPages;
+    let maxSpread = Math.ceil(totalPages / 2);
+    if (currentSpread < maxSpread - 1) {
+      currentSpread++;
       renderSpread();
     }
   }
 }
 function prevSpread() {
-  if (config.readingMode === 1) {
-    if (currentSpread - 1 >= 0) {
-      currentSpread--;
-      renderSpread();
-    }
-  } else {
-    if (currentSpread - 2 >= 0) {
-      currentSpread -= 2;
-      renderSpread();
-    }
+  if (currentSpread > 0) {
+    currentSpread--;
+    renderSpread();
   }
 }
 
-/********** Mostrar Encuesta al Final **********/
+/***********************
+ * Asignar Eventos a Botones (Desktop)
+ * En escritorio: la flecha izquierda llama a nextSpread y la derecha a prevSpread
+ ***********************/
+if (window.innerWidth >= 600) {
+  document.getElementById('prevArrow').addEventListener('click', nextSpread);
+  document.getElementById('nextArrow').addEventListener('click', prevSpread);
+}
+
+/***********************
+ * Mostrar Encuesta al Final
+ ***********************/
 function showSurvey() {
   fetch(`encuestas/${issueId}.json`)
     .then(resp => {
@@ -303,7 +327,9 @@ function showSurvey() {
     });
 }
 
-/********** Inicializar Lector PDF **********/
+/***********************
+ * Inicializar Lector PDF
+ ***********************/
 async function initViewer() {
   try {
     const pdfPath = await getIssuePDFPath(issueId);
@@ -330,12 +356,13 @@ document.getElementById('backButton').addEventListener('click', () => {
   window.location.href = 'rensai-details.html?id=' + issueId;
 });
 
-/********** Swipe en Móviles con Animación de Paso de Página **********/
+/***********************
+ * Swipe en Móviles con Animación de Paso de Página
+ * Se anima el canvas según el gesto, disparando nextSpread o prevSpread
+ ***********************/
 if (window.innerWidth < 600) {
-  let touchStartX = 0;
-  let touchCurrentX = 0;
-  let isSwiping = false;
-  const swipeThreshold = 50; // píxeles para disparar el cambio de página
+  let touchStartX = 0, touchCurrentX = 0, isSwiping = false;
+  const swipeThreshold = 50; // píxeles para disparar cambio
   const viewerContainer = document.getElementById('viewerContainer');
   
   viewerContainer.addEventListener('touchstart', (e) => {
@@ -348,7 +375,7 @@ if (window.innerWidth < 600) {
     if (!isSwiping) return;
     touchCurrentX = e.touches[0].clientX;
     let deltaX = touchCurrentX - touchStartX;
-    // Para lectura japonesa, se espera swipe de derecha a izquierda (deltaX negativo)
+    // Solo consideramos movimientos de derecha a izquierda (deltaX negativo)
     if (deltaX < 0) {
       canvasRight.style.transform = `translateX(${deltaX}px)`;
     }
@@ -357,9 +384,9 @@ if (window.innerWidth < 600) {
   viewerContainer.addEventListener('touchend', () => {
     if (!isSwiping) return;
     let deltaX = touchCurrentX - touchStartX;
-    // Duración de la animación en función de la distancia y la velocidad configurada
     canvasRight.style.transition = `transform ${Math.abs(deltaX)/200 * config.animSpeed}s ease-out`;
     if (Math.abs(deltaX) > swipeThreshold) {
+      // Si el gesto es suficientemente largo, avanzamos (lectura inversa: swipe izquierda = nextSpread)
       canvasRight.style.transform = `translateX(-100%)`;
       setTimeout(() => {
         canvasRight.style.transition = 'none';
@@ -373,5 +400,5 @@ if (window.innerWidth < 600) {
   });
 }
 
-// Re-renderizar al cambiar el tamaño de la ventana
+// Re-renderizar al cambiar tamaño
 window.addEventListener('resize', renderSpread);
