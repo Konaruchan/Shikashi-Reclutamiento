@@ -27,10 +27,12 @@ window.onerror = function(message, source, lineno, colno, error) {
 /**********************************
  * CONFIGURACIÓN Y VARIABLES GLOBALES
  **********************************/
-const preRenderScale = 3; // Factor para pre-renderizar a alta resolución
+const isMobile = window.innerWidth < 600;
+// Para móviles usamos un factor menor, para acelerar la carga
+const preRenderScale = isMobile ? 2 : 3;
 let config = {
-  readingMode: 2,  // 2 = doble página, 1 = una página (móvil se fuerza 1)
-  zoom: 1,         // 1 = ajuste perfecto al contenedor
+  readingMode: 2,  // 2 = doble página, 1 = una página (en móvil se fuerza 1)
+  zoom: 1,         // 1 = ajuste perfecto al contenedor (multiplica sobre el "fit")
   bgColor: '#fafafa'
 };
 
@@ -83,7 +85,7 @@ function updatePageInfo() {
   const topInfo = document.getElementById('topPageInfo');
   const bottomInfo = document.getElementById('bottomPageInfo');
   let displayNum, totalDisplay;
-  if (window.innerWidth < 600 || config.readingMode === 1) {
+  if (isMobile || config.readingMode === 1) {
     displayNum = currentSpread + 1;
     totalDisplay = totalPages;
   } else {
@@ -112,7 +114,7 @@ function makePageInfoEditable() {
       if (e.key === 'Enter') {
         let num = parseInt(input.value);
         if (!isNaN(num)) {
-          if (window.innerWidth < 600 || config.readingMode === 1) {
+          if (isMobile || config.readingMode === 1) {
             if (num >= 1 && num <= totalPages) {
               currentSpread = num - 1;
               renderSpread();
@@ -173,37 +175,63 @@ async function getIssuePDFPath(id) {
 }
 
 /**********************************
- * PRE-RENDERIZAR TODAS LAS PÁGINAS A ALTA RESOLUCIÓN
+ * PRE-RENDERIZADO
+ * En PC se pre-renderizan TODAS las páginas a alta resolución.
+ * En móviles se utiliza lazy loading: se pre-renderiza solo la página actual (o si no está en cache, se renderiza al momento).
  **********************************/
 async function preRenderAllPages() {
-  pageCache = [];
-  const promises = [];
-  for (let p = 1; p <= totalPages; p++) {
-    promises.push(
-      pdfDoc.getPage(p).then(page => {
-        const viewport = page.getViewport({ scale: preRenderScale });
-        const offscreen = document.createElement('canvas');
-        offscreen.width = viewport.width;
-        offscreen.height = viewport.height;
-        const offCtx = offscreen.getContext('2d');
-        return page.render({ canvasContext: offCtx, viewport: viewport }).promise.then(() => {
-          return {
-            dataURL: offscreen.toDataURL(),
-            width: offscreen.width,
-            height: offscreen.height
-          };
-        });
-      })
-    );
+  if (isMobile) {
+    // En móviles no pre-renderizamos todo; se cargará la página cuando se necesite.
+    await preRenderMobilePage(totalPages - currentSpread);
+  } else {
+    pageCache = [];
+    const promises = [];
+    for (let p = 1; p <= totalPages; p++) {
+      promises.push(
+        pdfDoc.getPage(p).then(page => {
+          const viewport = page.getViewport({ scale: preRenderScale });
+          const offscreen = document.createElement('canvas');
+          offscreen.width = viewport.width;
+          offscreen.height = viewport.height;
+          const offCtx = offscreen.getContext('2d');
+          return page.render({ canvasContext: offCtx, viewport: viewport }).promise.then(() => {
+            return {
+              dataURL: offscreen.toDataURL(),
+              width: offscreen.width,
+              height: offscreen.height
+            };
+          });
+        })
+      );
+    }
+    const results = await Promise.all(promises);
+    results.forEach((data, i) => {
+      pageCache[i + 1] = data;
+    });
   }
-  const results = await Promise.all(promises);
-  results.forEach((data, i) => {
-    pageCache[i + 1] = data;
-  });
+}
+
+async function preRenderMobilePage(pageNum) {
+  if (pageNum < 1) return;
+  if (!pageCache[pageNum]) {
+    let page = await pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale: preRenderScale });
+    const offscreen = document.createElement('canvas');
+    offscreen.width = viewport.width;
+    offscreen.height = viewport.height;
+    const offCtx = offscreen.getContext('2d');
+    await page.render({ canvasContext: offCtx, viewport: viewport }).promise;
+    pageCache[pageNum] = {
+      dataURL: offscreen.toDataURL(),
+      width: offscreen.width,
+      height: offscreen.height
+    };
+  }
 }
 
 /**********************************
  * RENDERIZAR UNA IMAGEN PRE-RENDERIZADA EN UN CANVAS CON "FIT-TO-CONTAINER"
+ * Se calcula el factor base para que la imagen se ajuste al área visible y se multiplica por config.zoom.
  **********************************/
 function renderImageOnCanvas(imageData, canvas, availW, availH) {
   let img = new Image();
@@ -224,21 +252,23 @@ function renderImageOnCanvas(imageData, canvas, availW, availH) {
 
 /**********************************
  * RENDERIZAR SPREAD
- * - Modo simple (o móvil): Se muestra la página: número = totalPages - currentSpread.
- * - Modo doble: Se muestran dos páginas (derecha e izquierda) según lectura invertida.
- * Además, si estamos en la penúltima o última página se muestra el banner de encuesta.
+ * - Modo simple (o móvil): se muestra la página: número = totalPages - currentSpread.
+ * - Modo doble: se muestran dos páginas (derecha e izquierda) según lectura invertida.
+ * Al acercarse al final se muestra un banner de “fin de lectura”.
  **********************************/
-function renderSpread() {
-  // No interrumpir el render; simplemente se actualiza el canvas.
+async function renderSpread() {
   const container = document.getElementById('viewerContainer');
   const availW = container.clientWidth;
   const availH = container.clientHeight;
   
-  if (window.innerWidth < 600 || config.readingMode === 1) {
+  if (isMobile || config.readingMode === 1) {
     canvasLeft.style.display = 'none';
     canvasRight.style.display = 'block';
     let pdfPageNum = totalPages - currentSpread;
-    if (pdfPageNum >= 1 && pageCache[pdfPageNum]) {
+    if (pdfPageNum >= 1) {
+      if (!pageCache[pdfPageNum]) {
+        await preRenderMobilePage(pdfPageNum);
+      }
       renderImageOnCanvas(pageCache[pdfPageNum], canvasRight, availW, availH);
     } else {
       ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
@@ -250,12 +280,18 @@ function renderSpread() {
     let availableWForEach = (availW - gap) / 2;
     let rightPdf = totalPages - (currentSpread * 2);
     let leftPdf = rightPdf - 1;
-    if (rightPdf >= 1 && pageCache[rightPdf]) {
+    if (rightPdf >= 1) {
+      if (!pageCache[rightPdf]) {
+        await preRenderMobilePage(rightPdf);
+      }
       renderImageOnCanvas(pageCache[rightPdf], canvasRight, availableWForEach, availH);
     } else {
       ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
-    if (leftPdf >= 1 && pageCache[leftPdf]) {
+    if (leftPdf >= 1) {
+      if (!pageCache[leftPdf]) {
+        await preRenderMobilePage(leftPdf);
+      }
       renderImageOnCanvas(pageCache[leftPdf], canvasLeft, availableWForEach, availH);
     } else {
       ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
@@ -266,23 +302,18 @@ function renderSpread() {
 }
 
 /**********************************
- * MOSTRAR BANNER DE "FIN DE LECTURA" (en lugar de reemplazar la página)
+ * MOSTRAR BANNER DE "FIN DE LECTURA"
  **********************************/
 function checkEndBanner() {
   let showBanner = false;
-  if (window.innerWidth < 600 || config.readingMode === 1) {
-    // En modo simple, si estamos en la penúltima o última página
+  if (isMobile || config.readingMode === 1) {
     if (currentSpread >= totalPages - 2) showBanner = true;
   } else {
     let maxSpread = Math.ceil(totalPages / 2);
     if (currentSpread >= maxSpread - 1) showBanner = true;
   }
   const banner = document.getElementById('surveyBanner');
-  if (showBanner) {
-    banner.style.display = 'block';
-  } else {
-    banner.style.display = 'none';
-  }
+  banner.style.display = showBanner ? 'block' : 'none';
 }
 
 /**********************************
@@ -290,7 +321,7 @@ function checkEndBanner() {
  * En lectura japonesa: el botón izquierdo (prevArrow) AVANZA y el derecho (nextArrow) RETROCEDE.
  **********************************/
 function nextSpread() {
-  if (window.innerWidth < 600 || config.readingMode === 1) {
+  if (isMobile || config.readingMode === 1) {
     if (currentSpread < totalPages - 1) {
       currentSpread++;
       renderSpread();
@@ -308,7 +339,6 @@ function prevSpread() {
     currentSpread--;
     renderSpread();
   } else {
-    // Si ya estamos en la primera página, mostramos un toast de salida
     showExitToast();
   }
 }
@@ -316,17 +346,17 @@ function prevSpread() {
 /**********************************
  * ASIGNAR EVENTOS A LOS BOTONES (Desktop)
  **********************************/
-if (window.innerWidth >= 600) {
+if (!isMobile) {
   document.getElementById('prevArrow').addEventListener('click', nextSpread);
   document.getElementById('nextArrow').addEventListener('click', prevSpread);
 }
 
 /**********************************
- * BANNER DE ENCUESTA: Acción en el botón
+ * BANNER DE ENCUESTA: Acción de botones
  **********************************/
 document.getElementById('surveyButton').addEventListener('click', () => {
-  // Redirige a la encuesta
-  window.location.href = `encuestas/${issueId}.json`; // O a la URL de la encuesta si se tiene
+  // Redirige a la encuesta (ajusta la URL según necesites)
+  window.location.href = `encuestas/${issueId}.json`;
 });
 document.getElementById('closeBanner').addEventListener('click', () => {
   document.getElementById('surveyBanner').style.display = 'none';
@@ -354,7 +384,7 @@ async function initViewer() {
     totalPages = pdfDoc.numPages;
     await preRenderAllPages();
     currentSpread = 0;
-    renderSpread();
+    await renderSpread();
     document.getElementById('loadingOverlay').style.display = 'none';
     const directionOverlay = document.getElementById('directionOverlay');
     directionOverlay.style.display = 'flex';
@@ -367,7 +397,7 @@ async function initViewer() {
 }
 initViewer();
 
-// Botón "Volver": Mostrar toast y luego navegar
+// Botón "Volver": Muestra toast y luego redirige
 document.getElementById('backButton').addEventListener('click', () => {
   showExitToast();
   setTimeout(() => {
@@ -376,11 +406,11 @@ document.getElementById('backButton').addEventListener('click', () => {
 });
 
 /**********************************
- * SWIPE EN MÓVILES: Permitir pasar páginas con gesto
+ * SWIPE EN MÓVILES: Pasar página con gesto
  **********************************/
-if (window.innerWidth < 600) {
+if (isMobile) {
   let touchStartX = 0, touchCurrentX = 0, isSwiping = false;
-  const swipeThreshold = 50; // píxeles mínimos
+  const swipeThreshold = 50; // píxeles mínimos para disparar cambio
   const viewerContainer = document.getElementById('viewerContainer');
   
   viewerContainer.addEventListener('touchstart', (e) => {
@@ -416,5 +446,5 @@ if (window.innerWidth < 600) {
   });
 }
 
-// Re-renderizar al cambiar el tamaño
+// Re-renderizar al cambiar el tamaño de la ventana
 window.addEventListener('resize', renderSpread);
