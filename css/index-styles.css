@@ -1,4 +1,6 @@
-/* Base y Reset */
+/* ================================
+   Base y Reset
+================================ */
 * {
   margin: 0;
   padding: 0;
@@ -11,15 +13,20 @@ html, body {
   line-height: 1.6;
 }
 
-/* Contenedor general */
+/* ================================
+   Contenedor General
+================================ */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
-/* NAV: Inspirado en 3DS, con gradiente y sombra */
-.main-nav {
+/* ================================
+   Navegación (Header)
+   - Inspirado en 3DS con degradados y profundidad.
+================================ */
+nav {
   background: linear-gradient(45deg, #820000, #F4A200);
   padding: 1rem 2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -52,11 +59,13 @@ html, body {
   transition: background 0.3s, border-color 0.3s;
 }
 .nav-link:hover {
-  background: rgba(255,255,255,0.2);
+  background-color: rgba(255,255,255,0.2);
   border-color: rgba(255,255,255,0.5);
 }
 
-/* Marquee */
+/* ================================
+   Marquee
+================================ */
 .marquee-container {
   background: #F4A200;
   color: #fff;
@@ -77,7 +86,9 @@ html, body {
   to { transform: translateX(-100%); }
 }
 
-/* HERO IMAGE con Overlay Glass */
+/* ================================
+   Hero Image y Overlay (Glassmorphism)
+================================ */
 .hero-image-section {
   position: relative;
   aspect-ratio: 16/9;
@@ -88,12 +99,10 @@ html, body {
 }
 .overlay-grid {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* Efecto cristal (glassmorphism) */
-  background: rgba(255, 255, 255, 0.4);
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  /* Efecto cristal: fondo translúcido con desenfoque */
+  background: rgba(255,255,255,0.4);
   backdrop-filter: blur(8px);
   padding: 0.5rem;
   display: grid;
@@ -108,7 +117,9 @@ html, body {
   visibility: visible;
 }
 
-/* Cards: Efecto de profundidad y bordes suaves */
+/* ================================
+   Cards y Elementos con Profundidad
+================================ */
 .card {
   background: #fff;
   border-radius: 8px;
@@ -157,14 +168,19 @@ html, body {
   background: #680000;
 }
 
-/* Small Items */
+/* ================================
+   Small Items y Grid Dinámica
+================================ */
 .small-items-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
 }
 
-/* Carousel y Carrusel de Obras: Estilo moderno y minimalista */
+/* ================================
+   Carousel (Artículos Recientes y Obras)
+   - Diseño minimalista con botones flotantes y sombras sutiles.
+================================ */
 .carousel-section, .obras-carousel-section {
   width: 100%;
   padding: 2rem 0;
@@ -229,7 +245,9 @@ html, body {
 .obras-carousel-button.prev { left: -2rem; }
 .obras-carousel-button.next { right: -2rem; }
 
-/* Articles Section */
+/* ================================
+   Articles Section
+================================ */
 .articles-section {
   padding: 3rem 0;
   background: #fff;
@@ -332,7 +350,9 @@ html, body {
   color: #820000;
 }
 
-/* Footer */
+/* ================================
+   Footer
+================================ */
 .footer {
   background: #820000;
   color: #fff;
@@ -341,7 +361,9 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* Toast de Salida */
+/* ================================
+   Toast de Salida
+================================ */
 .exit-toast {
   position: fixed;
   top: 10px;
@@ -355,7 +377,9 @@ html, body {
   display: none;
 }
 
-/* Small Loading Indicator (para cambio de página en móvil) */
+/* ================================
+   Small Loading Indicator (para cambio de página en móvil)
+================================ */
 .small-loading {
   position: absolute;
   top: 50%;
@@ -371,18 +395,32 @@ html, body {
   height: auto;
 }
 
-/* Responsive */
+/* ================================
+   Responsive
+================================ */
 @media (max-width: 768px) {
-  .hero-image-section { max-width: 100%; margin: 0 1rem; }
-  .overlay-grid { padding: 0.5rem; grid-template-columns: 1fr; }
-  .small-items-container { grid-template-columns: 1fr 1fr; }
+  .hero-image-section {
+    max-width: 100%;
+    margin: 0 1rem;
+  }
+  .overlay-grid {
+    padding: 0.5rem;
+    grid-template-columns: 1fr;
+  }
+  .small-items-container {
+    grid-template-columns: 1fr 1fr;
+  }
   .carousel-button.prev, .carousel-button.next,
   .obras-carousel-button.prev, .obras-carousel-button.next {
-    top: auto; bottom: 1rem; transform: translateY(0);
+    top: auto;
+    bottom: 1rem;
+    transform: translateY(0);
   }
   .carousel-button.prev { left: 1rem; }
   .carousel-button.next { right: 1rem; }
   .obras-carousel-button.prev { left: 1rem; }
   .obras-carousel-button.next { right: 1rem; }
-  .articles-content { grid-template-columns: 1fr; }
+  .articles-content {
+    grid-template-columns: 1fr;
+  }
 }
