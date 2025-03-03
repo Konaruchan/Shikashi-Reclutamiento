@@ -20,27 +20,51 @@
   <!-- Direction Overlay -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
   
-  <!-- Barra Superior: indicador y botón "Volver" -->
+  <!-- Barra Superior: Indicador, botón Volver y botón de Configuraciones -->
   <div id="topNavBar" class="top-bar">
     <div class="page-info" id="topPageInfo" aria-label="Información de página">&lt; Páginas ? - ? de ? &gt;</div>
-    <button id="backButton" aria-label="Volver a la lista" type="button">Volver</button>
+    <div class="nav-buttons">
+      <button id="backButton" aria-label="Volver" type="button">Volver</button>
+      <button id="settingsButton" aria-label="Configuraciones" type="button">⚙️</button>
+    </div>
+  </div>
+  
+  <!-- Menú de Configuraciones (oculto por defecto) -->
+  <div id="settingsMenu" class="settings-menu">
+    <h3>Configuraciones</h3>
+    <label>
+      Modo de lectura:
+      <select id="readingMode">
+        <option value="2">Doble página</option>
+        <option value="1">Una página</option>
+      </select>
+    </label>
+    <label>
+      Zoom:
+      <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" value="1.2">
+    </label>
+    <label>
+      Fondo:
+      <input type="color" id="bgColorPicker" value="#fafafa">
+    </label>
+    <label>
+      Velocidad de animación:
+      <input type="range" id="animSpeed" min="0.1" max="2" step="0.1" value="1">
+    </label>
+    <button id="closeSettings">Cerrar</button>
   </div>
   
   <!-- Contenedor del visor -->
   <div id="viewerContainer" class="viewer-container">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Flechas de navegación para Desktop -->
+    <!-- Flechas de navegación para Desktop (se muestran solo en pantallas grandes) -->
     <div id="prevArrow" class="nav-arrow arrow-left" aria-label="Avanzar">&#9664;</div>
     <div id="nextArrow" class="nav-arrow arrow-right" aria-label="Retroceder">&#9654;</div>
-    <!-- Navegación para Móvil -->
-    <div id="mobileNav" class="mobile-nav">
-      <button id="mobilePrev" aria-label="Avanzar">&#9664;</button>
-      <button id="mobileNext" aria-label="Retroceder">&#9654;</button>
-    </div>
+    <!-- En móviles se usará swipe -->
   </div>
   
-  <!-- Barra Inferior -->
+  <!-- Barra Inferior: Indicador y Copyright -->
   <div id="bottomNavBar" class="bottom-nav-bar">
     <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
     <div class="copy">&copy; 2025 Shikashi MF</div>
