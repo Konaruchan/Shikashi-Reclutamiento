@@ -24,11 +24,16 @@ html, body {
   align-items: center;
   justify-content: space-between;
   z-index: 1100;
+  box-sizing: border-box;
 }
 .top-bar .page-info {
   font-family: 'Botones', sans-serif;
   font-size: 1rem;
   cursor: pointer;
+}
+.top-bar .nav-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 .top-bar .nav-buttons button {
   background: transparent;
@@ -38,7 +43,6 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  margin-left: 0.5rem;
 }
 
 /* Barra Inferior */
@@ -76,11 +80,12 @@ html, body {
   justify-content: center;
   padding: 0 1rem;
   overflow: hidden;
-  background-color: #fafafa; /* modificable vía configuración */
+  background-color: #fafafa;
   transition: background-color 0.3s;
 }
 canvas {
   background: #fff;
+  /* Transición para animar cambios de posición en swipe */
   transition: transform 0.3s;
 }
 
@@ -123,7 +128,7 @@ canvas {
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   z-index: 1200;
   display: none;
-  width: 200px;
+  width: 220px;
   transition: opacity 0.3s ease;
 }
 .settings-menu h3 {
@@ -191,7 +196,7 @@ canvas {
   z-index: 1000;
 }
 
-/* Estilos para Móviles */
+/* Móviles */
 @media (max-width: 600px) {
   .top-bar .nav-buttons button {
     font-size: 1rem;
@@ -204,7 +209,7 @@ canvas {
     width: 100%;
     height: auto;
   }
-  /* Se ocultan las flechas en móviles, se usa swipe */
+  /* Oculta flechas en móviles (se usa swipe) */
   .nav-arrow {
     display: none;
   }
