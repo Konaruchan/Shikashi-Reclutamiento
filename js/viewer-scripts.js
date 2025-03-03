@@ -1,6 +1,5 @@
 /**********************************
- * GESTIÓN DE ERRORES: Mostrar cualquier error (no advertencia)
- * como globo de texto en la esquina superior izquierda.
+ * GESTIÓN DE ERRORES: Mostrar errores como globo en la esquina superior izquierda
  **********************************/
 window.onerror = function(message, source, lineno, colno, error) {
   let errorDiv = document.getElementById('errorBubble');
@@ -28,11 +27,10 @@ window.onerror = function(message, source, lineno, colno, error) {
  * CONFIGURACIÓN Y VARIABLES GLOBALES
  **********************************/
 const isMobile = window.innerWidth < 600;
-// Para móviles usamos un factor menor, para acelerar la carga
 const preRenderScale = isMobile ? 2 : 3;
 let config = {
   readingMode: 2,  // 2 = doble página, 1 = una página (en móvil se fuerza 1)
-  zoom: 1,         // 1 = ajuste perfecto al contenedor (multiplica sobre el "fit")
+  zoom: 1,         // 1 = ajuste perfecto al contenedor (se multiplica sobre el "fit")
   bgColor: '#fafafa'
 };
 
@@ -41,7 +39,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 let pdfDoc = null,
     totalPages = 0,
     currentSpread = 0; // Índice de lectura (0 = primer spread)
-let pageCache = [];   // Aquí se almacenan los datos pre-renderizados (dataURL, width, height)
+let pageCache = [];   // Se almacenan los datos pre-renderizados (dataURL, width, height)
+let lastBannerTime = 0; // Para cooldown del banner
 
 // Elementos canvas y contextos
 const canvasLeft = document.getElementById('canvasLeft');
@@ -177,11 +176,10 @@ async function getIssuePDFPath(id) {
 /**********************************
  * PRE-RENDERIZADO
  * En PC se pre-renderizan TODAS las páginas a alta resolución.
- * En móviles se utiliza lazy loading: se pre-renderiza solo la página actual (o si no está en cache, se renderiza al momento).
+ * En móviles se utiliza lazy loading: sólo se pre-renderiza la página actual (o la que no esté en cache).
  **********************************/
 async function preRenderAllPages() {
   if (isMobile) {
-    // En móviles no pre-renderizamos todo; se cargará la página cuando se necesite.
     await preRenderMobilePage(totalPages - currentSpread);
   } else {
     pageCache = [];
@@ -231,7 +229,6 @@ async function preRenderMobilePage(pageNum) {
 
 /**********************************
  * RENDERIZAR UNA IMAGEN PRE-RENDERIZADA EN UN CANVAS CON "FIT-TO-CONTAINER"
- * Se calcula el factor base para que la imagen se ajuste al área visible y se multiplica por config.zoom.
  **********************************/
 function renderImageOnCanvas(imageData, canvas, availW, availH) {
   let img = new Image();
@@ -252,9 +249,6 @@ function renderImageOnCanvas(imageData, canvas, availW, availH) {
 
 /**********************************
  * RENDERIZAR SPREAD
- * - Modo simple (o móvil): se muestra la página: número = totalPages - currentSpread.
- * - Modo doble: se muestran dos páginas (derecha e izquierda) según lectura invertida.
- * Al acercarse al final se muestra un banner de “fin de lectura”.
  **********************************/
 async function renderSpread() {
   const container = document.getElementById('viewerContainer');
@@ -302,7 +296,7 @@ async function renderSpread() {
 }
 
 /**********************************
- * MOSTRAR BANNER DE "FIN DE LECTURA"
+ * BANNER DE "FIN DE LECTURA" CON COOLDOWN
  **********************************/
 function checkEndBanner() {
   let showBanner = false;
@@ -313,16 +307,28 @@ function checkEndBanner() {
     if (currentSpread >= maxSpread - 1) showBanner = true;
   }
   const banner = document.getElementById('surveyBanner');
-  banner.style.display = showBanner ? 'block' : 'none';
+  let now = Date.now();
+  if (showBanner && (now - lastBannerTime > 3000)) {
+      banner.style.display = 'block';
+      lastBannerTime = now;
+  } else if (!showBanner) {
+      banner.style.display = 'none';
+  }
 }
 
 /**********************************
- * NAVEGACIÓN (Desktop)
- * En lectura japonesa: el botón izquierdo (prevArrow) AVANZA y el derecho (nextArrow) RETROCEDE.
+ * NAVEGACIÓN (Desktop) y con "loading" en móviles
  **********************************/
-function nextSpread() {
+async function nextSpread() {
   if (isMobile || config.readingMode === 1) {
     if (currentSpread < totalPages - 1) {
+      let nextPage = totalPages - (currentSpread + 1);
+      if (!pageCache[nextPage]) {
+        // Mostrar indicador de carga pequeño
+        document.getElementById('smallLoading').style.display = 'block';
+        await preRenderMobilePage(nextPage);
+        document.getElementById('smallLoading').style.display = 'none';
+      }
       currentSpread++;
       renderSpread();
     }
@@ -344,7 +350,7 @@ function prevSpread() {
 }
 
 /**********************************
- * ASIGNAR EVENTOS A LOS BOTONES (Desktop)
+ * ASIGNAR EVENTOS A BOTONES (Desktop)
  **********************************/
 if (!isMobile) {
   document.getElementById('prevArrow').addEventListener('click', nextSpread);
@@ -352,10 +358,9 @@ if (!isMobile) {
 }
 
 /**********************************
- * BANNER DE ENCUESTA: Acción de botones
+ * BANNER DE ENCUESTA: Botones
  **********************************/
 document.getElementById('surveyButton').addEventListener('click', () => {
-  // Redirige a la encuesta (ajusta la URL según necesites)
   window.location.href = `encuestas/${issueId}.json`;
 });
 document.getElementById('closeBanner').addEventListener('click', () => {
@@ -363,7 +368,7 @@ document.getElementById('closeBanner').addEventListener('click', () => {
 });
 
 /**********************************
- * MOSTRAR UN TOAST DE SALIDA
+ * TOAST DE SALIDA
  **********************************/
 function showExitToast() {
   const toast = document.getElementById('exitToast');
@@ -397,7 +402,7 @@ async function initViewer() {
 }
 initViewer();
 
-// Botón "Volver": Muestra toast y luego redirige
+// Botón "Volver": Mostrar toast y redirigir
 document.getElementById('backButton').addEventListener('click', () => {
   showExitToast();
   setTimeout(() => {
@@ -406,11 +411,11 @@ document.getElementById('backButton').addEventListener('click', () => {
 });
 
 /**********************************
- * SWIPE EN MÓVILES: Pasar página con gesto
+ * SWIPE EN MÓVILES: Ahora se debe deslizar de IZQUIERDA A DERECHA para avanzar
  **********************************/
 if (isMobile) {
   let touchStartX = 0, touchCurrentX = 0, isSwiping = false;
-  const swipeThreshold = 50; // píxeles mínimos para disparar cambio
+  const swipeThreshold = 50; // píxeles mínimos
   const viewerContainer = document.getElementById('viewerContainer');
   
   viewerContainer.addEventListener('touchstart', (e) => {
@@ -423,7 +428,8 @@ if (isMobile) {
     if (!isSwiping) return;
     touchCurrentX = e.touches[0].clientX;
     let deltaX = touchCurrentX - touchStartX;
-    if (deltaX < 0) {  // solo swipe de derecha a izquierda
+    // Ahora, para avanzar se desliza de IZQUIERDA A DERECHA (deltaX positivo)
+    if (deltaX > 0) {
       canvasRight.style.transform = `translateX(${deltaX}px)`;
     }
   });
@@ -432,8 +438,8 @@ if (isMobile) {
     if (!isSwiping) return;
     let deltaX = touchCurrentX - touchStartX;
     canvasRight.style.transition = `transform ${Math.abs(deltaX)/200}s ease-out`;
-    if (Math.abs(deltaX) > swipeThreshold) {
-      canvasRight.style.transform = `translateX(-100%)`;
+    if (deltaX > swipeThreshold) {
+      canvasRight.style.transform = `translateX(100%)`;
       setTimeout(() => {
         canvasRight.style.transition = 'none';
         canvasRight.style.transform = 'translateX(0)';
@@ -446,5 +452,5 @@ if (isMobile) {
   });
 }
 
-// Re-renderizar al cambiar el tamaño de la ventana
+// Re-renderizar al cambiar el tamaño
 window.addEventListener('resize', renderSpread);
