@@ -1,12 +1,37 @@
 /**********************************
+ * GESTIÓN DE ERRORES: Mostrar cualquier error (no advertencia)
+ * como globo de texto en la esquina superior izquierda.
+ **********************************/
+window.onerror = function(message, source, lineno, colno, error) {
+  let errorDiv = document.getElementById('errorBubble');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'errorBubble';
+    errorDiv.style.position = 'fixed';
+    errorDiv.style.top = '10px';
+    errorDiv.style.left = '10px';
+    errorDiv.style.backgroundColor = 'rgba(255,0,0,0.8)';
+    errorDiv.style.color = '#fff';
+    errorDiv.style.padding = '5px 10px';
+    errorDiv.style.borderRadius = '4px';
+    errorDiv.style.zIndex = '9999';
+    document.body.appendChild(errorDiv);
+  }
+  errorDiv.textContent = `Error: ${message} (${source}:${lineno}:${colno})`;
+  setTimeout(() => {
+    if(errorDiv) errorDiv.remove();
+  }, 5000);
+  return false;
+};
+
+/**********************************
  * CONFIGURACIÓN Y VARIABLES GLOBALES
  **********************************/
-const preRenderScale = 3; // Factor alto para pre-renderizar (garantiza alta resolución)
+const preRenderScale = 3; // Factor para pre-renderizar a alta resolución
 let config = {
-  readingMode: 2,  // 2 = doble página, 1 = una página (en móvil se fuerza 1)
-  zoom: 1,         // 1 = “fit-to-container”. El zoom se aplica multiplicando sobre el fit
-  bgColor: '#fafafa',
-  animSpeed: 1     // Multiplicador para la duración de la animación (en segundos)
+  readingMode: 2,  // 2 = doble página, 1 = una página (móvil se fuerza 1)
+  zoom: 1,         // 1 = ajuste perfecto al contenedor
+  bgColor: '#fafafa'
 };
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
@@ -14,9 +39,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 let pdfDoc = null,
     totalPages = 0,
     currentSpread = 0; // Índice de lectura (0 = primer spread)
-let pageCache = [];   // Aquí se almacenan los datos pre-renderizados (objetos con dataURL, width, height)
+let pageCache = [];   // Aquí se almacenan los datos pre-renderizados (dataURL, width, height)
 
-// Elementos de canvas
+// Elementos canvas y contextos
 const canvasLeft = document.getElementById('canvasLeft');
 const canvasRight = document.getElementById('canvasRight');
 const ctxLeft = canvasLeft.getContext('2d');
@@ -31,11 +56,7 @@ const closeSettings = document.getElementById('closeSettings');
 const readingModeSelect = document.getElementById('readingMode');
 const zoomRange = document.getElementById('zoomRange');
 const bgColorPicker = document.getElementById('bgColorPicker');
-const animSpeedInput = document.getElementById('animSpeed');
 
-/**********************************
- * EVENTOS DEL MENÚ DE CONFIGURACIÓN
- **********************************/
 settingsButton.addEventListener('click', () => {
   settingsMenu.style.display = 'block';
 });
@@ -54,15 +75,9 @@ bgColorPicker.addEventListener('input', () => {
   config.bgColor = bgColorPicker.value;
   document.getElementById('viewerContainer').style.backgroundColor = config.bgColor;
 });
-animSpeedInput.addEventListener('input', () => {
-  config.animSpeed = parseFloat(animSpeedInput.value);
-});
 
 /**********************************
- * ACTUALIZAR CONTADORES (MOSTRAR NÚMERO DE PÁGINA)
- * Se muestran en orden de lectura natural: 
- * - En modo simple: contador = currentSpread+1, total = totalPages.
- * - En modo doble: contador = currentSpread+1, total = Math.ceil(totalPages/2).
+ * ACTUALIZAR CONTADORES DE PÁGINA
  **********************************/
 function updatePageInfo() {
   const topInfo = document.getElementById('topPageInfo');
@@ -81,7 +96,7 @@ function updatePageInfo() {
 }
 
 /**********************************
- * EDITAR CONTADOR AL HACER CLICK (Saltar a un número específico)
+ * SALTO DIRECTO: Permitir editar el contador al hacer clic
  **********************************/
 function makePageInfoEditable() {
   const topInfo = document.getElementById('topPageInfo');
@@ -125,7 +140,7 @@ function makePageInfoEditable() {
 makePageInfoEditable();
 
 /**********************************
- * OBTENCIÓN DE PARÁMETROS URL (issueId)
+ * OBTENCIÓN DE PARÁMETROS (issueId)
  **********************************/
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
@@ -158,8 +173,7 @@ async function getIssuePDFPath(id) {
 }
 
 /**********************************
- * PRE-RENDERIZADO DE TODAS LAS PÁGINAS
- * Se renderiza cada página a un alto preRenderScale para asegurar alta calidad.
+ * PRE-RENDERIZAR TODAS LAS PÁGINAS A ALTA RESOLUCIÓN
  **********************************/
 async function preRenderAllPages() {
   pageCache = [];
@@ -189,17 +203,13 @@ async function preRenderAllPages() {
 }
 
 /**********************************
- * FUNCION PARA RENDERIZAR UNA PÁGINA EN UN CANVAS
- * Se calcula el “fit scale” para que la imagen (pre-renderizada a alta resolución)
- * se ajuste completamente al contenedor sin deformar.
+ * RENDERIZAR UNA IMAGEN PRE-RENDERIZADA EN UN CANVAS CON "FIT-TO-CONTAINER"
  **********************************/
 function renderImageOnCanvas(imageData, canvas, availW, availH) {
   let img = new Image();
   img.onload = () => {
-    // Resetear transformaciones
     const ctx = canvas.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    // Calcular factor para ajustar la imagen (fit-to-container)
     let scaleFit = Math.min(availW / imageData.width, availH / imageData.height);
     let finalScale = scaleFit * config.zoom;
     let drawW = imageData.width * finalScale;
@@ -214,37 +224,26 @@ function renderImageOnCanvas(imageData, canvas, availW, availH) {
 
 /**********************************
  * RENDERIZAR SPREAD
- * - En modo simple (o en móvil): se muestra una única página.
- * - En modo doble: se muestran dos páginas (derecha e izquierda) usando la lectura invertida.
+ * - Modo simple (o móvil): Se muestra la página: número = totalPages - currentSpread.
+ * - Modo doble: Se muestran dos páginas (derecha e izquierda) según lectura invertida.
+ * Además, si estamos en la penúltima o última página se muestra el banner de encuesta.
  **********************************/
 function renderSpread() {
-  // En modo simple, la condición de final es currentSpread >= totalPages
-  // En modo doble, es currentSpread >= Math.ceil(totalPages / 2)
-  if ((window.innerWidth < 600 || config.readingMode === 1) && currentSpread >= totalPages) {
-    showSurvey();
-    return;
-  }
-  if (config.readingMode === 2 && currentSpread >= Math.ceil(totalPages / 2)) {
-    showSurvey();
-    return;
-  }
+  // No interrumpir el render; simplemente se actualiza el canvas.
   const container = document.getElementById('viewerContainer');
   const availW = container.clientWidth;
   const availH = container.clientHeight;
   
   if (window.innerWidth < 600 || config.readingMode === 1) {
-    // Modo simple: mostrar la página: número = totalPages - currentSpread
     canvasLeft.style.display = 'none';
     canvasRight.style.display = 'block';
     let pdfPageNum = totalPages - currentSpread;
     if (pdfPageNum >= 1 && pageCache[pdfPageNum]) {
       renderImageOnCanvas(pageCache[pdfPageNum], canvasRight, availW, availH);
     } else {
-      const ctx = canvasRight.getContext('2d');
-      ctx.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
   } else {
-    // Modo doble: 
     canvasLeft.style.display = 'block';
     canvasRight.style.display = 'block';
     let gap = 20;
@@ -254,23 +253,41 @@ function renderSpread() {
     if (rightPdf >= 1 && pageCache[rightPdf]) {
       renderImageOnCanvas(pageCache[rightPdf], canvasRight, availableWForEach, availH);
     } else {
-      const ctx = canvasRight.getContext('2d');
-      ctx.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
     if (leftPdf >= 1 && pageCache[leftPdf]) {
       renderImageOnCanvas(pageCache[leftPdf], canvasLeft, availableWForEach, availH);
     } else {
-      const ctx = canvasLeft.getContext('2d');
-      ctx.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+      ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
     }
   }
   updatePageInfo();
+  checkEndBanner();
+}
+
+/**********************************
+ * MOSTRAR BANNER DE "FIN DE LECTURA" (en lugar de reemplazar la página)
+ **********************************/
+function checkEndBanner() {
+  let showBanner = false;
+  if (window.innerWidth < 600 || config.readingMode === 1) {
+    // En modo simple, si estamos en la penúltima o última página
+    if (currentSpread >= totalPages - 2) showBanner = true;
+  } else {
+    let maxSpread = Math.ceil(totalPages / 2);
+    if (currentSpread >= maxSpread - 1) showBanner = true;
+  }
+  const banner = document.getElementById('surveyBanner');
+  if (showBanner) {
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
 }
 
 /**********************************
  * NAVEGACIÓN (Desktop)
- * Debido a la lectura japonesa, el botón izquierdo (prevArrow) avanza (suma currentSpread)
- * y el botón derecho (nextArrow) retrocede (resta currentSpread)
+ * En lectura japonesa: el botón izquierdo (prevArrow) AVANZA y el derecho (nextArrow) RETROCEDE.
  **********************************/
 function nextSpread() {
   if (window.innerWidth < 600 || config.readingMode === 1) {
@@ -290,6 +307,9 @@ function prevSpread() {
   if (currentSpread > 0) {
     currentSpread--;
     renderSpread();
+  } else {
+    // Si ya estamos en la primera página, mostramos un toast de salida
+    showExitToast();
   }
 }
 
@@ -302,44 +322,25 @@ if (window.innerWidth >= 600) {
 }
 
 /**********************************
- * MOSTRAR ENCUESTA AL FINAL
+ * BANNER DE ENCUESTA: Acción en el botón
  **********************************/
-function showSurvey() {
-  fetch(`encuestas/${issueId}.json`)
-    .then(resp => {
-      if (!resp.ok) throw new Error("Encuesta no encontrada");
-      return resp.json();
-    })
-    .then(data => {
-      const surveyLink = data.surveyLink;
-      const container = document.getElementById('viewerContainer');
-      container.innerHTML = `
-        <div style="text-align: center; padding: 2rem; width: 100%;">
-          <h1>¡Gracias por leer!</h1>
-          <p>Para ayudarnos a mejorar, por favor completa la encuesta de satisfacción.</p>
-          <button onclick="window.location.href='${surveyLink}'" 
-            style="font-size: 1.2rem; padding: 0.75rem 1.5rem; border: none; background: #820000; color: #fff; border-radius: 4px; cursor: pointer;">
-            Realizar Encuesta
-          </button>
-          <br><br>
-          <button onclick="window.location.href='rensai-details.html?id=${issueId}'" 
-            style="font-size: 1rem; padding: 0.5rem 1rem; border: none; background: #ccc; color: #333; border-radius: 4px; cursor: pointer;">
-            Volver
-          </button>
-        </div>
-      `;
-      document.getElementById('topPageInfo').textContent = '';
-    })
-    .catch(err => {
-      console.error(err);
-      const container = document.getElementById('viewerContainer');
-      container.innerHTML = `
-        <div style="text-align: center; padding: 2rem; width: 100%;">
-          <h1>¡Gracias por leer!</h1>
-          <p>No se encontró la encuesta. Inténtalo más tarde.</p>
-        </div>
-      `;
-    });
+document.getElementById('surveyButton').addEventListener('click', () => {
+  // Redirige a la encuesta
+  window.location.href = `encuestas/${issueId}.json`; // O a la URL de la encuesta si se tiene
+});
+document.getElementById('closeBanner').addEventListener('click', () => {
+  document.getElementById('surveyBanner').style.display = 'none';
+});
+
+/**********************************
+ * MOSTRAR UN TOAST DE SALIDA
+ **********************************/
+function showExitToast() {
+  const toast = document.getElementById('exitToast');
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
 }
 
 /**********************************
@@ -366,18 +367,20 @@ async function initViewer() {
 }
 initViewer();
 
-// Botón "Volver"
+// Botón "Volver": Mostrar toast y luego navegar
 document.getElementById('backButton').addEventListener('click', () => {
-  window.location.href = 'rensai-details.html?id=' + issueId;
+  showExitToast();
+  setTimeout(() => {
+    window.location.href = 'rensai-details.html?id=' + issueId;
+  }, 3000);
 });
 
 /**********************************
- * SWIPE EN MÓVILES CON ANIMACIÓN
- * Se utiliza touch events para mover el canvasRight; al soltar se decide si se avanza o retrocede.
+ * SWIPE EN MÓVILES: Permitir pasar páginas con gesto
  **********************************/
 if (window.innerWidth < 600) {
   let touchStartX = 0, touchCurrentX = 0, isSwiping = false;
-  const swipeThreshold = 50; // píxeles para disparar cambio
+  const swipeThreshold = 50; // píxeles mínimos
   const viewerContainer = document.getElementById('viewerContainer');
   
   viewerContainer.addEventListener('touchstart', (e) => {
@@ -390,7 +393,7 @@ if (window.innerWidth < 600) {
     if (!isSwiping) return;
     touchCurrentX = e.touches[0].clientX;
     let deltaX = touchCurrentX - touchStartX;
-    if (deltaX < 0) {  // sólo para swipe de derecha a izquierda
+    if (deltaX < 0) {  // solo swipe de derecha a izquierda
       canvasRight.style.transform = `translateX(${deltaX}px)`;
     }
   });
@@ -398,14 +401,14 @@ if (window.innerWidth < 600) {
   viewerContainer.addEventListener('touchend', () => {
     if (!isSwiping) return;
     let deltaX = touchCurrentX - touchStartX;
-    canvasRight.style.transition = `transform ${Math.abs(deltaX)/200 * config.animSpeed}s ease-out`;
+    canvasRight.style.transition = `transform ${Math.abs(deltaX)/200}s ease-out`;
     if (Math.abs(deltaX) > swipeThreshold) {
       canvasRight.style.transform = `translateX(-100%)`;
       setTimeout(() => {
         canvasRight.style.transition = 'none';
         canvasRight.style.transform = 'translateX(0)';
         nextSpread();
-      }, Math.abs(deltaX)/200 * config.animSpeed * 1000);
+      }, Math.abs(deltaX)/200 * 1000);
     } else {
       canvasRight.style.transform = 'translateX(0)';
     }
@@ -413,5 +416,5 @@ if (window.innerWidth < 600) {
   });
 }
 
-// Re-renderizar en resize
+// Re-renderizar al cambiar el tamaño
 window.addEventListener('resize', renderSpread);
