@@ -20,7 +20,7 @@
   <!-- Direction Overlay (se muestra brevemente al iniciar) -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
   
-  <!-- Barra Superior: Contador, botón Volver y botón Configuraciones -->
+  <!-- Barra Superior: Contador, botón Volver y Configuración -->
   <div id="topNavBar" class="top-bar">
     <div class="page-info" id="topPageInfo" aria-label="Información de página">1 de ?</div>
     <div class="nav-buttons">
@@ -47,10 +47,6 @@
       Fondo:
       <input type="color" id="bgColorPicker" value="#fafafa">
     </label>
-    <label>
-      Velocidad de animación:
-      <input type="range" id="animSpeed" min="0.1" max="2" step="0.1" value="1">
-    </label>
     <button id="closeSettings">Cerrar</button>
   </div>
   
@@ -59,10 +55,21 @@
     <!-- En modo doble se usarán dos canvas; en móvil o modo simple, solo se muestra uno -->
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Botones de navegación en Desktop (en móviles se usará swipe) -->
+    <!-- Botones de navegación para Desktop (en móvil se usa swipe) -->
     <div id="prevArrow" class="nav-arrow arrow-left" aria-label="Avanzar">&#9664;</div>
     <div id="nextArrow" class="nav-arrow arrow-right" aria-label="Retroceder">&#9654;</div>
   </div>
+  
+  <!-- Banner de "fin de lectura" (oculto por defecto) -->
+  <div id="surveyBanner" class="survey-banner" style="display: none;">
+    <p>¡Felicidades, terminaste de leer!</p>
+    <p>Si te gustó, ayúdanos completando una breve encuesta para mantener la revista con buen contenido.</p>
+    <button id="surveyButton">Realizar Encuesta</button>
+    <button id="closeBanner">Cerrar</button>
+  </div>
+  
+  <!-- Toast de salida (oculto por defecto) -->
+  <div id="exitToast" class="exit-toast" style="display: none;">antes de que te vallas :,&lt;</div>
   
   <!-- Barra Inferior: Contador y Copyright -->
   <div id="bottomNavBar" class="bottom-nav-bar">
