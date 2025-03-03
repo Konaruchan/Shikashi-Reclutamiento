@@ -1,6 +1,14 @@
 /* Configurar pdf.js */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
+/********** Configuración Global **********/
+let config = {
+  readingMode: 2, // 2 = doble página, 1 = una página
+  zoom: 1.2,
+  bgColor: '#fafafa',
+  animSpeed: 1 // multiplicador para la duración de la animación
+};
+
 /********** Loading Text Animation **********/
 const loadingMessages = [
   "Vistiendo a las chicas mágicas...",
@@ -19,8 +27,7 @@ setInterval(() => {
 /********** Variables Globales de PDF **********/
 let pdfDoc = null;
 let totalPages = 0;
-let currentSpread = 0; // Desktop: 2 páginas; Móvil: 1 página
-const pdfScale = 1.2;
+let currentSpread = 0; // se calcula desde el final (lectura inversa)
 let pageCache = [];
 
 const canvasLeft = document.getElementById('canvasLeft');
@@ -28,12 +35,57 @@ const canvasRight = document.getElementById('canvasRight');
 const ctxLeft = canvasLeft.getContext('2d');
 const ctxRight = canvasRight.getContext('2d');
 
-/********** Detectar Mobile **********/
-function isMobile() {
-  return window.innerWidth < 600;
+/********** Elementos de Configuración **********/
+const settingsButton = document.getElementById('settingsButton');
+const settingsMenu = document.getElementById('settingsMenu');
+const closeSettings = document.getElementById('closeSettings');
+const readingModeSelect = document.getElementById('readingMode');
+const zoomRange = document.getElementById('zoomRange');
+const bgColorPicker = document.getElementById('bgColorPicker');
+const animSpeedInput = document.getElementById('animSpeed');
+
+/********** Eventos del Menú de Configuración **********/
+settingsButton.addEventListener('click', () => {
+  settingsMenu.style.display = 'block';
+});
+closeSettings.addEventListener('click', () => {
+  settingsMenu.style.display = 'none';
+});
+readingModeSelect.addEventListener('change', (e) => {
+  config.readingMode = parseInt(e.target.value);
+  renderSpread();
+});
+zoomRange.addEventListener('input', (e) => {
+  config.zoom = parseFloat(e.target.value);
+  renderSpread();
+});
+bgColorPicker.addEventListener('input', (e) => {
+  config.bgColor = e.target.value;
+  document.getElementById('viewerContainer').style.backgroundColor = config.bgColor;
+});
+animSpeedInput.addEventListener('input', (e) => {
+  config.animSpeed = parseFloat(e.target.value);
+});
+
+/********** Actualizar Indicadores (Superior e Inferior) **********/
+function updatePageInfo() {
+  const topInfo = document.getElementById('topPageInfo');
+  const bottomInfo = document.getElementById('bottomPageInfo');
+  if (config.readingMode === 1) {
+    let pageNum = totalPages - currentSpread;
+    let info = `Página ${pageNum} de ${totalPages}`;
+    topInfo.textContent = info;
+    bottomInfo.textContent = info;
+  } else {
+    let rightPage = totalPages - currentSpread;
+    let leftPage = totalPages - currentSpread - 1;
+    let info = leftPage >= 1 ? `Páginas ${leftPage} - ${rightPage} de ${totalPages}` : `Página ${rightPage} de ${totalPages}`;
+    topInfo.textContent = info;
+    bottomInfo.textContent = info;
+  }
 }
 
-/********** Obtener parámetros URL **********/
+/********** Obtener Parámetros de URL **********/
 function getQueryParam(param) {
   const params = new URLSearchParams(window.location.search);
   return params.get(param);
@@ -43,7 +95,7 @@ if (!issueId) {
   window.location.href = 'rensai.html';
 }
 
-/********** Obtener PDF Path de issues.json **********/
+/********** Cargar PDF (issues.json) **********/
 async function fetchIssues() {
   try {
     const resp = await fetch('issues.json');
@@ -62,13 +114,13 @@ async function getIssuePDFPath(id) {
   return base + '/Issue.pdf';
 }
 
-/********** Preload de páginas con carga concurrente **********/
+/********** Preload de Páginas (Carga Concurrente) **********/
 async function preloadAllPages() {
   const promises = [];
   for (let p = 1; p <= totalPages; p++) {
     promises.push(
       pdfDoc.getPage(p).then(page => {
-        const viewport = page.getViewport({ scale: pdfScale });
+        const viewport = page.getViewport({ scale: config.zoom });
         const offscreen = document.createElement('canvas');
         offscreen.width = viewport.width;
         offscreen.height = viewport.height;
@@ -87,7 +139,7 @@ async function preloadAllPages() {
   });
 }
 
-/********** Escalar imagen manteniendo aspect ratio **********/
+/********** Escalar Imagen sin Deformar **********/
 function getScaledDimensions(cacheObj, availW, availH) {
   const origW = cacheObj.width;
   const origH = cacheObj.height;
@@ -95,81 +147,21 @@ function getScaledDimensions(cacheObj, availW, availH) {
   return { width: origW * scaleFactor, height: origH * scaleFactor };
 }
 
-/********** Indicador Editable **********/
-function makePageInfoEditable() {
-  const topInfo = document.getElementById('topPageInfo');
-  topInfo.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.className = 'editable-input';
-    input.placeholder = 'Ir a...';
-    topInfo.textContent = "";
-    topInfo.appendChild(input);
-    input.focus();
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        let num = parseInt(input.value);
-        if (!isNaN(num)) {
-          if (isMobile()) {
-            if (num >= 1 && num <= totalPages) {
-              currentSpread = totalPages - num;
-              renderSpread();
-            }
-          } else {
-            const totalSpreads = Math.ceil(totalPages / 2);
-            if (num >= 1 && num <= totalSpreads) {
-              currentSpread = totalPages - (num * 2) + 1;
-              if (currentSpread < 0) currentSpread = 0;
-              renderSpread();
-            }
-          }
-        }
-        topInfo.removeChild(input);
-        updatePageInfo();
-      }
-    });
-    input.addEventListener('blur', () => {
-      if (topInfo.contains(input)) {
-        topInfo.removeChild(input);
-        updatePageInfo();
-      }
-    });
-  });
-}
-makePageInfoEditable();
-
-function updatePageInfo() {
-  const topInfo = document.getElementById('topPageInfo');
-  if (isMobile()) {
-    const disp = totalPages - currentSpread;
-    topInfo.textContent = `Página ${disp} de ${totalPages}`;
-  } else {
-    const rightPage = totalPages - currentSpread;
-    const leftPage = totalPages - currentSpread - 1;
-    let info;
-    if (leftPage >= 1) {
-      info = `Páginas ${leftPage} - ${rightPage} de ${totalPages}`;
-    } else {
-      info = `Página ${rightPage} de ${totalPages}`;
-    }
-    topInfo.textContent = info;
-  }
-}
-
 /********** Renderizar Spread **********/
 async function renderSpread() {
-  // Si se excede el número de páginas, muestra la encuesta
   if (currentSpread >= totalPages) {
     showSurvey();
     return;
   }
-  if (isMobile()) {
+  const container = document.getElementById('viewerContainer');
+  const availW = container.clientWidth;
+  const availH = container.clientHeight;
+  
+  // En móviles se usa siempre el modo de una página (para swipe)
+  if (window.innerWidth < 600) {
     canvasLeft.style.display = 'none';
     canvasRight.style.display = 'block';
-    const container = document.getElementById('viewerContainer');
-    const availW = container.clientWidth;
-    const availH = container.clientHeight;
-    const pdfPage = totalPages - currentSpread; // Lectura inversa
+    const pdfPage = totalPages - currentSpread;
     if (pdfPage >= 1 && pageCache[pdfPage]) {
       const dims = getScaledDimensions(pageCache[pdfPage], availW, availH);
       canvasRight.width = dims.width;
@@ -184,47 +176,66 @@ async function renderSpread() {
       ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
     }
   } else {
-    // Desktop: Mostrar dos páginas
-    const container = document.getElementById('viewerContainer');
-    const availW = container.clientWidth;
-    const availH = container.clientHeight;
-    const gap = 20;
-    const halfW = (availW - gap) / 2;
-    const pdfRight = totalPages - currentSpread;
-    const pdfLeft = totalPages - currentSpread - 1;
-    if (pdfRight >= 1 && pageCache[pdfRight]) {
-      const dims = getScaledDimensions(pageCache[pdfRight], halfW, availH);
-      canvasRight.width = dims.width;
-      canvasRight.height = dims.height;
-      ctxRight.clearRect(0, 0, dims.width, dims.height);
-      let imgR = new Image();
-      imgR.onload = () => {
-        ctxRight.drawImage(imgR, 0, 0, dims.width, dims.height);
-      };
-      imgR.src = pageCache[pdfRight].dataURL;
+    // En Desktop: respetar el modo configurado
+    if (config.readingMode === 1) {
+      canvasLeft.style.display = 'none';
+      canvasRight.style.display = 'block';
+      const pdfPage = totalPages - currentSpread;
+      if (pdfPage >= 1 && pageCache[pdfPage]) {
+        const dims = getScaledDimensions(pageCache[pdfPage], availW, availH);
+        canvasRight.width = dims.width;
+        canvasRight.height = dims.height;
+        ctxRight.clearRect(0, 0, dims.width, dims.height);
+        let img = new Image();
+        img.onload = () => {
+          ctxRight.drawImage(img, 0, 0, dims.width, dims.height);
+        };
+        img.src = pageCache[pdfPage].dataURL;
+      } else {
+        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      }
     } else {
-      ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
-    }
-    if (pdfLeft >= 1 && pageCache[pdfLeft]) {
-      const dims = getScaledDimensions(pageCache[pdfLeft], halfW, availH);
-      canvasLeft.width = dims.width;
-      canvasLeft.height = dims.height;
-      ctxLeft.clearRect(0, 0, dims.width, dims.height);
-      let imgL = new Image();
-      imgL.onload = () => {
-        ctxLeft.drawImage(imgL, 0, 0, dims.width, dims.height);
-      };
-      imgL.src = pageCache[pdfLeft].dataURL;
-    } else {
-      ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+      // Modo doble página
+      canvasLeft.style.display = 'block';
+      canvasRight.style.display = 'block';
+      const gap = 20;
+      const halfW = (availW - gap) / 2;
+      const pdfRight = totalPages - currentSpread;
+      const pdfLeft = totalPages - currentSpread - 1;
+      if (pdfRight >= 1 && pageCache[pdfRight]) {
+        const dims = getScaledDimensions(pageCache[pdfRight], halfW, availH);
+        canvasRight.width = dims.width;
+        canvasRight.height = dims.height;
+        ctxRight.clearRect(0, 0, dims.width, dims.height);
+        let imgR = new Image();
+        imgR.onload = () => {
+          ctxRight.drawImage(imgR, 0, 0, dims.width, dims.height);
+        };
+        imgR.src = pageCache[pdfRight].dataURL;
+      } else {
+        ctxRight.clearRect(0, 0, canvasRight.width, canvasRight.height);
+      }
+      if (pdfLeft >= 1 && pageCache[pdfLeft]) {
+        const dims = getScaledDimensions(pageCache[pdfLeft], halfW, availH);
+        canvasLeft.width = dims.width;
+        canvasLeft.height = dims.height;
+        ctxLeft.clearRect(0, 0, dims.width, dims.height);
+        let imgL = new Image();
+        imgL.onload = () => {
+          ctxLeft.drawImage(imgL, 0, 0, dims.width, dims.height);
+        };
+        imgL.src = pageCache[pdfLeft].dataURL;
+      } else {
+        ctxLeft.clearRect(0, 0, canvasLeft.width, canvasLeft.height);
+      }
     }
   }
   updatePageInfo();
 }
 
-/********** Navegación **********/
+/********** Navegación (Desktop) **********/
 function nextSpread() {
-  if (isMobile()) {
+  if (config.readingMode === 1) {
     if (currentSpread + 1 < totalPages) {
       currentSpread++;
       renderSpread();
@@ -240,7 +251,7 @@ function nextSpread() {
   }
 }
 function prevSpread() {
-  if (isMobile()) {
+  if (config.readingMode === 1) {
     if (currentSpread - 1 >= 0) {
       currentSpread--;
       renderSpread();
@@ -251,14 +262,6 @@ function prevSpread() {
       renderSpread();
     }
   }
-}
-// Asignar eventos de navegación según dispositivo
-if (!isMobile()) {
-  document.getElementById('prevArrow').addEventListener('click', nextSpread);
-  document.getElementById('nextArrow').addEventListener('click', prevSpread);
-} else {
-  document.getElementById('mobilePrev').addEventListener('click', nextSpread);
-  document.getElementById('mobileNext').addEventListener('click', prevSpread);
 }
 
 /********** Mostrar Encuesta al Final **********/
@@ -322,10 +325,53 @@ async function initViewer() {
 }
 initViewer();
 
-// Actualizar la visualización al cambiar el tamaño de la ventana
-window.addEventListener('resize', renderSpread);
-
 // Asignar acción al botón "Volver"
 document.getElementById('backButton').addEventListener('click', () => {
   window.location.href = 'rensai-details.html?id=' + issueId;
 });
+
+/********** Swipe en Móviles con Animación de Paso de Página **********/
+if (window.innerWidth < 600) {
+  let touchStartX = 0;
+  let touchCurrentX = 0;
+  let isSwiping = false;
+  const swipeThreshold = 50; // píxeles para disparar el cambio de página
+  const viewerContainer = document.getElementById('viewerContainer');
+  
+  viewerContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    isSwiping = true;
+    canvasRight.style.transition = 'none';
+  });
+  
+  viewerContainer.addEventListener('touchmove', (e) => {
+    if (!isSwiping) return;
+    touchCurrentX = e.touches[0].clientX;
+    let deltaX = touchCurrentX - touchStartX;
+    // Para lectura japonesa, se espera swipe de derecha a izquierda (deltaX negativo)
+    if (deltaX < 0) {
+      canvasRight.style.transform = `translateX(${deltaX}px)`;
+    }
+  });
+  
+  viewerContainer.addEventListener('touchend', () => {
+    if (!isSwiping) return;
+    let deltaX = touchCurrentX - touchStartX;
+    // Duración de la animación en función de la distancia y la velocidad configurada
+    canvasRight.style.transition = `transform ${Math.abs(deltaX)/200 * config.animSpeed}s ease-out`;
+    if (Math.abs(deltaX) > swipeThreshold) {
+      canvasRight.style.transform = `translateX(-100%)`;
+      setTimeout(() => {
+        canvasRight.style.transition = 'none';
+        canvasRight.style.transform = 'translateX(0)';
+        nextSpread();
+      }, Math.abs(deltaX)/200 * config.animSpeed * 1000);
+    } else {
+      canvasRight.style.transform = 'translateX(0)';
+    }
+    isSwiping = false;
+  });
+}
+
+// Re-renderizar al cambiar el tamaño de la ventana
+window.addEventListener('resize', renderSpread);
