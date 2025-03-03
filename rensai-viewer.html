@@ -6,7 +6,7 @@
   <title>Rensai Viewer - Shikashi Monthly Friday Series</title>
   <!-- pdf.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-  <!-- Archivo de estilos externo -->
+  <!-- Estilos externos -->
   <link rel="stylesheet" href="css/viewer-styles.css">
 </head>
 <body>
@@ -20,9 +20,9 @@
   <!-- Direction Overlay -->
   <div id="directionOverlay" class="direction-overlay" style="display: none;">←</div>
   
-  <!-- Barra Superior: Indicador, botón Volver y botón de Configuraciones -->
+  <!-- Barra Superior: Indicador, botón Volver y Configuración -->
   <div id="topNavBar" class="top-bar">
-    <div class="page-info" id="topPageInfo" aria-label="Información de página">&lt; Páginas ? - ? de ? &gt;</div>
+    <div class="page-info" id="topPageInfo" aria-label="Información de página">&lt;  de  &gt;</div>
     <div class="nav-buttons">
       <button id="backButton" aria-label="Volver" type="button">Volver</button>
       <button id="settingsButton" aria-label="Configuraciones" type="button">⚙️</button>
@@ -41,7 +41,7 @@
     </label>
     <label>
       Zoom:
-      <input type="range" id="zoomRange" min="0.5" max="3" step="0.1" value="1.2">
+      <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="2">
     </label>
     <label>
       Fondo:
@@ -58,19 +58,19 @@
   <div id="viewerContainer" class="viewer-container">
     <canvas id="canvasLeft"></canvas>
     <canvas id="canvasRight"></canvas>
-    <!-- Flechas de navegación para Desktop (se muestran solo en pantallas grandes) -->
+    <!-- Botones de navegación Desktop (en móviles se usará swipe) -->
     <div id="prevArrow" class="nav-arrow arrow-left" aria-label="Avanzar">&#9664;</div>
     <div id="nextArrow" class="nav-arrow arrow-right" aria-label="Retroceder">&#9654;</div>
-    <!-- En móviles se usará swipe -->
   </div>
   
   <!-- Barra Inferior: Indicador y Copyright -->
   <div id="bottomNavBar" class="bottom-nav-bar">
-    <div class="page-info" id="bottomPageInfo">Páginas ? - ? de ?</div>
+    <div class="page-info" id="bottomPageInfo"> de </div>
     <div class="copy">&copy; 2025 Shikashi MF</div>
   </div>
   
-  <!-- Archivo de script externo -->
+  <!-- Script externo -->
   <script src="js/viewer-scripts.js"></script>
 </body>
 </html>
+
