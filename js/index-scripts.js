@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ==== OVERLAY ====
+  // ==== OVERLAY SHOW ====
   const overlayGrid = document.getElementById('overlayGrid');
   setTimeout(() => overlayGrid.classList.add('active'), 1500);
 
-  // ==== JSON FETCH ====
+  // ==== FETCH ARTICLES ====
   let articlesData = [];
   fetch('articulos.json')
     .then(res => res.json())
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
       articlesData = data;
       renderOverlayArticles();
       renderCarouselArticles();
+      renderObrasCarousel();
       renderArticleList();
     })
     .catch(err => {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       articlesData = [];
     });
 
-  // ==== RENDER OVERLAY ====
+  // ==== OVERLAY: Revista + 4 destacados ====
   function renderOverlayArticles() {
     const smallContainer = document.getElementById('smallItemsContainer');
     const featured = articlesData.filter(a => a.featured).slice(0, 4);
@@ -86,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const obrasCarouselPages = document.getElementById('obrasCarouselPages');
   let currentObrasPage = 0;
   const obrasImages = [
-    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png'
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png', 
+    'img/obras/5.png', 'img/obras/6.png'
   ];
 
   function renderObrasCarousel() {
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateObrasCarousel();
   };
 
-  // ==== RENDER LISTADO DE ARTÍCULOS ====
+  // ==== LISTADO DE ARTÍCULOS ====
   const articleListContainer = document.querySelector('.articles-list');
   const selectorButtons = document.querySelectorAll('.selector-btn');
 
@@ -166,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ==== UTILITY ====
+  // ==== UTILIDADES ====
   function chunkArray(arr, size) {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
@@ -174,6 +176,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return result;
   }
-
-  renderObrasCarousel();
 });
