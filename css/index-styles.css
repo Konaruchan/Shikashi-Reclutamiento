@@ -1,6 +1,6 @@
-/* ======================
-    Base y Tipografía
-====================== */
+/* ========================================
+   Base y Tipografía tipo 3DS / Aero
+======================================== */
 @font-face {
   font-family: 'Botones';
   src: url('ttf/botones.woff2') format('woff2');
@@ -9,29 +9,17 @@
   font-family: 'Cuerpo';
   src: url('ttf/cuerpo.woff2') format('woff2');
 }
-html {
-  zoom: 0.75;
-}
+html { zoom: 0.75; scroll-behavior: smooth; }
 body {
   font-family: 'Cuerpo', sans-serif;
   background: linear-gradient(135deg, #e0f7fa, #ffffff);
   color: #333;
   line-height: 1.6;
-  overflow-x: hidden;
 }
 
-/* ======================
-    Container
-====================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* ======================
-    Navegación
-====================== */
+/* ========================================
+   Navbar
+======================================== */
 nav {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   padding: 1rem 2rem;
@@ -68,9 +56,9 @@ nav {
   transform: translateY(-2px);
 }
 
-/* ======================
-    Marquee
-====================== */
+/* ========================================
+   Marquee estilo 3DS
+======================================== */
 .marquee-container {
   background: linear-gradient(90deg, #00c6ff, #0072ff);
   color: #fff;
@@ -91,50 +79,61 @@ nav {
   to { transform: translateX(-100%); }
 }
 
-/* ======================
-    HERO Section
-====================== */
+/* ========================================
+   Hero image + overlay grid
+======================================== */
 .hero-image-section {
-  margin: 1rem 0;
   position: relative;
   aspect-ratio: 16/9;
-  background: url('img/hero-image.jpg') center/cover no-repeat;
   border-radius: 12px;
   overflow: hidden;
+  margin-bottom: 2rem;
+}
+.hero-background {
+  background: url('img/hero-image.jpg') center/cover no-repeat;
+  width: 100%;
+  height: 100%;
 }
 .overlay-grid {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(8px);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  transition: 0.5s ease;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(12px);
   opacity: 0;
   visibility: hidden;
+  transition: 0.5s ease;
 }
 .overlay-grid.active {
   opacity: 1;
   visibility: visible;
 }
 
-/* ======================
-    Cards
-====================== */
+/* ========================================
+   Card General (revista + artículos)
+======================================== */
 .card {
   background: rgba(255,255,255,0.95);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
 }
 .card-header {
   display: flex;
   align-items: center;
   padding: 0.5rem;
+  background: #fff;
   border-bottom: 2px solid #00c6ff;
 }
 .card-header .accent {
@@ -145,7 +144,7 @@ nav {
 }
 .card-header h3 {
   font-family: 'Botones', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 }
 .card-body {
   padding: 0.5rem;
@@ -153,6 +152,16 @@ nav {
   justify-content: center;
   align-items: center;
 }
+.card-body img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ========================================
+   Revista Bloque (izquierda)
+======================================== */
+.big-item .card-body { height: 350px; }
 .big-item-btn {
   margin: 0.5rem auto;
   padding: 0.8rem 1.5rem;
@@ -163,21 +172,26 @@ nav {
   border-radius: 6px;
   box-shadow: inset 0 2px rgba(255,255,255,0.6), 0 4px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
-  display: inline-block;
+  text-align: center;
+  display: block;
 }
 .big-item-btn:hover {
   background: linear-gradient(180deg, #00bcd4, #0097a7);
   transform: translateY(-2px);
 }
+
+/* ========================================
+   Artículos (derecha)
+======================================== */
 .small-items-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
 }
 
-/* ======================
-    Carruseles
-====================== */
+/* ========================================
+   Carrusel
+======================================== */
 .carousel-section, .obras-carousel-section {
   padding: 2rem 0;
 }
@@ -238,9 +252,9 @@ nav {
 .carousel-button.prev, .obras-carousel-button.prev { left: -2rem; }
 .carousel-button.next, .obras-carousel-button.next { right: -2rem; }
 
-/* ======================
-    Articles Section
-====================== */
+/* ========================================
+   Lista de Artículos
+======================================== */
 .articles-section {
   background: #fff;
   padding: 3rem 0;
@@ -295,9 +309,9 @@ nav {
   color: #fff;
 }
 
-/* ======================
-    Footer
-====================== */
+/* ========================================
+   Footer
+======================================== */
 .footer {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   color: #fff;
