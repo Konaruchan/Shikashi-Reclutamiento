@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       articlesData = [];
     });
 
-  // ==== OVERLAY: Revista + 4 destacados ====
+  // ==== OVERLAY DESTACADOS ====
   function renderOverlayArticles() {
     const smallContainer = document.getElementById('smallItemsContainer');
     const featured = articlesData.filter(a => a.featured).slice(0, 4);
@@ -83,12 +83,18 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCarousel();
   };
 
+  // AUTO-SCROLL Carrusel Artículos
+  setInterval(() => {
+    currentPage = (currentPage < carouselPages.children.length - 1) ? currentPage + 1 : 0;
+    updateCarousel();
+  }, 7000);
+
   // ==== CARRUSEL OBRAS SHIKASHI ====
   const obrasCarouselPages = document.getElementById('obrasCarouselPages');
   let currentObrasPage = 0;
   const obrasImages = [
-    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png', 
-    'img/obras/5.png', 'img/obras/6.png'
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 
+    'img/obras/4.png', 'img/obras/5.png', 'img/obras/6.png'
   ];
 
   function renderObrasCarousel() {
@@ -126,6 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
     currentObrasPage = (currentObrasPage < obrasCarouselPages.children.length - 1) ? currentObrasPage + 1 : 0;
     updateObrasCarousel();
   };
+
+  // AUTO-SCROLL Carrusel Obras
+  setInterval(() => {
+    currentObrasPage = (currentObrasPage < obrasCarouselPages.children.length - 1) ? currentObrasPage + 1 : 0;
+    updateObrasCarousel();
+  }, 7000);
 
   // ==== LISTADO DE ARTÍCULOS ====
   const articleListContainer = document.querySelector('.articles-list');
@@ -168,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ==== UTILIDADES ====
+  // ==== UTILITY ====
   function chunkArray(arr, size) {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
