@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- Barra de Navegación -->
+  <!-- NAVBAR -->
   <nav>
     <div class="nav-container container">
       <div class="logo-container">
@@ -24,7 +24,7 @@
     </div>
   </nav>
 
-  <!-- Marquee -->
+  <!-- MARQUEE -->
   <div class="marquee-container">
     <div class="marquee-content container">
       <span>📢 ¡Bienvenidos a Shikashi Monthly Friday! | 📰 Últimas noticias sobre manga y rensai aquí | 🎉 ¡No te pierdas la próxima edición!</span>
@@ -32,21 +32,24 @@
     </div>
   </div>
 
-  <!-- HERO IMAGE con Overlay -->
-  <section class="hero-image-section container">
+  <!-- HERO IMAGE -->
+  <section class="hero-image-section">
+    <div class="hero-background"></div>
     <div class="overlay-grid" id="overlayGrid">
+      <!-- Revista (bloque fijo) -->
       <div class="big-item card">
         <div class="card-header">
           <span class="accent"></span>
-          <h3>SHIKASHI MONTHLY DE ESTE MES</h3>
+          <h3>REVISTA DEL MES</h3>
         </div>
         <div class="card-body">
           <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         </div>
-        <a href="rensai.html" class="big-item-btn">¡Quiero leerlo!</a>
+        <a href="rensai.html" class="big-item-btn">¡Ver Revista!</a>
       </div>
+      <!-- Artículos dinámicos -->
       <div class="small-items-container" id="smallItemsContainer">
-        <!-- Se inyectarán dinámicamente -->
+        <!-- Aquí van los artículos destacados -->
       </div>
     </div>
   </section>
@@ -56,9 +59,7 @@
     <div class="carousel-wrapper container">
       <h2>Artículos Recientes</h2>
       <div class="carousel-container" id="carousel-container">
-        <div class="carousel-pages" id="carouselPages">
-          <!-- Páginas se inyectan dinámicamente -->
-        </div>
+        <div class="carousel-pages" id="carouselPages"></div>
       </div>
       <button class="carousel-button prev" id="prevButton">❮</button>
       <button class="carousel-button next" id="nextButton">❯</button>
@@ -70,9 +71,7 @@
     <div class="obras-carousel-wrapper container">
       <h2>¡¡Obras Shikashi de Marzo 2025!!</h2>
       <div class="obras-carousel-container" id="obrasCarouselContainer">
-        <div class="obras-carousel-pages" id="obrasCarouselPages">
-          <!-- Páginas se inyectan dinámicamente -->
-        </div>
+        <div class="obras-carousel-pages" id="obrasCarouselPages"></div>
       </div>
       <button class="obras-carousel-button prev" id="obrasPrevButton">❮</button>
       <button class="obras-carousel-button next" id="obrasNextButton">❯</button>
@@ -91,19 +90,19 @@
             <button class="selector-btn" data-category="todos">Todos</button>
           </div>
           <div class="articles-list"></div>
-          <button class="more-articles-btn" onclick="location.href='Articulos.html';">Mas artículos</button>
+          <button class="more-articles-btn" onclick="location.href='Articulos.html';">Más artículos</button>
         </div>
         <div class="articles-promo"></div>
       </div>
     </div>
   </section>
 
-  <!-- Pie de Página -->
+  <!-- FOOTER -->
   <footer class="footer">
     © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
   </footer>
 
-  <!-- Scripts -->
+  <!-- SCRIPTS -->
   <script src="scripts.js"></script>
   <script>
     fetch('articulos.json')
