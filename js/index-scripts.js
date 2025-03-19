@@ -1,127 +1,148 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Mostrar overlay luego de 2 segundos (efecto glass)
+  // ==== OVERLAY ====
   const overlayGrid = document.getElementById('overlayGrid');
-  setTimeout(() => overlayGrid.classList.add('active'), 2000);
+  setTimeout(() => overlayGrid.classList.add('active'), 1500);
 
-  const smallItemsContainer = document.getElementById('smallItemsContainer');
-  const carouselPagesContainer = document.getElementById('carouselPages');
-  const articlesListContainer = document.querySelector('.articles-list');
-  const selectorButtons = document.querySelectorAll('.selector-btn');
+  // ==== JSON FETCH ====
+  let articlesData = [];
+  fetch('articulos.json')
+    .then(res => res.json())
+    .then(data => {
+      articlesData = data;
+      renderOverlayArticles();
+      renderCarouselArticles();
+      renderArticleList();
+    })
+    .catch(err => {
+      console.error('Error cargando JSON', err);
+      articlesData = [];
+    });
 
-  // === CARGA DINÁMICA DESDE JSON ===
-  function loadContent() {
-    if (!window.articlesData || window.articlesData.length === 0) {
-      setTimeout(loadContent, 100);
-      return;
-    }
-
-    renderHeroArticles();
-    renderCarousel();
-    renderArticlesList('nuevo');
-    renderPromoImages();
-    renderObrasCarousel();
-  }
-
-  // === HERO OVERLAY (4 destacados) ===
-  function renderHeroArticles() {
-    const featuredArticles = window.articlesData.filter(a => a.featured).slice(0, 4);
-    smallItemsContainer.innerHTML = '';
-    featuredArticles.forEach(article => {
-      const smallItem = document.createElement('div');
-      smallItem.className = 'card';
-      smallItem.innerHTML = `
-        <div class="card-header">
-          <span class="accent"></span>
-          <h3>${article.title}</h3>
-        </div>
+  // ==== RENDER OVERLAY ====
+  function renderOverlayArticles() {
+    const smallContainer = document.getElementById('smallItemsContainer');
+    const featured = articlesData.filter(a => a.featured).slice(0, 4);
+    smallContainer.innerHTML = '';
+    featured.forEach(article => {
+      const item = document.createElement('div');
+      item.className = 'card';
+      item.innerHTML = `
+        <div class="card-header"><span class="accent"></span><h3>${article.title}</h3></div>
         <div class="card-body">
           <img src="${article.thumbnail}" alt="${article.title}">
         </div>
       `;
-      smallItem.addEventListener('click', () => {
+      item.addEventListener('click', () => {
         window.location.href = `Artic-Viewer.html?id=${article.id}`;
       });
-      smallItemsContainer.appendChild(smallItem);
+      smallContainer.appendChild(item);
     });
   }
 
-  // === CARRUSEL PRINCIPAL ===
+  // ==== CARRUSEL ARTÍCULOS ====
+  const carouselPages = document.getElementById('carouselPages');
   let currentPage = 0;
-  const articlesPerPage = 5;
-  function renderCarousel() {
-    let sorted = [...window.articlesData].sort((a, b) => new Date(b.date) - new Date(a.date));
-    carouselPagesContainer.innerHTML = '';
-    const pages = Math.ceil(sorted.length / articlesPerPage);
 
-    for (let i = 0; i < pages; i++) {
-      const page = document.createElement('div');
-      page.className = 'carousel-page';
-      const articles = sorted.slice(i * articlesPerPage, (i + 1) * articlesPerPage);
-      articles.forEach(article => {
-        const item = document.createElement('div');
-        item.className = 'carousel-item';
-        item.innerHTML = `
-          <img src="${article.thumbnail}" class="carousel-thumbnail" alt="${article.title}">
+  function renderCarouselArticles() {
+    carouselPages.innerHTML = '';
+    const pagedArticles = chunkArray(articlesData, 5);
+    pagedArticles.forEach(page => {
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'carousel-page';
+      page.forEach(article => {
+        const card = document.createElement('div');
+        card.className = 'carousel-item';
+        card.innerHTML = `
+          <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
           <div class="carousel-info">
-            ${article.new ? '<span class="new-label">Nuevo!</span>' : ''}
-            <span class="date">${article.date}</span>
             <h3>${article.title}</h3>
           </div>
         `;
-        item.addEventListener('click', () => {
+        card.addEventListener('click', () => {
           window.location.href = `Artic-Viewer.html?id=${article.id}`;
         });
-        page.appendChild(item);
+        pageContainer.appendChild(card);
       });
-      carouselPagesContainer.appendChild(page);
-    }
+      carouselPages.appendChild(pageContainer);
+    });
     updateCarousel();
   }
 
   function updateCarousel() {
     const offset = -currentPage * 100;
-    carouselPagesContainer.style.transform = `translateX(${offset}%)`;
+    carouselPages.style.transform = `translateX(${offset}%)`;
   }
 
-  // Botones carrusel
-  document.getElementById('prevButton').addEventListener('click', () => {
-    currentPage = (currentPage > 0) ? currentPage - 1 : carouselPagesContainer.children.length - 1;
+  document.getElementById('prevButton').onclick = () => {
+    currentPage = (currentPage > 0) ? currentPage - 1 : carouselPages.children.length - 1;
     updateCarousel();
-  });
-  document.getElementById('nextButton').addEventListener('click', () => {
-    currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
+  };
+  document.getElementById('nextButton').onclick = () => {
+    currentPage = (currentPage < carouselPages.children.length - 1) ? currentPage + 1 : 0;
     updateCarousel();
-  });
+  };
 
-  // Auto avance carrusel
-  let autoCarousel = setInterval(() => {
-    currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
-    updateCarousel();
-  }, 5000);
-  carouselPagesContainer.parentNode.addEventListener('mouseenter', () => clearInterval(autoCarousel));
-  carouselPagesContainer.parentNode.addEventListener('mouseleave', () => {
-    autoCarousel = setInterval(() => {
-      currentPage = (currentPage < carouselPagesContainer.children.length - 1) ? currentPage + 1 : 0;
-      updateCarousel();
-    }, 5000);
-  });
+  // ==== CARRUSEL OBRAS SHIKASHI ====
+  const obrasCarouselPages = document.getElementById('obrasCarouselPages');
+  let currentObrasPage = 0;
+  const obrasImages = [
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png'
+  ];
 
-  // === LISTA DE ARTÍCULOS ===
-  function renderArticlesList(category) {
-    articlesListContainer.innerHTML = '';
+  function renderObrasCarousel() {
+    obrasCarouselPages.innerHTML = '';
+    const pagedObras = chunkArray(obrasImages.length ? obrasImages : [null, null, null, null], 4);
+    pagedObras.forEach(page => {
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'obras-carousel-page';
+      page.forEach(src => {
+        const obra = document.createElement('div');
+        obra.className = 'obras-carousel-item';
+        if (src) {
+          obra.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.src='img/placeholder.png';">`;
+        } else {
+          obra.classList.add('placeholder');
+          obra.innerHTML = `<span>Obra</span>`;
+        }
+        pageContainer.appendChild(obra);
+      });
+      obrasCarouselPages.appendChild(pageContainer);
+    });
+    updateObrasCarousel();
+  }
+
+  function updateObrasCarousel() {
+    const offset = -currentObrasPage * 100;
+    obrasCarouselPages.style.transform = `translateX(${offset}%)`;
+  }
+
+  document.getElementById('obrasPrevButton').onclick = () => {
+    currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPages.children.length - 1;
+    updateObrasCarousel();
+  };
+  document.getElementById('obrasNextButton').onclick = () => {
+    currentObrasPage = (currentObrasPage < obrasCarouselPages.children.length - 1) ? currentObrasPage + 1 : 0;
+    updateObrasCarousel();
+  };
+
+  // ==== RENDER LISTADO DE ARTÍCULOS ====
+  const articleListContainer = document.querySelector('.articles-list');
+  const selectorButtons = document.querySelectorAll('.selector-btn');
+
+  function renderArticleList(category = 'nuevo') {
+    articleListContainer.innerHTML = '';
     let filtered = [];
     if (category === 'nuevo') {
-      filtered = window.articlesData.filter(a => a.new);
+      filtered = articlesData.filter(a => a.new);
     } else if (category === 'destacado') {
-      filtered = window.articlesData.filter(a => a.featured);
+      filtered = articlesData.filter(a => a.featured);
     } else {
-      filtered = [...window.articlesData];
+      filtered = [...articlesData];
     }
-
     filtered.forEach(article => {
-      const articleItem = document.createElement('div');
-      articleItem.className = 'article-item';
-      articleItem.innerHTML = `
+      const item = document.createElement('div');
+      item.className = 'article-item';
+      item.innerHTML = `
         <img src="${article.thumbnail}" alt="${article.title}">
         <div class="article-details">
           <h3>${article.title}</h3>
@@ -129,10 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>${article.date}</span>
         </div>
       `;
-      articleItem.addEventListener('click', () => {
+      item.addEventListener('click', () => {
         window.location.href = `Artic-Viewer.html?id=${article.id}`;
       });
-      articlesListContainer.appendChild(articleItem);
+      articleListContainer.appendChild(item);
     });
   }
 
@@ -141,85 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
       selectorButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const cat = btn.getAttribute('data-category');
-      renderArticlesList(cat);
+      renderArticleList(cat);
     });
   });
 
-  // === PROMOS laterales ===
-  const articlesPromoContainer = document.querySelector('.articles-promo');
-  const promoImages = ['img/mainpromo/promo1.jpg', 'img/mainpromo/promo2.jpg'];
-
-  function renderPromoImages() {
-    articlesPromoContainer.innerHTML = '';
-    if (promoImages.length > 0) {
-      promoImages.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Promoción';
-        img.onerror = () => {
-          articlesPromoContainer.innerHTML = '<div class="no-images">¡Bienvenido a Shikashi Monthly Friday Series!</div>';
-        };
-        articlesPromoContainer.appendChild(img);
-      });
+  // ==== UTILITY ====
+  function chunkArray(arr, size) {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
     }
+    return result;
   }
 
-  // === CARRUSEL DE OBRAS ===
-  const obrasCarouselPagesContainer = document.getElementById('obrasCarouselPages');
-  const obrasPrevButton = document.getElementById('obrasPrevButton');
-  const obrasNextButton = document.getElementById('obrasNextButton');
-  let currentObrasPage = 0;
-  const obrasPerPage = 4;
-  const obrasImages = [
-    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
-    'img/obras/5.png', 'img/obras/6.png', 'img/obras/7.png', 'img/obras/8.png'
-  ];
-
-  function renderObrasCarousel() {
-    obrasCarouselPagesContainer.innerHTML = '';
-    const numPages = Math.ceil(obrasImages.length / obrasPerPage);
-    for (let i = 0; i < numPages; i++) {
-      const page = document.createElement('div');
-      page.className = 'obras-carousel-page';
-      const imgs = obrasImages.slice(i * obrasPerPage, (i + 1) * obrasPerPage);
-      imgs.forEach(src => {
-        const item = document.createElement('div');
-        item.className = 'obras-carousel-item';
-        item.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.onerror=null; this.src='img/placeholder.png';">`;
-        page.appendChild(item);
-      });
-      obrasCarouselPagesContainer.appendChild(page);
-    }
-    updateObrasCarousel();
-  }
-
-  function updateObrasCarousel() {
-    const offset = -currentObrasPage * 100;
-    obrasCarouselPagesContainer.style.transform = `translateX(${offset}%)`;
-  }
-
-  obrasPrevButton.onclick = () => {
-    currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPagesContainer.children.length - 1;
-    updateObrasCarousel();
-  };
-  obrasNextButton.onclick = () => {
-    currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-    updateObrasCarousel();
-  };
-
-  let autoObrasInterval = setInterval(() => {
-    currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-    updateObrasCarousel();
-  }, 5000);
-  obrasCarouselPagesContainer.parentNode.addEventListener('mouseenter', () => clearInterval(autoObrasInterval));
-  obrasCarouselPagesContainer.parentNode.addEventListener('mouseleave', () => {
-    autoObrasInterval = setInterval(() => {
-      currentObrasPage = (currentObrasPage < obrasCarouselPagesContainer.children.length - 1) ? currentObrasPage + 1 : 0;
-      updateObrasCarousel();
-    }, 5000);
-  });
-
-  // Init
-  loadContent();
+  renderObrasCarousel();
 });
-
