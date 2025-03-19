@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shikashi Monthly Friday Series</title>
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Se elimina la carga de tipografías personalizadas y el zoom global -->
-  <link rel="stylesheet" href="css/index-styles.css" />
 </head>
 <body>
+
   <!-- Barra de Navegación -->
-  <nav class="main-nav">
+  <nav>
     <div class="nav-container container">
       <div class="logo-container">
         <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" />
@@ -32,21 +32,19 @@
     </div>
   </div>
 
-  <!-- HERO IMAGE con Overlay Glass -->
+  <!-- HERO IMAGE con Overlay -->
   <section class="hero-image-section container">
     <div class="overlay-grid" id="overlayGrid">
-      <!-- Bloque Grande: Portada -->
       <div class="big-item card">
         <div class="card-header">
           <span class="accent"></span>
           <h3>SHIKASHI MONTHLY DE ESTE MES</h3>
         </div>
         <div class="card-body">
-          <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail" />
+          <img src="img/portada-edicion.png" alt="Portada de la Edición" class="big-thumbnail">
         </div>
         <a href="rensai.html" class="big-item-btn">¡Quiero leerlo!</a>
       </div>
-      <!-- Bloque Dinámico: 4 artículos pequeños -->
       <div class="small-items-container" id="smallItemsContainer">
         <!-- Se inyectarán dinámicamente -->
       </div>
@@ -92,14 +90,10 @@
             <button class="selector-btn" data-category="destacado">Destacado</button>
             <button class="selector-btn" data-category="todos">Todos</button>
           </div>
-          <div class="articles-list">
-            <!-- Se inyectarán dinámicamente -->
-          </div>
-          <button class="more-articles-btn" onclick="location.href='Articulos.html';">Más artículos</button>
+          <div class="articles-list"></div>
+          <button class="more-articles-btn" onclick="location.href='Articulos.html';">Mas artículos</button>
         </div>
-        <div class="articles-promo">
-          <!-- Promos o mensaje de fallback -->
-        </div>
+        <div class="articles-promo"></div>
       </div>
     </div>
   </section>
@@ -109,7 +103,13 @@
     © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
   </footer>
 
-  <!-- Cargar script externo -->
-  <script src="js/index-scripts.js"></script>
+  <!-- Scripts -->
+  <script src="scripts.js"></script>
+  <script>
+    fetch('articulos.json')
+      .then(r => r.json())
+      .then(data => { window.articlesData = data; })
+      .catch(err => { window.articlesData = []; console.error(err); });
+  </script>
 </body>
 </html>
