@@ -3,27 +3,29 @@
 ======================================== */
 @font-face {
   font-family: 'Botones';
-  src: url('ttf/botones.woff2') format('woff2');
+  src: url('../ttf/botones.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Cuerpo';
-  src: url('ttf/cuerpo.woff2') format('woff2');
+  src: url('../ttf/cuerpo.woff2') format('woff2');
 }
 html { zoom: 0.75; scroll-behavior: smooth; }
 body {
   font-family: 'Cuerpo', sans-serif;
-  background: linear-gradient(135deg, #e0f7fa, #ffffff);
+  background: linear-gradient(135deg, #fff8f5, #ffffff);
   color: #333;
   line-height: 1.6;
+  padding: 0 2rem; /* Margen lateral global */
 }
 
 /* ========================================
    Navbar
 ======================================== */
 nav {
-  background: linear-gradient(180deg, #00c6ff, #0072ff);
+  background: linear-gradient(180deg, #820000, #5c0000);
   padding: 1rem 2rem;
   box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+  margin: 0 -2rem; /* Extender navbar hasta borde */
 }
 .nav-container {
   display: flex;
@@ -46,7 +48,7 @@ nav {
   color: #fff;
   text-decoration: none;
   padding: 0.5rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 10px;
   background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(0,0,0,0.1));
   box-shadow: inset 0 1px rgba(255,255,255,0.6);
   transition: all 0.3s;
@@ -57,10 +59,10 @@ nav {
 }
 
 /* ========================================
-   Marquee estilo 3DS
+   Marquee estilo Aero
 ======================================== */
 .marquee-container {
-  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  background: linear-gradient(90deg, #F4A200, #820000);
   color: #fff;
   font-family: 'Botones', sans-serif;
   font-weight: bold;
@@ -68,6 +70,7 @@ nav {
   overflow: hidden;
   white-space: nowrap;
   box-shadow: inset 0 -2px rgba(255,255,255,0.3);
+  margin: 0 -2rem;
 }
 .marquee-content {
   display: inline-block;
@@ -90,23 +93,26 @@ nav {
   margin-bottom: 2rem;
 }
 .hero-background {
-  background: url('img/hero-image.jpg') center/cover no-repeat;
+  background: url('../img/hero-image.jpg') center/cover no-repeat;
   width: 100%;
   height: 100%;
 }
 .overlay-grid {
   position: absolute;
   top: 0; left: 0;
-  width: 100%; height: 100%;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  margin: 1rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.2rem;
+  padding: 0.5rem;
   background: rgba(255,255,255,0.35);
   backdrop-filter: blur(12px);
   opacity: 0;
   visibility: hidden;
   transition: 0.5s ease;
+  border-radius: 12px;
 }
 .overlay-grid.active {
   opacity: 1;
@@ -118,11 +124,10 @@ nav {
 ======================================== */
 .card {
   background: rgba(255,255,255,0.95);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
-  cursor: pointer;
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -134,12 +139,12 @@ nav {
   align-items: center;
   padding: 0.5rem;
   background: #fff;
-  border-bottom: 2px solid #00c6ff;
+  border-bottom: 2px solid #F4A200;
 }
 .card-header .accent {
   width: 6px;
   height: 100%;
-  background: #00c6ff;
+  background: #F4A200;
   margin-right: 0.5rem;
 }
 .card-header h3 {
@@ -153,30 +158,30 @@ nav {
   align-items: center;
 }
 .card-body img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
 }
 
 /* ========================================
    Revista Bloque (izquierda)
 ======================================== */
-.big-item .card-body { height: 350px; }
+.big-item .card-body { height: 400px; }
 .big-item-btn {
   margin: 0.5rem auto;
   padding: 0.8rem 1.5rem;
-  background: linear-gradient(180deg, #00e5ff, #00b8d4);
+  background: linear-gradient(180deg, #F4A200, #c57300);
   color: #fff;
   font-family: 'Botones', sans-serif;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 10px;
   box-shadow: inset 0 2px rgba(255,255,255,0.6), 0 4px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
   text-align: center;
   display: block;
 }
 .big-item-btn:hover {
-  background: linear-gradient(180deg, #00bcd4, #0097a7);
+  background: linear-gradient(180deg, #c57300, #a65600);
   transform: translateY(-2px);
 }
 
@@ -186,18 +191,18 @@ nav {
 .small-items-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 /* ========================================
-   Carrusel
+   Carrusel y Obras Carrusel
 ======================================== */
 .carousel-section, .obras-carousel-section {
   padding: 2rem 0;
 }
 .carousel-section h2, .obras-carousel-section h2 {
   font-family: 'Botones', sans-serif;
-  color: #0072ff;
+  color: #820000;
   font-size: 1.8rem;
   margin-bottom: 1rem;
 }
@@ -216,8 +221,8 @@ nav {
 .carousel-item, .obras-carousel-item {
   flex: 1;
   background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   padding: 1rem;
   transition: transform 0.3s ease;
 }
@@ -229,7 +234,7 @@ nav {
   aspect-ratio: 1/1;
   object-fit: cover;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 .carousel-button, .obras-carousel-button {
   position: absolute;
@@ -237,12 +242,12 @@ nav {
   transform: translateY(-50%);
   background: rgba(255,255,255,0.95);
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 0.8rem;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   font-size: 1.5rem;
-  color: #0072ff;
+  color: #820000;
   transition: background 0.3s;
   z-index: 2;
 }
@@ -261,7 +266,7 @@ nav {
 }
 .articles-section h2 {
   font-family: 'Botones', sans-serif;
-  color: #0072ff;
+  color: #820000;
 }
 .articles-content {
   display: grid;
@@ -274,12 +279,13 @@ nav {
   padding: 0.75rem 1.5rem;
   cursor: pointer;
   flex: 1;
+  border-radius: 10px;
   transition: 0.3s ease;
 }
 .selector-btn.active {
-  background: #0072ff;
+  background: #820000;
   color: #fff;
-  border-color: #0072ff;
+  border-color: #820000;
 }
 .article-item {
   display: flex;
@@ -298,14 +304,15 @@ nav {
   font-size: 1.2rem;
 }
 .more-articles-btn {
-  border: 1px solid #0072ff;
+  border: 1px solid #820000;
   background: transparent;
-  color: #0072ff;
+  color: #820000;
   padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   transition: 0.3s;
 }
 .more-articles-btn:hover {
-  background: #0072ff;
+  background: #820000;
   color: #fff;
 }
 
@@ -313,8 +320,10 @@ nav {
    Footer
 ======================================== */
 .footer {
-  background: linear-gradient(180deg, #00c6ff, #0072ff);
+  background: linear-gradient(180deg, #820000, #5c0000);
   color: #fff;
   text-align: center;
   padding: 1rem;
+  border-radius: 0;
+  margin: 0 -2rem;
 }
