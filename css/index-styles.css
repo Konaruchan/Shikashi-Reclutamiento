@@ -1,25 +1,41 @@
-/* ================================
-   Base
-================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ======================
+    Base y Tipografía
+====================== */
+@font-face {
+  font-family: 'Botones';
+  src: url('ttf/botones.woff2') format('woff2');
 }
-html, body {
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
+@font-face {
+  font-family: 'Cuerpo';
+  src: url('ttf/cuerpo.woff2') format('woff2');
+}
+html {
+  zoom: 0.75;
+}
+body {
+  font-family: 'Cuerpo', sans-serif;
   background: linear-gradient(135deg, #e0f7fa, #ffffff);
   color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-/* ================================
-   Navegación (Header estilo 3DS)
-================================ */
+/* ======================
+    Container
+====================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ======================
+    Navegación
+====================== */
 nav {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   padding: 1rem 2rem;
   box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
-  border-bottom: 1px solid rgba(255,255,255,0.4);
 }
 .nav-container {
   display: flex;
@@ -27,7 +43,7 @@ nav {
   align-items: center;
 }
 .logo-container img {
-  width: 160px;
+  width: 150px;
   margin-bottom: 0.8rem;
 }
 .nav-links {
@@ -37,7 +53,7 @@ nav {
   justify-content: center;
 }
 .nav-link {
-  font-weight: bold;
+  font-family: 'Botones', sans-serif;
   text-transform: uppercase;
   color: #fff;
   text-decoration: none;
@@ -52,12 +68,13 @@ nav {
   transform: translateY(-2px);
 }
 
-/* ================================
-   Marquee - estilo Aqua
-================================ */
+/* ======================
+    Marquee
+====================== */
 .marquee-container {
   background: linear-gradient(90deg, #00c6ff, #0072ff);
   color: #fff;
+  font-family: 'Botones', sans-serif;
   font-weight: bold;
   padding: 0.8rem 2rem;
   overflow: hidden;
@@ -68,22 +85,20 @@ nav {
   display: inline-block;
   animation: marquee 15s linear infinite;
 }
-.marquee-content span {
-  padding: 0 30px;
-}
+.marquee-content span { padding: 0 30px; }
 @keyframes marquee {
   from { transform: translateX(100%); }
   to { transform: translateX(-100%); }
 }
 
-/* ================================
-   Hero Image con efecto "glass"
-================================ */
+/* ======================
+    HERO Section
+====================== */
 .hero-image-section {
+  margin: 1rem 0;
   position: relative;
   aspect-ratio: 16/9;
   background: url('img/hero-image.jpg') center/cover no-repeat;
-  margin: 1rem 0;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -91,55 +106,201 @@ nav {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(8px);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.3);
-  box-shadow: inset 0 0 20px rgba(255,255,255,0.3);
+  gap: 0.75rem;
+  padding: 0.5rem;
+  transition: 0.5s ease;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.5s ease;
 }
 .overlay-grid.active {
   opacity: 1;
   visibility: visible;
 }
 
-/* ================================
-   Botón estilo UI Nintendo
-================================ */
+/* ======================
+    Cards
+====================== */
+.card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 2px solid #00c6ff;
+}
+.card-header .accent {
+  width: 6px;
+  height: 100%;
+  background: #00c6ff;
+  margin-right: 0.5rem;
+}
+.card-header h3 {
+  font-family: 'Botones', sans-serif;
+  font-size: 1.4rem;
+}
+.card-body {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .big-item-btn {
+  margin: 0.5rem auto;
+  padding: 0.8rem 1.5rem;
   background: linear-gradient(180deg, #00e5ff, #00b8d4);
   color: #fff;
-  padding: 0.8rem 1.5rem;
-  border: none;
+  font-family: 'Botones', sans-serif;
+  text-decoration: none;
   border-radius: 6px;
   box-shadow: inset 0 2px rgba(255,255,255,0.6), 0 4px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  font-weight: bold;
-  text-decoration: none;
   display: inline-block;
 }
 .big-item-btn:hover {
-  transform: translateY(-2px);
   background: linear-gradient(180deg, #00bcd4, #0097a7);
+  transform: translateY(-2px);
+}
+.small-items-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
-/* ================================
-   Ajustes secundarios
-================================ */
-.card-header h3 {
+/* ======================
+    Carruseles
+====================== */
+.carousel-section, .obras-carousel-section {
+  padding: 2rem 0;
+}
+.carousel-section h2, .obras-carousel-section h2 {
+  font-family: 'Botones', sans-serif;
+  color: #0072ff;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+.carousel-container, .obras-carousel-container {
+  overflow: hidden;
+}
+.carousel-pages, .obras-carousel-pages {
+  display: flex;
+  transition: transform 0.8s ease;
+}
+.carousel-page, .obras-carousel-page {
+  min-width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+.carousel-item, .obras-carousel-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  transition: transform 0.3s ease;
+}
+.carousel-item:hover, .obras-carousel-item:hover {
+  transform: translateY(-5px);
+}
+.carousel-thumbnail {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.carousel-button, .obras-carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-size: 1.5rem;
+  color: #0072ff;
+  transition: background 0.3s;
+  z-index: 2;
+}
+.carousel-button:hover, .obras-carousel-button:hover {
+  background: rgba(255,255,255,1);
+}
+.carousel-button.prev, .obras-carousel-button.prev { left: -2rem; }
+.carousel-button.next, .obras-carousel-button.next { right: -2rem; }
+
+/* ======================
+    Articles Section
+====================== */
+.articles-section {
+  background: #fff;
+  padding: 3rem 0;
+}
+.articles-section h2 {
+  font-family: 'Botones', sans-serif;
   color: #0072ff;
 }
+.articles-content {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 1rem;
+}
+.selector-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  flex: 1;
+  transition: 0.3s ease;
+}
+.selector-btn.active {
+  background: #0072ff;
+  color: #fff;
+  border-color: #0072ff;
+}
+.article-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #ddd;
+}
+.article-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+.article-details h3 {
+  font-family: 'Botones', sans-serif;
+  font-size: 1.2rem;
+}
+.more-articles-btn {
+  border: 1px solid #0072ff;
+  background: transparent;
+  color: #0072ff;
+  padding: 0.75rem 1.5rem;
+  transition: 0.3s;
+}
+.more-articles-btn:hover {
+  background: #0072ff;
+  color: #fff;
+}
 
+/* ======================
+    Footer
+====================== */
 .footer {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   color: #fff;
-  padding: 1rem;
   text-align: center;
-  box-shadow: inset 0 2px rgba(255,255,255,0.2);
+  padding: 1rem;
 }
