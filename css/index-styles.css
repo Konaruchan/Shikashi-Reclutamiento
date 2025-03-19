@@ -8,7 +8,8 @@
   src: url('../ttf/cuerpo.woff2') format('woff2');
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
+html { zoom: 0.75; } /* Zoom global restaurado */
+body {
   font-family: 'Cuerpo', sans-serif;
   background: linear-gradient(135deg, #fff8f5, #ffffff);
   color: #333;
@@ -20,7 +21,7 @@ html, body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
 }
 
 /* ========== NAVBAR ========== */
@@ -75,6 +76,8 @@ nav {
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 .hero-background {
   background: url('../img/hero-image.jpg') center/cover no-repeat;
@@ -88,8 +91,8 @@ nav {
   height: calc(100% - 2rem);
   margin: 1rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
+  grid-template-columns: 45% 55%;
+  gap: 1.5rem;
   padding: 0.5rem;
   background: rgba(255,255,255,0.35);
   backdrop-filter: blur(12px);
@@ -141,7 +144,7 @@ nav {
   padding: 1rem;
 }
 .big-item .card-body img {
-  max-width: 85%;
+  max-width: 90%;
   max-height: 90%;
   object-fit: contain;
   border-radius: 8px;
@@ -168,137 +171,24 @@ nav {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-
-/* ========== CARRUSELES (ARTICULOS + OBRAS) ========== */
-.carousel-section, .obras-carousel-section { padding: 2rem 0; }
-.carousel-section h2, .obras-carousel-section h2 {
-  font-family: 'Botones', sans-serif;
-  color: #820000;
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+.small-items-container .card-body {
+  height: 180px;
 }
-.carousel-wrapper, .obras-carousel-wrapper {
-  position: relative;
-  overflow: hidden;
-}
-.carousel-container, .obras-carousel-container {
-  overflow: hidden;
-}
-.carousel-pages, .obras-carousel-pages {
-  display: flex;
-  transition: transform 0.8s ease;
-}
-.carousel-page, .obras-carousel-page {
-  min-width: 100%;
-  display: flex;
-  gap: 1rem;
-}
-.carousel-item, .obras-carousel-item {
-  flex: 1;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  padding: 1rem;
-  transition: transform 0.3s ease;
-}
-.carousel-item:hover, .obras-carousel-item:hover { transform: translateY(-5px); }
-.carousel-thumbnail {
+.small-items-container img {
   width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-}
-.carousel-button, .obras-carousel-button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.95);
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 0.8rem;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  font-size: 1.5rem;
-  color: #820000;
-  transition: background 0.3s;
-  z-index: 2;
-}
-.carousel-button:hover, .obras-carousel-button:hover { background: rgba(255,255,255,1); }
-.carousel-button.prev, .obras-carousel-button.prev { left: 1rem; }
-.carousel-button.next, .obras-carousel-button.next { right: 1rem; }
-
-/* ========== PLACEHOLDER PARA OBRAS VACÍAS ========== */
-.obras-carousel-item img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1.42;
+  max-height: 100%;
   object-fit: contain;
-  padding: 0.5rem;
-}
-.obras-carousel-item.placeholder {
-  background: linear-gradient(135deg, #eee, #ccc);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #555;
-  font-family: 'Botones', sans-serif;
 }
 
-/* ========== ARTICLES SECTION ========== */
-.articles-section {
-  background: #fff;
-  padding: 3rem 0;
+/* ========== FIX: VIEWPORT PROTEGIDO ========== */
+body, html {
+  width: 100%;
+  overflow-x: hidden;
 }
-.articles-content {
-  display: grid;
-  grid-template-columns: 1fr 250px;
-  gap: 1rem;
-}
-.selector-btn {
-  background: transparent;
-  border: 1px solid #ccc;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  flex: 1;
-  border-radius: 12px;
-  transition: 0.3s ease;
-}
-.selector-btn.active {
-  background: #820000;
-  color: #fff;
-  border-color: #820000;
-}
-.article-item {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #ddd;
-}
-.article-item img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  margin-right: 1rem;
-}
-.article-details h3 {
-  font-family: 'Botones', sans-serif;
-  font-size: 1.2rem;
-}
-.more-articles-btn {
-  border: 1px solid #820000;
-  background: transparent;
-  color: #820000;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  transition: 0.3s;
-}
-.more-articles-btn:hover { background: #820000; color: #fff; }
+.hero-image-section, .overlay-grid { box-sizing: border-box; }
 
-/* ========== FOOTER ========== */
-.footer {
-  background: linear-gradient(180deg, #820000, #5c0000);
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
+/* ========== MEDIA QUERIES ========== */
+@media (max-width: 768px) {
+  .overlay-grid { grid-template-columns: 1fr; grid-template-rows: auto auto; }
+  .small-items-container { grid-template-columns: 1fr 1fr; }
 }
