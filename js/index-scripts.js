@@ -1,116 +1,130 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ==== MENU BURGER ====
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (menuToggle && mobileMenu) {
-    menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('show');
-    });
+  // === REDIRECCIÓN A VERSIÓN MÓVIL ===
+  if (window.innerWidth <= 768) {
+    window.location.href = 'index-mb.html';
   }
 
-  // ==== FETCH JSON ====
-  let articlesData = [];
+  // === MOSTRAR OVERLAY ===
+  const overlayGrid = document.getElementById('overlayGrid');
+  setTimeout(() => overlayGrid.classList.add('active'), 1500);
 
-  // Artículos
+  // === FETCH JSON ===
+  let articlesData = [];
   fetch('articulos.json')
     .then(res => res.json())
     .then(data => {
       articlesData = data;
-      if (document.getElementById('carouselArticles')) renderCarouselArticles();
-      if (document.getElementById('carouselObras')) renderObrasCarousel();
-      if (document.getElementById('articlesList')) renderArticleList();
+      renderOverlayArticles();
+      renderCarouselArticles();
+      renderObrasCarousel();
+      renderArticleList();
     })
     .catch(err => {
-      console.error('Error cargando artículos:', err);
+      console.error('Error cargando JSON', err);
+      articlesData = [];
     });
 
-  // Issue
-  fetch('issues.json')
-    .then(res => res.json())
-    .then(data => {
-      if (data && data.length > 0) {
-        renderIssueOverlay(data[0]);
-      }
-    })
-    .catch(err => {
-      console.error('Error cargando issue:', err);
+  // === RENDER OVERLAY DESTACADOS ===
+  function renderOverlayArticles() {
+    const smallContainer = document.getElementById('smallItemsContainer');
+    const featured = articlesData.filter(a => a.featured).slice(0, 4);
+    smallContainer.innerHTML = '';
+    featured.forEach(article => {
+      const item = document.createElement('div');
+      item.className = 'card';
+      item.innerHTML = `
+        <div class="card-header"><span class="accent"></span><h3>${article.title}</h3></div>
+        <div class="card-body">
+          <img src="${article.thumbnail}" alt="${article.title}">
+        </div>
+      `;
+      item.addEventListener('click', () => {
+        window.location.href = `Artic-Viewer.html?id=${article.id}`;
+      });
+      smallContainer.appendChild(item);
     });
-
-  // ==== HERO OVERLAY ====
-  function renderIssueOverlay(issue) {
-    const issueTitle = document.getElementById('issueTitle');
-    const issueDesc = document.getElementById('issueDesc');
-    const issueImage = document.getElementById('issueImage');
-    const viewIssueBtn = document.getElementById('viewIssueBtn');
-    if (issueTitle && issueDesc && issueImage && viewIssueBtn) {
-      issueTitle.innerText = issue.title;
-      issueDesc.innerText = issue.description;
-      viewIssueBtn.onclick = () => {
-        window.location.href = issue.path;
-      };
-      // Mostrar overlay después de 3 segundos
-      setTimeout(() => {
-        const heroOverlay = document.getElementById('heroOverlay');
-        if (heroOverlay) {
-          heroOverlay.classList.add('show');
-        }
-      }, 3000);
-    }
   }
 
-  // ==== CARRUSEL ARTÍCULOS ====
+  // === CARRUSEL ARTÍCULOS AUTOMÁTICO ===
+  const carouselPages = document.getElementById('carouselPages');
+  let currentPage = 0;
+
   function renderCarouselArticles() {
-    const carousel = document.getElementById('carouselArticles');
-    carousel.innerHTML = '';
-    const pagedArticles = chunkArray(articlesData, 2);
+    carouselPages.innerHTML = '';
+    const pagedArticles = chunkArray(articlesData, 5);
     pagedArticles.forEach(page => {
-      const pageDiv = document.createElement('div');
-      pageDiv.className = 'carousel-page';
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'carousel-page';
       page.forEach(article => {
         const card = document.createElement('div');
         card.className = 'carousel-item';
         card.innerHTML = `
-          <img src="${article.thumbnail}" alt="${article.title}">
-          <h4>${article.title}</h4>
+          <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
+          <div class="carousel-info">
+            <h3>${article.title}</h3>
+          </div>
         `;
         card.addEventListener('click', () => {
           window.location.href = `Artic-Viewer.html?id=${article.id}`;
         });
-        pageDiv.appendChild(card);
+        pageContainer.appendChild(card);
       });
-      carousel.appendChild(pageDiv);
+      carouselPages.appendChild(pageContainer);
     });
-    autoSlide(carousel);
+    autoSlideCarousel();
   }
 
-  // ==== CARRUSEL OBRAS ====
+  function autoSlideCarousel() {
+    setInterval(() => {
+      currentPage = (currentPage + 1) % carouselPages.children.length;
+      const offset = -currentPage * 100;
+      carouselPages.style.transform = `translateX(${offset}%)`;
+    }, 4000);
+  }
+
+  // === CARRUSEL OBRAS AUTO ===
+  const obrasCarouselPages = document.getElementById('obrasCarouselPages');
+  let currentObrasPage = 0;
+  const obrasImages = [
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
+    'img/obras/5.png', 'img/obras/6.png', 'img/obras/7.png', 'img/obras/8.png'
+  ];
+
   function renderObrasCarousel() {
-    const carousel = document.getElementById('carouselObras');
-    const obrasImages = [
-      'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
-      'img/obras/5.png', 'img/obras/6.png'
-    ];
-    carousel.innerHTML = '';
-    const pagedObras = chunkArray(obrasImages, 2);
+    obrasCarouselPages.innerHTML = '';
+    const images = [...obrasImages];
+    while (images.length < 8) {
+      images.push(...obrasImages);
+    }
+    const pagedObras = chunkArray(images, 4);
     pagedObras.forEach(page => {
-      const pageDiv = document.createElement('div');
-      pageDiv.className = 'carousel-page';
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'obras-carousel-page';
       page.forEach(src => {
-        const card = document.createElement('div');
-        card.className = 'obras-carousel-item';
-        card.innerHTML = `<img src="${src}" alt="Obra" onerror="this.onerror=null;this.src='img/placeholder.png';">`;
-        pageDiv.appendChild(card);
+        const obra = document.createElement('div');
+        obra.className = 'obras-carousel-item';
+        obra.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.src='img/placeholder.png';">`;
+        pageContainer.appendChild(obra);
       });
-      carousel.appendChild(pageDiv);
+      obrasCarouselPages.appendChild(pageContainer);
     });
-    autoSlide(carousel);
+    autoSlideObrasCarousel();
   }
 
-  // ==== ARTÍCULOS LISTA ====
+  function autoSlideObrasCarousel() {
+    setInterval(() => {
+      currentObrasPage = (currentObrasPage + 1) % obrasCarouselPages.children.length;
+      const offset = -currentObrasPage * 100;
+      obrasCarouselPages.style.transform = `translateX(${offset}%)`;
+    }, 4500);
+  }
+
+  // === LISTA DE ARTÍCULOS ===
+  const articleListContainer = document.querySelector('.articles-list');
   const selectorButtons = document.querySelectorAll('.selector-btn');
+
   function renderArticleList(category = 'nuevo') {
-    const container = document.getElementById('articlesList');
-    container.innerHTML = '';
+    articleListContainer.innerHTML = '';
     let filtered = [];
     if (category === 'nuevo') {
       filtered = articlesData.filter(a => a.new);
@@ -127,12 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="article-details">
           <h3>${article.title}</h3>
           <p>${article.subtitle}</p>
+          <span>${article.date}</span>
         </div>
       `;
       item.addEventListener('click', () => {
         window.location.href = `Artic-Viewer.html?id=${article.id}`;
       });
-      container.appendChild(item);
+      articleListContainer.appendChild(item);
     });
   }
 
@@ -145,27 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ==== UTILS ====
+  // === UTILS ===
   function chunkArray(arr, size) {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
-      let chunk = arr.slice(i, i + size);
-      // Si el chunk es menor a 'size', completar con elementos del inicio
-      if (chunk.length < size && arr.length > 0) {
-        let fill = arr.slice(0, size - chunk.length);
-        chunk = chunk.concat(fill);
-      }
-      result.push(chunk);
+      result.push(arr.slice(i, i + size));
     }
     return result;
-  }
-
-  function autoSlide(carousel) {
-    let index = 0;
-    const totalPages = carousel.children.length;
-    setInterval(() => {
-      index = (index + 1) % totalPages;
-      carousel.style.transform = `translateX(-${index * 100}%)`;
-    }, 3500);
   }
 });
