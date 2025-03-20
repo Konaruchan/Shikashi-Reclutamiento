@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +7,6 @@
   <link rel="stylesheet" href="css/index-mb-styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-
 <body>
   <!-- NAV MOBILE -->
   <nav class="mobile-nav">
@@ -22,22 +20,19 @@
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero-image"></section>
-
-  <!-- ISSUE CARD -->
-  <section class="issue-section">
-    <div class="issue-card" id="issueCard">
-      <div class="issue-header">
-        <h3>Revista del Mes</h3>
-      </div>
-      <div class="issue-body">
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-image">
+      <img src="img/hero.jpg" alt="Hero Image" />
+    </div>
+    <div class="hero-overlay" id="heroOverlay">
+      <div class="magazine-thumbnail">
         <img src="img/portada-edicion.png" alt="Portada de la Edición" id="issueImage" />
-        <div class="issue-info">
-          <h4 id="issueTitle">Cargando...</h4>
-          <p id="issueDesc"></p>
-          <button id="viewIssueBtn">¡Ver Revista!</button>
-        </div>
+      </div>
+      <div class="magazine-info">
+        <h4 id="issueTitle">Cargando...</h4>
+        <p id="issueDesc"></p>
+        <button id="viewIssueBtn">¡Ver Revista!</button>
       </div>
     </div>
   </section>
@@ -45,16 +40,16 @@
   <!-- CARRUSEL ARTÍCULOS -->
   <section class="carousel-section">
     <h2>Artículos Recientes</h2>
-    <div class="carousel-container">
-      <div class="carousel-pages" id="carouselPages"></div>
+    <div class="carousel-container" id="carouselArticles">
+      <!-- Contenido generado dinámicamente -->
     </div>
   </section>
 
   <!-- CARRUSEL OBRAS -->
   <section class="carousel-section">
     <h2>Obras Shikashi</h2>
-    <div class="carousel-container">
-      <div class="carousel-pages" id="obrasCarouselPages"></div>
+    <div class="carousel-container" id="carouselObras">
+      <!-- Contenido generado dinámicamente -->
     </div>
   </section>
 
@@ -77,5 +72,4 @@
 
   <script src="js/index-mb-scripts.js"></script>
 </body>
-
 </html>
