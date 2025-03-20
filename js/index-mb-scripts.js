@@ -10,22 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ==== FETCH JSON ====
   let articlesData = [];
+
+  // Artículos
   fetch('articulos.json')
     .then(res => res.json())
     .then(data => {
       articlesData = data;
-      renderCarouselArticles();
-      renderObrasCarousel();
-      renderArticleList();
+      if (document.getElementById('carouselPages')) renderCarouselArticles();
+      if (document.getElementById('obrasCarouselPages')) renderObrasCarousel();
+      if (document.getElementById('articlesList')) renderArticleList();
     })
     .catch(err => {
       console.error('Error cargando artículos:', err);
     });
 
+  // Issue
   fetch('issues.json')
     .then(res => res.json())
     .then(data => {
-      renderIssueCard(data[0]);
+      if (document.getElementById('issueCard')) renderIssueCard(data[0]);
     })
     .catch(err => {
       console.error('Error cargando issue:', err);
@@ -49,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==== CARRUSEL ARTICULOS ====
   function renderCarouselArticles() {
     const carousel = document.getElementById('carouselPages');
-    if (!carousel) return;
     carousel.innerHTML = '';
     const pagedArticles = chunkArray(articlesData, 2);
     pagedArticles.forEach(page => {
@@ -75,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==== CARRUSEL OBRAS ====
   function renderObrasCarousel() {
     const carousel = document.getElementById('obrasCarouselPages');
-    if (!carousel) return;
     const obrasImages = [
       'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
       'img/obras/5.png', 'img/obras/6.png'
@@ -100,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectorButtons = document.querySelectorAll('.selector-btn');
   function renderArticleList(category = 'nuevo') {
     const container = document.getElementById('articlesList');
-    if (!container) return;
     container.innerHTML = '';
     let filtered = [];
     if (category === 'nuevo') filtered = articlesData.filter(a => a.new);
