@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shikashi Mobile</title>
+  <link rel="stylesheet" href="css/index-mb-styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+  <!-- NAVBAR MOVIL -->
+  <nav class="mobile-nav">
+    <div class="nav-left">
+      <img src="img/logo.png" alt="Logo" class="logo" />
+    </div>
+    <div class="nav-right">
+      <button id="hamburger" class="hamburger-btn">☰</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index-mb.html">Inicio</a>
+      <a href="rensai.html">Rensai</a>
+      <a href="Articulos.html">Artículos</a>
+      <a href="#">SMF PLUS</a>
+    </div>
+  </nav>
+
+  <!-- HERO IMAGE -->
+  <section class="hero-image">
+    <img src="img/hero-image.jpg" alt="Hero" />
+    <div class="revista-card" id="revistaCard">
+      <h3>Revista del Mes</h3>
+      <div class="revista-body">
+        <img src="img/portada-edicion.png" alt="Portada" />
+        <a href="rensai.html" class="revista-btn">¡Ver Revista!</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARRUSEL ARTÍCULOS -->
+  <section class="carousel-section">
+    <h2>Artículos Recientes</h2>
+    <div class="carousel-container" id="articlesCarousel"></div>
+  </section>
+
+  <!-- CARRUSEL OBRAS -->
+  <section class="carousel-section">
+    <h2>Obras Shikashi</h2>
+    <div class="carousel-container" id="obrasCarousel"></div>
+  </section>
+
+  <!-- SHIKASHI ARTÍCULOS -->
+  <section class="articles-section">
+    <h2>Shikashi Artículos</h2>
+    <div class="articles-selector">
+      <button class="selector-btn active" data-category="nuevo">Nuevo</button>
+      <button class="selector-btn" data-category="destacado">Destacado</button>
+      <button class="selector-btn" data-category="todos">Todos</button>
+    </div>
+    <div class="articles-list"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
+  </footer>
+
+  <!-- JS -->
+  <script src="js/index-mb-scripts.js"></script>
+</body>
+
+</html>
