@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileMenu = document.getElementById('mobileMenu');
   if (menuToggle && mobileMenu) {
     menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('active');
+      mobileMenu.classList.toggle('show');
     });
   }
 
@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.json())
     .then(data => {
       articlesData = data;
-      if (document.getElementById('carouselPages')) renderCarouselArticles();
-      if (document.getElementById('obrasCarouselPages')) renderObrasCarousel();
+      if (document.getElementById('carouselArticles')) renderCarouselArticles();
+      if (document.getElementById('carouselObras')) renderObrasCarousel();
       if (document.getElementById('articlesList')) renderArticleList();
     })
     .catch(err => {
@@ -28,14 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('issues.json')
     .then(res => res.json())
     .then(data => {
-      if (document.getElementById('issueCard')) renderIssueCard(data[0]);
+      if (data && data.length > 0) {
+        renderIssueOverlay(data[0]);
+      }
     })
     .catch(err => {
       console.error('Error cargando issue:', err);
     });
 
-  // ==== ISSUE CARD ====
-  function renderIssueCard(issue) {
+  // ==== HERO OVERLAY ====
+  function renderIssueOverlay(issue) {
     const issueTitle = document.getElementById('issueTitle');
     const issueDesc = document.getElementById('issueDesc');
     const issueImage = document.getElementById('issueImage');
@@ -46,12 +48,19 @@ document.addEventListener('DOMContentLoaded', () => {
       viewIssueBtn.onclick = () => {
         window.location.href = issue.path;
       };
+      // Mostrar overlay después de 3 segundos
+      setTimeout(() => {
+        const heroOverlay = document.getElementById('heroOverlay');
+        if (heroOverlay) {
+          heroOverlay.classList.add('show');
+        }
+      }, 3000);
     }
   }
 
-  // ==== CARRUSEL ARTICULOS ====
+  // ==== CARRUSEL ARTÍCULOS ====
   function renderCarouselArticles() {
-    const carousel = document.getElementById('carouselPages');
+    const carousel = document.getElementById('carouselArticles');
     carousel.innerHTML = '';
     const pagedArticles = chunkArray(articlesData, 2);
     pagedArticles.forEach(page => {
@@ -76,19 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ==== CARRUSEL OBRAS ====
   function renderObrasCarousel() {
-    const carousel = document.getElementById('obrasCarouselPages');
+    const carousel = document.getElementById('carouselObras');
     const obrasImages = [
       'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
       'img/obras/5.png', 'img/obras/6.png'
     ];
-    const pagedObras = chunkArray(obrasImages, 2);
     carousel.innerHTML = '';
+    const pagedObras = chunkArray(obrasImages, 2);
     pagedObras.forEach(page => {
       const pageDiv = document.createElement('div');
       pageDiv.className = 'carousel-page';
       page.forEach(src => {
         const card = document.createElement('div');
-        card.className = 'carousel-item';
+        card.className = 'obras-carousel-item';
         card.innerHTML = `<img src="${src}" alt="Obra">`;
         pageDiv.appendChild(card);
       });
@@ -103,15 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('articlesList');
     container.innerHTML = '';
     let filtered = [];
-    if (category === 'nuevo') filtered = articlesData.filter(a => a.new);
-    else if (category === 'destacado') filtered = articlesData.filter(a => a.featured);
-    else filtered = [...articlesData];
+    if (category === 'nuevo') {
+      filtered = articlesData.filter(a => a.new);
+    } else if (category === 'destacado') {
+      filtered = articlesData.filter(a => a.featured);
+    } else {
+      filtered = [...articlesData];
+    }
     filtered.forEach(article => {
       const item = document.createElement('div');
       item.className = 'article-item';
       item.innerHTML = `
         <img src="${article.thumbnail}" alt="${article.title}">
-        <div>
+        <div class="article-details">
           <h3>${article.title}</h3>
           <p>${article.subtitle}</p>
         </div>
