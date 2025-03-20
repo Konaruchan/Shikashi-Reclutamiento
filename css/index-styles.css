@@ -60,22 +60,24 @@ nav {
   white-space: nowrap;
   box-shadow: inset 0 -2px rgba(255,255,255,0.3);
 }
-.marquee-content { display: inline-block; animation: marquee 15s linear infinite; }
+.marquee-content {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+}
 .marquee-content span { padding: 0 30px; }
 @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-/* === HERO + OVERLAY === */
+/* === HERO === */
 .hero-image-section {
+  margin: 0 auto;
   position: relative;
   aspect-ratio: 16/9;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  margin: 0 auto;
 }
 .hero-background {
   background: url('../img/hero-image.jpg') center/cover no-repeat;
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
 }
 .overlay-grid {
   position: absolute;
@@ -92,50 +94,15 @@ nav {
   opacity: 0;
   visibility: hidden;
   transition: 0.5s ease;
-  border-radius: 20px;
+  border-radius: 24px;
 }
 .overlay-grid.active { opacity: 1; visibility: visible; }
 
-/* === MOBILE-ONLY ISSUE SECTION === */
-.mobile-issue-section {
-  display: none;
-  padding: 2rem 0;
-}
-.mobile-issue-wrapper {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-.mobile-issue-wrapper img {
-  width: 120px;
-  height: auto;
-  object-fit: contain;
-  border-radius: 12px;
-}
-.mobile-issue-content h3 {
-  font-family: 'Botones', sans-serif;
-  font-size: 1.2rem;
-  color: #820000;
-}
-.mobile-issue-content p { font-size: 0.9rem; margin: 0.5rem 0; }
-.mobile-issue-content span { font-size: 0.8rem; color: #666; }
-.mobile-issue-btn {
-  display: inline-block;
-  margin-top: 0.5rem;
-  background: linear-gradient(180deg, #F4A200, #c57300);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  font-family: 'Botones', sans-serif;
-  text-decoration: none;
-  box-shadow: inset 0 1px rgba(255,255,255,0.6), 0 2px rgba(0,0,0,0.2);
-}
-
-/* === CARD === */
+/* === CARDS 3DS === */
 .card {
   background: rgba(255,255,255,0.97);
-  border-radius: 16px;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.3), inset 0 2px rgba(255,255,255,0.5);
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 0 2px rgba(255,255,255,0.5);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -149,8 +116,13 @@ nav {
   background: #fff;
   border-bottom: 2px solid #F4A200;
 }
-.card-header .accent { width: 6px; height: 100%; background: #F4A200; margin-right: 0.5rem; }
-.card-header h3 { font-family: 'Botones', sans-serif; font-size: 1.2rem; }
+.card-header .accent {
+  width: 6px; height: 100%; background: #F4A200; margin-right: 0.5rem;
+}
+.card-header h3 {
+  font-family: 'Botones', sans-serif;
+  font-size: 1.2rem;
+}
 .card-body {
   padding: 0.5rem;
   display: flex;
@@ -164,7 +136,7 @@ nav {
   max-width: 85%;
   max-height: 90%;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .big-item-btn {
@@ -196,14 +168,14 @@ nav {
   width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* === CARRUSEL GENERAL === */
+/* === CARRUSEL === */
 .carousel-section {
   background: #820000;
   padding: 3rem 0;
-  position: relative;
 }
 .carousel-wrapper {
   max-width: 1200px;
@@ -215,10 +187,9 @@ nav {
   margin-bottom: 1rem;
   font-family: 'Botones', sans-serif;
 }
-.carousel-container { overflow: hidden; }
 .carousel-pages {
   display: flex;
-  transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.8s ease;
   will-change: transform;
 }
 .carousel-page {
@@ -229,7 +200,7 @@ nav {
 .carousel-item {
   flex: 1;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1rem;
   box-shadow: 0 5px 10px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
@@ -247,7 +218,6 @@ nav {
 .obras-carousel-section {
   background: #fff;
   padding: 3rem 0;
-  position: relative;
 }
 .obras-carousel-wrapper {
   max-width: 1200px;
@@ -274,7 +244,7 @@ nav {
   flex: 1;
   max-width: 220px;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 0.5rem;
   box-shadow: 0 4px 8px rgba(0,0,0,0.25);
 }
@@ -283,9 +253,10 @@ nav {
   aspect-ratio: 1 / 1.42;
   object-fit: contain;
   border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* === LISTA DE ARTÍCULOS === */
+/* === SHIKASHI ARTÍCULOS === */
 .articles-section {
   padding: 3rem 0;
   background: #fff;
@@ -303,29 +274,51 @@ nav {
 .article-item {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 0.5rem;
   border-bottom: 1px solid #ccc;
   cursor: pointer;
   background: rgba(255,255,255,0.95);
-  border-radius: 12px;
+  border-radius: 16px;
   margin-bottom: 0.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .article-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 .article-item img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   margin-right: 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 .article-details h3 { font-size: 1.1rem; font-weight: bold; }
 .article-details p { font-size: 0.9rem; color: #666; }
 .article-details span { font-size: 0.85rem; color: #999; }
+
+/* === BOTONES UI 3DS === */
+.selector-btn, .more-articles-btn, .big-item-btn {
+  background: linear-gradient(180deg, #F4A200, #c57300);
+  border: none;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  font-family: 'Botones', sans-serif;
+  font-size: 1rem;
+  border-radius: 16px;
+  box-shadow: inset 0 1px rgba(255,255,255,0.7), 0 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.selector-btn:hover, .more-articles-btn:hover, .big-item-btn:hover {
+  background: linear-gradient(180deg, #c57300, #a65600);
+  transform: translateY(-2px);
+}
+.selector-btn.active {
+  background: linear-gradient(180deg, #820000, #5c0000);
+}
 
 /* === FOOTER === */
 .footer {
@@ -335,18 +328,4 @@ nav {
   padding: 1rem;
   font-family: 'Cuerpo', sans-serif;
   font-size: 0.9rem;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 768px) {
-  html { zoom: 1; }
-  .hero-image-section { margin: 0; border-radius: 0; }
-  .overlay-grid { display: none; }
-  .mobile-issue-section { display: block; }
-  .carousel-page { flex-wrap: wrap; }
-  .carousel-item { flex: 0 0 48%; }
-  .obras-carousel-page { flex-wrap: wrap; }
-  .obras-carousel-item { flex: 0 0 48%; max-width: none; }
-  .articles-content { grid-template-columns: 1fr; }
-  .container { padding: 0 1rem; }
 }
