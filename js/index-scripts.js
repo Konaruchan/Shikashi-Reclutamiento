@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ==== OVERLAY DESKTOP ====
-  const overlayGrid = document.getElementById('overlayGrid');
-  if (window.innerWidth > 768) {
-    setTimeout(() => overlayGrid?.classList.add('active'), 1500);
+  // === REDIRECCIÓN A VERSIÓN MÓVIL ===
+  if (window.innerWidth <= 768) {
+    window.location.href = 'index-mb.html';
   }
 
-  // ==== FETCH ARTICLES ====
+  // === MOSTRAR OVERLAY ===
+  const overlayGrid = document.getElementById('overlayGrid');
+  setTimeout(() => overlayGrid.classList.add('active'), 1500);
+
+  // === FETCH JSON ===
   let articlesData = [];
   fetch('articulos.json')
     .then(res => res.json())
     .then(data => {
       articlesData = data;
-      if (window.innerWidth > 768) {
-        renderOverlayArticles();
-      } else {
-        renderMobileIssue();
-      }
+      renderOverlayArticles();
       renderCarouselArticles();
       renderObrasCarousel();
       renderArticleList();
@@ -25,30 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       articlesData = [];
     });
 
-  // ==== FETCH ISSUE JSON (MOBILE) ====
-  function renderMobileIssue() {
-    fetch('issues.json')
-      .then(res => res.json())
-      .then(data => {
-        const latest = data[0];
-        const mobileIssue = document.getElementById('mobile-issue');
-        if (mobileIssue) {
-          mobileIssue.innerHTML = `
-            <div class="mobile-issue-card">
-              <img src="img/portada-edicion.png" alt="Portada" />
-              <div>
-                <h3>${latest.title}</h3>
-                <p>${latest.description}</p>
-                <span>${latest.date}</span><br>
-                <a href="rensai.html" class="big-item-btn">¡Ver Revista!</a>
-              </div>
-            </div>
-          `;
-        }
-      });
-  }
-
-  // ==== OVERLAY DESTACADOS (SOLO DESKTOP) ====
+  // === RENDER OVERLAY DESTACADOS ===
   function renderOverlayArticles() {
     const smallContainer = document.getElementById('smallItemsContainer');
     const featured = articlesData.filter(a => a.featured).slice(0, 4);
@@ -69,14 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ==== CARRUSEL ARTÍCULOS AUTO ====
+  // === CARRUSEL ARTÍCULOS AUTOMÁTICO ===
   const carouselPages = document.getElementById('carouselPages');
   let currentPage = 0;
 
   function renderCarouselArticles() {
     carouselPages.innerHTML = '';
-    const perPage = window.innerWidth > 768 ? 5 : 2;
-    const pagedArticles = chunkArray(articlesData, perPage);
+    const pagedArticles = chunkArray(articlesData, 5);
     pagedArticles.forEach(page => {
       const pageContainer = document.createElement('div');
       pageContainer.className = 'carousel-page';
@@ -85,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'carousel-item';
         card.innerHTML = `
           <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
-          <div class="carousel-info"><h3>${article.title}</h3></div>
+          <div class="carousel-info">
+            <h3>${article.title}</h3>
+          </div>
         `;
         card.addEventListener('click', () => {
           window.location.href = `Artic-Viewer.html?id=${article.id}`;
@@ -94,29 +71,32 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       carouselPages.appendChild(pageContainer);
     });
-    startAutoCarousel();
+    autoSlideCarousel();
   }
 
-  function startAutoCarousel() {
+  function autoSlideCarousel() {
     setInterval(() => {
       currentPage = (currentPage + 1) % carouselPages.children.length;
       const offset = -currentPage * 100;
       carouselPages.style.transform = `translateX(${offset}%)`;
-    }, 5000);
+    }, 4000);
   }
 
-  // ==== CARRUSEL OBRAS SHIKASHI AUTO ====
+  // === CARRUSEL OBRAS AUTO ===
   const obrasCarouselPages = document.getElementById('obrasCarouselPages');
   let currentObrasPage = 0;
   const obrasImages = [
-    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png',
-    'img/obras/4.png', 'img/obras/5.png', 'img/obras/6.png'
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 'img/obras/4.png',
+    'img/obras/5.png', 'img/obras/6.png', 'img/obras/7.png', 'img/obras/8.png'
   ];
 
   function renderObrasCarousel() {
     obrasCarouselPages.innerHTML = '';
-    const list = obrasImages.length < 8 ? [...obrasImages, ...obrasImages] : obrasImages;
-    const pagedObras = chunkArray(list, 4);
+    const images = [...obrasImages];
+    while (images.length < 8) {
+      images.push(...obrasImages);
+    }
+    const pagedObras = chunkArray(images, 4);
     pagedObras.forEach(page => {
       const pageContainer = document.createElement('div');
       pageContainer.className = 'obras-carousel-page';
@@ -128,18 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       obrasCarouselPages.appendChild(pageContainer);
     });
-    startAutoObrasCarousel();
+    autoSlideObrasCarousel();
   }
 
-  function startAutoObrasCarousel() {
+  function autoSlideObrasCarousel() {
     setInterval(() => {
       currentObrasPage = (currentObrasPage + 1) % obrasCarouselPages.children.length;
       const offset = -currentObrasPage * 100;
       obrasCarouselPages.style.transform = `translateX(${offset}%)`;
-    }, 5000);
+    }, 4500);
   }
 
-  // ==== LISTADO DE ARTÍCULOS ====
+  // === LISTA DE ARTÍCULOS ===
   const articleListContainer = document.querySelector('.articles-list');
   const selectorButtons = document.querySelectorAll('.selector-btn');
 
@@ -180,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ==== UTILITY ====
+  // === UTILS ===
   function chunkArray(arr, size) {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
