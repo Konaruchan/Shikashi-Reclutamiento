@@ -39,16 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==== HERO OVERLAY ====
   function renderIssueOverlay(issue) {
     const issueTitle = document.getElementById('issueTitle');
-    const issueDesc = document.getElementById('issueDesc');
-    const issueImage = document.getElementById('issueImage');
     const viewIssueBtn = document.getElementById('viewIssueBtn');
-    if (issueTitle && issueDesc && issueImage && viewIssueBtn) {
-      issueTitle.innerText = issue.title;
-      issueDesc.innerText = issue.description;
+    if (issueTitle && viewIssueBtn) {
+      issueTitle.innerText = "Shikashi de este mes";
       viewIssueBtn.onclick = () => {
         window.location.href = issue.path;
       };
-      // Mostrar overlay después de 3 segundos
+      // Mostrar overlay después de 3 segundos con animación
       setTimeout(() => {
         const heroOverlay = document.getElementById('heroOverlay');
         if (heroOverlay) {
@@ -98,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       page.forEach(src => {
         const card = document.createElement('div');
         card.className = 'obras-carousel-item';
-        card.innerHTML = `<img src="${src}" alt="Obra">`;
+        card.innerHTML = `<img src="${src}" alt="Obra" onerror="this.onerror=null;this.src='img/placeholder.png';">`;
         pageDiv.appendChild(card);
       });
       carousel.appendChild(pageDiv);
@@ -149,16 +146,27 @@ document.addEventListener('DOMContentLoaded', () => {
   function chunkArray(arr, size) {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
-      result.push(arr.slice(i, i + size));
+      let chunk = arr.slice(i, i + size);
+      if (chunk.length < size && arr.length > 0) {
+        let fill = arr.slice(0, size - chunk.length);
+        chunk = chunk.concat(fill);
+      }
+      result.push(chunk);
+    }
+    if (result.length < 2 && result.length > 0) {
+      // Duplicar el primer chunk para asegurar mínimo 2 páginas
+      result.push(result[0].slice());
     }
     return result;
   }
 
   function autoSlide(carousel) {
     let index = 0;
+    const totalPages = carousel.children.length;
     setInterval(() => {
-      index = (index + 1) % carousel.children.length;
+      index = (index + 1) % totalPages;
       carousel.style.transform = `translateX(-${index * 100}%)`;
     }, 3500);
   }
 });
+
