@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ==== OVERLAY SHOW ====
+  // ==== OVERLAY DESKTOP ====
   const overlayGrid = document.getElementById('overlayGrid');
-  setTimeout(() => overlayGrid.classList.add('active'), 1500);
+  if (window.innerWidth > 768) {
+    setTimeout(() => overlayGrid?.classList.add('active'), 1500);
+  }
 
   // ==== FETCH ARTICLES ====
   let articlesData = [];
@@ -9,7 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.json())
     .then(data => {
       articlesData = data;
-      renderOverlayArticles();
+      if (window.innerWidth > 768) {
+        renderOverlayArticles();
+      } else {
+        renderMobileIssue();
+      }
       renderCarouselArticles();
       renderObrasCarousel();
       renderArticleList();
@@ -19,7 +25,30 @@ document.addEventListener('DOMContentLoaded', () => {
       articlesData = [];
     });
 
-  // ==== OVERLAY DESTACADOS ====
+  // ==== FETCH ISSUE JSON (MOBILE) ====
+  function renderMobileIssue() {
+    fetch('issues.json')
+      .then(res => res.json())
+      .then(data => {
+        const latest = data[0];
+        const mobileIssue = document.getElementById('mobile-issue');
+        if (mobileIssue) {
+          mobileIssue.innerHTML = `
+            <div class="mobile-issue-card">
+              <img src="img/portada-edicion.png" alt="Portada" />
+              <div>
+                <h3>${latest.title}</h3>
+                <p>${latest.description}</p>
+                <span>${latest.date}</span><br>
+                <a href="rensai.html" class="big-item-btn">¡Ver Revista!</a>
+              </div>
+            </div>
+          `;
+        }
+      });
+  }
+
+  // ==== OVERLAY DESTACADOS (SOLO DESKTOP) ====
   function renderOverlayArticles() {
     const smallContainer = document.getElementById('smallItemsContainer');
     const featured = articlesData.filter(a => a.featured).slice(0, 4);
@@ -40,13 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ==== CARRUSEL ARTÍCULOS ====
+  // ==== CARRUSEL ARTÍCULOS AUTO ====
   const carouselPages = document.getElementById('carouselPages');
   let currentPage = 0;
 
   function renderCarouselArticles() {
     carouselPages.innerHTML = '';
-    const pagedArticles = chunkArray(articlesData, 5);
+    const perPage = window.innerWidth > 768 ? 5 : 2;
+    const pagedArticles = chunkArray(articlesData, perPage);
     pagedArticles.forEach(page => {
       const pageContainer = document.createElement('div');
       pageContainer.className = 'carousel-page';
@@ -55,9 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'carousel-item';
         card.innerHTML = `
           <img src="${article.thumbnail}" alt="${article.title}" class="carousel-thumbnail">
-          <div class="carousel-info">
-            <h3>${article.title}</h3>
-          </div>
+          <div class="carousel-info"><h3>${article.title}</h3></div>
         `;
         card.addEventListener('click', () => {
           window.location.href = `Artic-Viewer.html?id=${article.id}`;
@@ -66,78 +94,50 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       carouselPages.appendChild(pageContainer);
     });
-    updateCarousel();
+    startAutoCarousel();
   }
 
-  function updateCarousel() {
-    const offset = -currentPage * 100;
-    carouselPages.style.transform = `translateX(${offset}%)`;
+  function startAutoCarousel() {
+    setInterval(() => {
+      currentPage = (currentPage + 1) % carouselPages.children.length;
+      const offset = -currentPage * 100;
+      carouselPages.style.transform = `translateX(${offset}%)`;
+    }, 5000);
   }
 
-  document.getElementById('prevButton').onclick = () => {
-    currentPage = (currentPage > 0) ? currentPage - 1 : carouselPages.children.length - 1;
-    updateCarousel();
-  };
-  document.getElementById('nextButton').onclick = () => {
-    currentPage = (currentPage < carouselPages.children.length - 1) ? currentPage + 1 : 0;
-    updateCarousel();
-  };
-
-  // AUTO-SCROLL Carrusel Artículos
-  setInterval(() => {
-    currentPage = (currentPage < carouselPages.children.length - 1) ? currentPage + 1 : 0;
-    updateCarousel();
-  }, 7000);
-
-  // ==== CARRUSEL OBRAS SHIKASHI ====
+  // ==== CARRUSEL OBRAS SHIKASHI AUTO ====
   const obrasCarouselPages = document.getElementById('obrasCarouselPages');
   let currentObrasPage = 0;
   const obrasImages = [
-    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png', 
+    'img/obras/1.png', 'img/obras/2.png', 'img/obras/3.png',
     'img/obras/4.png', 'img/obras/5.png', 'img/obras/6.png'
   ];
 
   function renderObrasCarousel() {
     obrasCarouselPages.innerHTML = '';
-    const pagedObras = chunkArray(obrasImages.length ? obrasImages : [null, null, null, null], 4);
+    const list = obrasImages.length < 8 ? [...obrasImages, ...obrasImages] : obrasImages;
+    const pagedObras = chunkArray(list, 4);
     pagedObras.forEach(page => {
       const pageContainer = document.createElement('div');
       pageContainer.className = 'obras-carousel-page';
       page.forEach(src => {
         const obra = document.createElement('div');
         obra.className = 'obras-carousel-item';
-        if (src) {
-          obra.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.src='img/placeholder.png';">`;
-        } else {
-          obra.classList.add('placeholder');
-          obra.innerHTML = `<span>Obra</span>`;
-        }
+        obra.innerHTML = `<img src="${src}" alt="Obra Shikashi" onerror="this.src='img/placeholder.png';">`;
         pageContainer.appendChild(obra);
       });
       obrasCarouselPages.appendChild(pageContainer);
     });
-    updateObrasCarousel();
+    startAutoObrasCarousel();
   }
 
-  function updateObrasCarousel() {
-    const offset = -currentObrasPage * 100;
-    obrasCarouselPages.style.transform = `translateX(${offset}%)`;
+  function startAutoObrasCarousel() {
+    setInterval(() => {
+      currentObrasPage = (currentObrasPage + 1) % obrasCarouselPages.children.length;
+      const offset = -currentObrasPage * 100;
+      obrasCarouselPages.style.transform = `translateX(${offset}%)`;
+    }, 5000);
   }
-
-  document.getElementById('obrasPrevButton').onclick = () => {
-    currentObrasPage = (currentObrasPage > 0) ? currentObrasPage - 1 : obrasCarouselPages.children.length - 1;
-    updateObrasCarousel();
-  };
-  document.getElementById('obrasNextButton').onclick = () => {
-    currentObrasPage = (currentObrasPage < obrasCarouselPages.children.length - 1) ? currentObrasPage + 1 : 0;
-    updateObrasCarousel();
-  };
-
-  // AUTO-SCROLL Carrusel Obras
-  setInterval(() => {
-    currentObrasPage = (currentObrasPage < obrasCarouselPages.children.length - 1) ? currentObrasPage + 1 : 0;
-    updateObrasCarousel();
-  }, 7000);
 
   // ==== LISTADO DE ARTÍCULOS ====
   const articleListContainer = document.querySelector('.articles-list');
