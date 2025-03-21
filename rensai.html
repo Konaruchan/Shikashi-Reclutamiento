@@ -229,9 +229,28 @@
       opacity: 1;
     }
     
-    /* === RESPONSIVE === */
+    /* === RESPONSIVE PARA RENSAI === */
     @media (max-width: 768px) {
-      .rensai-main { flex-direction: column; }
+      /* En móvil, para la revista más reciente: imagen más pequeña en la esquina superior izquierda y texto al lado */
+      .rensai-main {
+        flex-direction: row;
+        align-items: center;
+        padding: 1rem;
+      }
+      .recent-issue img {
+        width: 120px;
+        margin-right: 1rem;
+      }
+      .recent-details h1 {
+        font-size: 1.8rem;
+      }
+      .recent-details p {
+        font-size: 1rem;
+      }
+      /* Cuadrícula de revistas anteriores: 2 columnas */
+      .issues-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
     
     /* === FOOTER === */
@@ -277,12 +296,12 @@
   <div class="container">
     <!-- Sección principal: Revista más reciente -->
     <div id="recentIssueContainer" class="rensai-main">
-      <!-- Aquí se inyecta la revista más reciente -->
+      <!-- Se inyecta la revista más reciente -->
     </div>
     
     <!-- Cuadrícula de revistas anteriores -->
     <div id="issuesGrid" class="issues-grid">
-      <!-- Aquí se inyectan las revistas anteriores ordenadas de más reciente a más antiguo -->
+      <!-- Se inyectan las revistas anteriores ordenadas de más reciente a más antiguo -->
     </div>
   </div>
   
