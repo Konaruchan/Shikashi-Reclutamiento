@@ -6,25 +6,35 @@
   <title>Artículos - Shikashi Monthly Friday Series</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Zoom global igual que en index.html */
+    /* === RESET Y BASE === */
+    @font-face {
+      font-family: 'Botones';
+      src: url('../ttf/botones.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Cuerpo';
+      src: url('../ttf/cuerpo.woff2') format('woff2');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { zoom: 0.75; }
-    /* Estilos generales y de navegación */
     body {
       font-family: 'Cuerpo', sans-serif;
-      background-color: #fafafa;
-      margin: 0;
-      padding: 0;
+      background: linear-gradient(135deg, #fff8f5, #ffffff);
       color: #333;
+      overflow-x: hidden;
     }
     .container {
+      width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 1rem;
+      padding: 0 2rem;
     }
+    
+    /* === NAV === */
     nav {
-      background: #820000;
+      background: linear-gradient(180deg, #820000, #5c0000);
       padding: 1rem 2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
     }
     .nav-container { 
       display: flex; 
@@ -37,88 +47,105 @@
     }
     .nav-links {
       display: flex;
-      gap: 1.2rem;
+      gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
     .nav-link {
       font-family: 'Botones', sans-serif;
-      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
       color: #fff;
       text-decoration: none;
-      font-size: 0.9rem;
-      padding: 0.75rem 1.2rem;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: background 0.3s ease;
+      padding: 0.5rem 1.2rem;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(0,0,0,0.05));
+      box-shadow: inset 0 1px rgba(255,255,255,0.6);
+      transition: all 0.3s;
     }
     .nav-link:hover { 
-      background-color: rgba(255,255,255,0.2); 
+      background: rgba(255,255,255,0.25); 
+      transform: translateY(-2px);
     }
+    
+    /* === HEADER Y BUSCADOR === */
     header {
-      margin-bottom: 2rem;
+      margin: 2rem 0;
     }
-    h1 {
+    header h1 {
       font-family: 'Botones', sans-serif;
       color: #820000;
+      text-align: center;
+      margin-bottom: 1rem;
     }
     .search-container {
       margin-bottom: 1.5rem;
     }
     .search-container input {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.75rem 1rem;
       font-size: 1rem;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 16px;
+      box-shadow: inset 0 1px rgba(0,0,0,0.1);
+      transition: all 0.3s;
     }
+    .search-container input:focus {
+      border-color: #820000;
+      outline: none;
+    }
+    
+    /* === LISTADO DE ARTÍCULOS === */
     .articles-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
     }
     .article-item {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .article-item:hover {
-      transform: translateY(-5px);
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
     .article-thumb {
-      width: 100%;
-      height: 200px;
+      width: 80px;
+      height: 80px;
       object-fit: cover;
-    }
-    .article-info {
-      padding: 0.75rem;
+      margin-right: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
     .article-info h3 {
-      margin: 0;
       font-family: 'Botones', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #820000;
+      margin: 0;
     }
     .article-info p {
-      margin: 0.5rem 0;
       font-size: 0.9rem;
       color: #666;
+      margin: 0.5rem 0;
     }
     .article-info span {
       font-size: 0.85rem;
       color: #999;
     }
-    footer {
+    
+    /* === FOOTER === */
+    .footer {
       background: #820000;
       color: #fff;
       text-align: center;
       padding: 1rem;
+      font-family: 'Cuerpo', sans-serif;
       font-size: 0.9rem;
       margin-top: 2rem;
     }
