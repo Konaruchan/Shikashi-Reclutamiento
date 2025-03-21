@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (issueTitle && viewIssueBtn) {
       issueTitle.innerText = "Shikashi de este mes";
       viewIssueBtn.onclick = () => {
-        window.location.href = rensai.html;
+        window.location.href = `rensai.html`;
       };
       // Mostrar overlay después de 3 segundos con animación
       setTimeout(() => {
