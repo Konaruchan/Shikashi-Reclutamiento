@@ -32,33 +32,31 @@
       margin: 0 auto;
       padding: 0 2rem;
     }
-    /* Spacer para separar el contenido */
-    .spacer {
-      height: 1.5rem;
-    }
+    /* Spacer con altura fija para dar respiro */
+    .spacer { display: block; height: 1.5rem; }
     
-    /* === NAV === */
-    nav {
+    /* === NAV DESKTOP === */
+    .desktop-nav {
       background: linear-gradient(180deg, #820000, #5c0000);
       padding: 1rem 2rem;
       box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
     }
-    .nav-container { 
+    .desktop-nav .nav-container { 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
     }
-    .logo-container img { 
+    .desktop-nav .logo-container img { 
       width: 150px; 
       margin-bottom: 0.8rem; 
     }
-    .nav-links {
+    .desktop-nav .nav-links {
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
-    .nav-link {
+    .desktop-nav .nav-link {
       font-family: 'Botones', sans-serif;
       text-transform: uppercase;
       color: #fff;
@@ -69,14 +67,68 @@
       box-shadow: inset 0 1px rgba(255,255,255,0.6);
       transition: all 0.3s;
     }
-    .nav-link:hover { 
+    .desktop-nav .nav-link:hover { 
       background: rgba(255,255,255,0.25); 
       transform: translateY(-2px);
     }
     
+    /* === NAV MOBILE === */
+    .mobile-nav {
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .mobile-nav .logo { width: 110px; }
+    .hamburger-btn {
+      background: linear-gradient(180deg, #F4A200, #c57300);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,0.7), 0 3px rgba(0,0,0,0.3);
+    }
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 1rem;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 50;
+    }
+    .mobile-menu.show { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 1rem;
+      color: #820000;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      background: rgba(255,255,255,0.95);
+    }
+    .mobile-menu a:hover { background: #f9f9f9; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    
+    /* Media queries para mostrar/ocultar nav según viewport */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-nav { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .desktop-nav { display: block; }
+      .mobile-nav { display: none; }
+    }
+    
     /* === HEADER Y BUSCADOR === */
     header {
-      margin: 2rem 0 1rem 0; /* margen superior para separar del contenido */
+      margin: 2rem 0 1rem 0;
     }
     header h1 {
       font-family: 'Botones', sans-serif;
@@ -150,9 +202,7 @@
     }
     
     /* === MAIN Y FOOTER === */
-    main {
-      flex: 1;
-    }
+    main { flex: 1; }
     .footer {
       background: #820000;
       color: #fff;
@@ -164,8 +214,8 @@
   </style>
 </head>
 <body>
-  <!-- Barra de Navegación -->
-  <nav>
+  <!-- Desktop Nav -->
+  <nav class="desktop-nav">
     <div class="nav-container container">
       <div class="logo-container">
         <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
@@ -176,6 +226,18 @@
         <a href="rensai.html" class="nav-link">RENSAI</a>
         <a href="#" class="nav-link">SMF PLUS</a>
       </div>
+    </div>
+  </nav>
+  
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav">
+    <img src="img/logo.png" alt="Logo Shikashi" class="logo">
+    <button id="menuToggle" class="hamburger-btn">☰</button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Inicio</a>
+      <a href="rensai.html">Rensai</a>
+      <a href="Articulos.html">Artículos</a>
+      <a href="#">SMF Plus</a>
     </div>
   </nav>
   
@@ -253,6 +315,15 @@
     });
 
     fetchArticles();
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+    }
   </script>
 </body>
 </html>
