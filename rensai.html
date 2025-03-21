@@ -231,7 +231,7 @@
     
     /* === RESPONSIVE PARA RENSAI === */
     @media (max-width: 768px) {
-      /* En móvil, para la revista más reciente: imagen más pequeña en la esquina superior izquierda y texto al lado */
+      /* Para la revista más reciente en móvil, la imagen se reduce y se coloca a la izquierda */
       .rensai-main {
         flex-direction: row;
         align-items: center;
@@ -338,6 +338,12 @@
         published = sortedIssues;
       }
       
+      // Si solo hay 1 revista disponible, redirige a rensai-details.html
+      if (published.length === 1) {
+        window.location.href = 'rensai-details.html?id=' + published[0].id;
+        return;
+      }
+      
       // La revista más reciente es la primera
       const recent = published[0];
       if (recent) {
@@ -395,3 +401,5 @@
   </script>
 </body>
 </html>
+
+    
