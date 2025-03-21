@@ -1,79 +1,149 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rensai - Shikashi Monthly Friday Series</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Zoom global (igual que en index.html) */
+    /* === RESET Y BASE === */
+    @font-face {
+      font-family: 'Botones';
+      src: url('../ttf/botones.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Cuerpo';
+      src: url('../ttf/cuerpo.woff2') format('woff2');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { zoom: 0.75; }
     body {
       font-family: 'Cuerpo', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #fafafa;
+      background: linear-gradient(135deg, #fff8f5, #ffffff);
       color: #333;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     .container {
       max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
-      padding: 1rem;
-    }
-    /* Navegación */
-    nav {
-      background: #820000;
       padding: 1rem 2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .nav-container {
+    
+    /* === NAV DESKTOP === */
+    .desktop-nav {
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .desktop-nav .nav-container {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .logo-container img {
+    .desktop-nav .logo-container img {
       width: 150px;
       margin-bottom: 0.8rem;
     }
-    .nav-links {
+    .desktop-nav .nav-links {
       display: flex;
-      gap: 1.2rem;
+      gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
-    .nav-link {
+    .desktop-nav .nav-link {
       font-family: 'Botones', sans-serif;
-      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
       color: #fff;
       text-decoration: none;
-      font-size: 0.9rem;
-      padding: 0.75rem 1.2rem;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: background 0.3s ease;
+      padding: 0.5rem 1.2rem;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(0,0,0,0.05));
+      box-shadow: inset 0 1px rgba(255,255,255,0.6);
+      transition: all 0.3s ease;
     }
-    .nav-link:hover { 
-      background-color: rgba(255,255,255,0.2); 
+    .desktop-nav .nav-link:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
     }
-    /* Sección principal de Rensai */
+    
+    /* === NAV MOBILE === */
+    .mobile-nav {
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .mobile-nav .logo { width: 110px; }
+    .hamburger-btn {
+      background: linear-gradient(180deg, #F4A200, #c57300);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,0.7), 0 3px rgba(0,0,0,0.3);
+    }
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 1rem;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 50;
+    }
+    .mobile-menu.show { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 1rem;
+      color: #820000;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      background: rgba(255,255,255,0.95);
+    }
+    .mobile-menu a:hover { background: #f9f9f9; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    
+    /* Media queries para navegación */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-nav { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .desktop-nav { display: block; }
+      .mobile-nav { display: none; }
+    }
+    
+    /* === SECCIÓN RENSAI (REVISTA MÁS RECIENTE) === */
     .rensai-main {
       display: flex;
       gap: 2rem;
       margin-top: 2rem;
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 1rem;
+      border-radius: 24px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      padding: 1.5rem;
     }
     .recent-issue {
       flex: 1;
       display: flex;
       gap: 2rem;
+      align-items: center;
     }
     .recent-issue img {
       max-width: 100%;
-      border-radius: 4px;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .recent-details {
       flex: 1;
@@ -84,11 +154,13 @@
     .recent-details h1 {
       font-family: 'Botones', sans-serif;
       color: #820000;
-      margin: 0 0 1rem;
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     .recent-details p {
-      font-size: 1rem;
-      margin: 0 0 1.5rem;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
     }
     .recent-buttons {
       display: flex;
@@ -97,25 +169,32 @@
     .recent-buttons a {
       text-decoration: none;
       font-family: 'Botones', sans-serif;
-      font-size: 1rem;
+      font-size: 1.1rem;
       padding: 0.75rem 1.5rem;
-      border: 1px solid #820000;
-      border-radius: 4px;
-      transition: background 0.3s ease, color 0.3s ease;
+      border-radius: 16px;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .recent-buttons a.leer {
       background: #820000;
       color: #fff;
     }
+    .recent-buttons a.leer:hover {
+      background: #5c0000;
+      transform: translateY(-2px);
+    }
     .recent-buttons a.comprar {
       background: transparent;
       color: #820000;
+      border: 2px solid #820000;
     }
     .recent-buttons a.comprar:hover {
       background: #820000;
       color: #fff;
+      transform: translateY(-2px);
     }
-    /* Cuadrícula de revistas anteriores */
+    
+    /* === CUADRÍCULA DE REVISTAS ANTERIORES === */
     .issues-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -129,7 +208,8 @@
     .issue-item img {
       width: 100%;
       display: block;
-      border-radius: 4px;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .issue-overlay {
       position: absolute;
@@ -141,12 +221,20 @@
       padding: 0.5rem;
       opacity: 0;
       transition: opacity 0.3s ease;
-      border-radius: 0 0 4px 4px;
+      border-radius: 0 0 16px 16px;
       font-family: 'Botones', sans-serif;
+      text-align: center;
     }
     .issue-item:hover .issue-overlay {
       opacity: 1;
     }
+    
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .rensai-main { flex-direction: column; }
+    }
+    
+    /* === FOOTER === */
     footer {
       background: #820000;
       color: #fff;
@@ -159,11 +247,11 @@
   </style>
 </head>
 <body>
-  <!-- Barra de Navegación -->
-  <nav>
+  <!-- Desktop Navigation -->
+  <nav class="desktop-nav">
     <div class="nav-container container">
       <div class="logo-container">
-        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series" />
+        <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
       </div>
       <div class="nav-links">
         <a href="index.html" class="nav-link">INICIO</a>
@@ -174,15 +262,27 @@
     </div>
   </nav>
   
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav">
+    <img src="img/logo.png" alt="Logo Shikashi" class="logo">
+    <button id="menuToggle" class="hamburger-btn">☰</button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Inicio</a>
+      <a href="Articulos.html">Artículos</a>
+      <a href="rensai.html">Rensai</a>
+      <a href="#">SMF Plus</a>
+    </div>
+  </nav>
+  
   <div class="container">
-    <!-- Sección principal: revista más reciente -->
+    <!-- Sección principal: Revista más reciente -->
     <div id="recentIssueContainer" class="rensai-main">
-      <!-- Se inyectará la revista más reciente -->
+      <!-- Aquí se inyecta la revista más reciente -->
     </div>
     
     <!-- Cuadrícula de revistas anteriores -->
     <div id="issuesGrid" class="issues-grid">
-      <!-- Se inyectan las revistas anteriores ordenadas de más reciente a más antiguo -->
+      <!-- Aquí se inyectan las revistas anteriores ordenadas de más reciente a más antiguo -->
     </div>
   </div>
   
@@ -191,13 +291,11 @@
   </footer>
   
   <script>
-    // Función para cargar issues.json (definido en la raíz del proyecto)
     async function fetchIssues() {
       try {
         const response = await fetch('issues.json');
         if (!response.ok) throw new Error('Error al cargar issues.json');
         const issues = await response.json();
-        console.log("Issues loaded:", issues);
         return issues;
       } catch (error) {
         console.error(error);
@@ -205,7 +303,6 @@
       }
     }
     
-    // Ordenar issues por fecha descendente (más reciente primero)
     function sortIssuesByDate(issues) {
       return issues.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
@@ -213,45 +310,38 @@
     function displayIssues(issues) {
       const sortedIssues = sortIssuesByDate(issues);
       const today = new Date();
-      // Filtrar issues con fecha <= hoy
       let published = sortedIssues.filter(issue => {
         const issueDate = new Date(issue.date);
         return !isNaN(issueDate) && issueDate <= today;
       });
-      // Si no se encuentran issues publicados, usar todas (posible que las fechas estén en el futuro)
       if (published.length === 0) {
         console.warn("No issues con fecha <= hoy. Mostrando todas las issues.");
         published = sortedIssues;
       }
-      console.log("Published issues:", published);
       
       // La revista más reciente es la primera
       const recent = published[0];
-      if(recent) {
+      if (recent) {
         const recentContainer = document.getElementById('recentIssueContainer');
-        // Se asume que la portada se encuentra en la misma carpeta que Issue.md
         const basePath = recent.path.substring(0, recent.path.lastIndexOf('/'));
         const portada = basePath + '/Portada.png';
-        // Ahora redirigimos a rensai-details.html en lugar de enlazar al PDF
         const detailsLink = 'rensai-details.html?id=' + recent.id;
-        // Se usa recent.description si existe; si no, se coloca un texto de ejemplo.
         const description = recent.description || "Aquí encontrarás la última edición de nuestra revista digital.";
         recentContainer.innerHTML = `
-          <div style="flex: 1;">
-            <img src="${portada}" alt="${recent.title}" style="max-width: 100%; border-radius: 4px;">
-          </div>
-          <div class="recent-details">
-            <h1>${recent.title}</h1>
-            <p>${description}</p>
-            <div class="recent-buttons">
-              <a href="${detailsLink}" class="leer">¡Leer ya!</a>
-              <a href="#" class="comprar">Comprar Fisico</a>
+          <div class="recent-issue">
+            <img src="${portada}" alt="${recent.title}">
+            <div class="recent-details">
+              <h1>${recent.title}</h1>
+              <p>${description}</p>
+              <div class="recent-buttons">
+                <a href="${detailsLink}" class="leer">¡Leer ya!</a>
+                <a href="#" class="comprar">Comprar Físico</a>
+              </div>
             </div>
           </div>
         `;
       }
       
-      // Mostrar en la cuadrícula las revistas anteriores (excluyendo la más reciente)
       const grid = document.getElementById('issuesGrid');
       const previousIssues = published.slice(1);
       let gridHtml = '';
@@ -274,6 +364,15 @@
     }
     
     initRensai();
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+    }
   </script>
 </body>
 </html>
