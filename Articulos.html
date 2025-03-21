@@ -32,8 +32,15 @@
       margin: 0 auto;
       padding: 0 2rem;
     }
-    /* Spacer con altura fija para dar respiro */
-    .spacer { display: block; height: 1.5rem; }
+    /* Spacer con altura fija y pseudo-elemento para asegurar contenido */
+    .spacer {
+      display: block;
+      height: 1.5rem;
+    }
+    .spacer::before {
+      content: "\00a0";
+      display: block;
+    }
     
     /* === NAV DESKTOP === */
     .desktop-nav {
