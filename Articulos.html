@@ -32,6 +32,10 @@
       margin: 0 auto;
       padding: 0 2rem;
     }
+    /* Spacer para separar el contenido */
+    .spacer {
+      height: 1.5rem;
+    }
     
     /* === NAV === */
     nav {
@@ -72,7 +76,7 @@
     
     /* === HEADER Y BUSCADOR === */
     header {
-      margin: 2rem 0 1rem 0; /* margen superior para separar del nav */
+      margin: 2rem 0 1rem 0; /* margen superior para separar del contenido */
     }
     header h1 {
       font-family: 'Botones', sans-serif;
@@ -148,7 +152,6 @@
     /* === MAIN Y FOOTER === */
     main {
       flex: 1;
-      margin: 2rem 0; /* margen superior e inferior para separar del nav y footer */
     }
     .footer {
       background: #820000;
@@ -175,6 +178,9 @@
       </div>
     </div>
   </nav>
+  
+  <!-- Spacer después del nav -->
+  <div class="spacer"></div>
 
   <header class="container">
     <h1>Artículos</h1>
@@ -189,6 +195,8 @@
     </div>
   </main>
 
+  <!-- Spacer antes del footer -->
+  <div class="spacer"></div>
   <footer class="footer">
     © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
   </footer>
