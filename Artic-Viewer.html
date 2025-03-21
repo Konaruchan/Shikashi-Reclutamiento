@@ -32,28 +32,28 @@
       padding: 0 2rem;
     }
     
-    /* === NAVIGATION === */
-    nav {
+    /* === NAV DESKTOP === */
+    .desktop-nav {
       background: linear-gradient(180deg, #820000, #5c0000);
       padding: 1rem 2rem;
       box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
     }
-    .nav-container {
+    .desktop-nav .nav-container {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .logo-container img {
+    .desktop-nav .logo-container img {
       width: 150px;
       margin-bottom: 0.8rem;
     }
-    .nav-links {
+    .desktop-nav .nav-links {
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
-    .nav-link {
+    .desktop-nav .nav-link {
       font-family: 'Botones', sans-serif;
       text-transform: uppercase;
       color: #fff;
@@ -64,9 +64,63 @@
       box-shadow: inset 0 1px rgba(255,255,255,0.6);
       transition: all 0.3s ease;
     }
-    .nav-link:hover {
+    .desktop-nav .nav-link:hover {
       background: rgba(255,255,255,0.25);
       transform: translateY(-2px);
+    }
+    
+    /* === NAV MOBILE === */
+    .mobile-nav {
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .mobile-nav .logo { width: 110px; }
+    .hamburger-btn {
+      background: linear-gradient(180deg, #F4A200, #c57300);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,0.7), 0 3px rgba(0,0,0,0.3);
+    }
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 1rem;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 50;
+    }
+    .mobile-menu.show { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 1rem;
+      color: #820000;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      background: rgba(255,255,255,0.95);
+    }
+    .mobile-menu a:hover { background: #f9f9f9; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    
+    /* Media queries para nav */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-nav { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .desktop-nav { display: block; }
+      .mobile-nav { display: none; }
     }
     
     /* === ARTICLE LAYOUT === */
@@ -75,13 +129,21 @@
       gap: 2rem;
       margin: 2rem 0;
     }
-    .article-main {
-      flex: 3;
-    }
+    .article-main { flex: 3; }
     .article-sidebar {
       flex: 1;
       border-left: 1px solid #ccc;
       padding-left: 1rem;
+    }
+    /* Nueva barra lateral de anuncios solo para PC */
+    .ad-sidebar {
+      flex: 1;
+      border-left: 1px solid #ccc;
+      padding-left: 1rem;
+    }
+    @media (max-width: 768px) {
+      .article-layout { flex-direction: column; }
+      .ad-sidebar { display: none; }
     }
     
     /* === BANNER Y META === */
@@ -164,9 +226,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.25);
       transition: transform 0.3s ease;
     }
-    .sidebar-article:hover {
-      transform: translateY(-2px);
-    }
+    .sidebar-article:hover { transform: translateY(-2px); }
     .sidebar-article img {
       width: 80px;
       height: 80px;
@@ -181,6 +241,24 @@
       color: #820000;
     }
     
+    /* === AD SIDEBAR (PC only) === */
+    .ad-sidebar h3 {
+      font-family: 'Botones', sans-serif;
+      color: #820000;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .ad-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+      text-align: center;
+      font-size: 1.1rem;
+      color: #820000;
+      margin-bottom: 1rem;
+    }
+    
     /* === FOOTER === */
     footer {
       background: #820000;
@@ -191,23 +269,11 @@
       font-size: 0.9rem;
       margin-top: 2rem;
     }
-    
-    /* === RESPONSIVE === */
-    @media (max-width: 768px) {
-      .article-layout {
-        flex-direction: column;
-      }
-      .article-sidebar {
-        border-left: none;
-        padding-left: 0;
-        margin-top: 2rem;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- Navegación -->
-  <nav>
+  <!-- Desktop Nav -->
+  <nav class="desktop-nav">
     <div class="nav-container container">
       <div class="logo-container">
         <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
@@ -221,14 +287,31 @@
     </div>
   </nav>
   
-  <!-- Layout Principal: Artículo y Sidebar -->
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav">
+    <img src="img/logo.png" alt="Logo Shikashi" class="logo">
+    <button id="menuToggle" class="hamburger-btn">☰</button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Inicio</a>
+      <a href="Articulos.html">Artículos</a>
+      <a href="rensai.html">RENSAI</a>
+      <a href="#">SMF Plus</a>
+    </div>
+  </nav>
+  
+  <!-- Layout de Artículo -->
   <div class="container article-layout">
     <div class="article-main" id="articleContainer">
-      <!-- El contenido del artículo se inyecta aquí -->
+      <!-- Se inyecta el contenido del artículo -->
     </div>
     <div class="article-sidebar" id="articleSidebar">
       <h3>También te puede interesar</h3>
-      <!-- Los artículos aleatorios se inyectan aquí -->
+      <!-- Se inyectan artículos aleatorios -->
+    </div>
+    <div class="ad-sidebar">
+      <h3>Anuncios</h3>
+      <div class="ad-box">Publicidad 1</div>
+      <div class="ad-box">Publicidad 2</div>
     </div>
   </div>
   
@@ -247,7 +330,6 @@
       window.location.href = 'Articulos.html';
     }
     
-    // Función para cargar el JSON de artículos
     async function fetchArticles() {
       try {
         const response = await fetch('articulos.json');
@@ -260,7 +342,6 @@
       }
     }
     
-    // Función para procesar shortcodes [imagen: ...] y [video: ...]
     function processShortcodes(text, basePath) {
       text = text.replace(/\[imagen:\s*([^\]]+)\]/gi, (match, p1) => {
         const filename = p1.trim();
@@ -284,7 +365,6 @@
       return text;
     }
     
-    // Función para parsear Markdown con front matter (YAML)
     function parseMarkdownWithFrontMatter(mdText) {
       const regex = /^---\s*([\s\S]+?)\s*---\s*([\s\S]*)$/;
       const match = mdText.match(regex);
@@ -356,6 +436,15 @@
     }
     
     loadArticle();
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+    }
   </script>
 </body>
 </html>
