@@ -4,28 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles de Rensai - Shikashi Monthly Friday Series</title>
-  <!-- Cargamos marked para convertir Markdown a HTML -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* Zoom global (igual que en index.html) */
+    /* === RESET Y BASE === */
+    @font-face {
+      font-family: 'Botones';
+      src: url('../ttf/botones.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Cuerpo';
+      src: url('../ttf/cuerpo.woff2') format('woff2');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { zoom: 0.75; }
     body {
       font-family: 'Cuerpo', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #fafafa;
+      background: linear-gradient(135deg, #fff8f5, #ffffff);
       color: #333;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     .container {
       max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
-      padding: 1rem;
-    }
-    /* Navegación */
-    nav {
-      background: #820000;
       padding: 1rem 2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* === NAVEGACIÓN === */
+    nav {
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
     }
     .nav-container {
       display: flex;
@@ -38,43 +50,98 @@
     }
     .nav-links {
       display: flex;
-      gap: 1.2rem;
+      gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
     .nav-link {
       font-family: 'Botones', sans-serif;
-      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
       color: #fff;
       text-decoration: none;
-      font-size: 0.9rem;
-      padding: 0.75rem 1.2rem;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: background 0.3s ease;
+      padding: 0.5rem 1.2rem;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(0,0,0,0.05));
+      box-shadow: inset 0 1px rgba(255,255,255,0.6);
+      transition: all 0.3s ease;
     }
-    .nav-link:hover { background-color: rgba(255,255,255,0.2); }
-    /* Layout de detalles: dos columnas */
+    .nav-link:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+    /* Mobile Navigation */
+    .mobile-nav {
+      display: none;
+      background: linear-gradient(180deg, #820000, #5c0000);
+      padding: 1rem 2rem;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .mobile-nav .logo { width: 110px; }
+    .hamburger-btn {
+      background: linear-gradient(180deg, #F4A200, #c57300);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: inset 0 1px rgba(255,255,255,0.7), 0 3px rgba(0,0,0,0.3);
+    }
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 1rem;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 50;
+    }
+    .mobile-menu.show { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 1rem;
+      color: #820000;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      background: rgba(255,255,255,0.95);
+    }
+    .mobile-menu a:hover { background: #f9f9f9; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .mobile-nav { display: flex; }
+    }
+    @media (min-width: 769px) {
+      .desktop-nav { display: block; }
+      .mobile-nav { display: none; }
+    }
+    
+    /* === LAYOUT DETALLES === */
     .details-layout {
       display: flex;
       gap: 2rem;
       margin-top: 2rem;
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 1rem;
+      border-radius: 24px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      overflow: hidden;
     }
     .details-image {
       flex: 1;
+      max-width: 400px;
     }
     .details-image img {
       width: 100%;
-      border-radius: 4px;
+      display: block;
     }
     .details-info {
       flex: 2;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -82,21 +149,22 @@
     .details-info h1 {
       font-family: 'Botones', sans-serif;
       color: #820000;
-      margin: 0 0 1rem;
-      font-size: 2rem;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     .details-info h2 {
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       color: #666;
       margin: 0.5rem 0;
     }
     .details-info .meta {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #999;
       margin-bottom: 1rem;
     }
     .details-info p {
-      font-size: 1rem;
+      font-size: 1.1rem;
       margin: 1rem 0;
     }
     .details-buttons {
@@ -109,52 +177,92 @@
       font-family: 'Botones', sans-serif;
       font-size: 1rem;
       padding: 0.75rem 1.5rem;
-      border: 1px solid #820000;
-      border-radius: 4px;
-      transition: background 0.3s ease, color 0.3s ease;
+      border-radius: 16px;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .details-buttons a.leer {
       background: #820000;
       color: #fff;
     }
+    .details-buttons a.leer:hover {
+      background: #5c0000;
+      transform: translateY(-2px);
+    }
     .details-buttons a.volver {
       background: transparent;
       color: #820000;
+      border: 2px solid #820000;
     }
     .details-buttons a.volver:hover {
       background: #820000;
       color: #fff;
+      transform: translateY(-2px);
     }
-    /* Sección extendida: contenido de la issue */
+    
+    /* === CONTENIDO EXTENDIDO === */
     .issue-content {
       margin-top: 2rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 24px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
     .issue-content h2 {
       font-family: 'Botones', sans-serif;
       color: #820000;
       margin-bottom: 1rem;
+      font-size: 2rem;
     }
     .issue-content .content {
       line-height: 1.8;
+      font-size: 1.1rem;
     }
     .issue-content .content img {
       max-width: 100%;
       display: block;
       margin: 1rem auto;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
+    
+    /* === FOOTER === */
     footer {
       background: #820000;
       color: #fff;
       text-align: center;
       padding: 1rem;
+      font-family: 'Cuerpo', sans-serif;
       font-size: 0.9rem;
       margin-top: 2rem;
+    }
+    
+    /* === RESPONSIVE AJUSTES === */
+    @media (max-width: 768px) {
+      .details-layout {
+        flex-direction: column;
+      }
+      .details-image {
+        max-width: 100%;
+      }
+      .details-info {
+        padding: 1rem;
+      }
+      .details-info h1 {
+        font-size: 2rem;
+      }
+      .details-info h2 {
+        font-size: 1.2rem;
+      }
+      .issue-content h2 {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Barra de navegación -->
-  <nav>
+  <!-- Navegación Desktop -->
+  <nav class="desktop-nav">
     <div class="nav-container container">
       <div class="logo-container">
         <img src="img/logo.png" alt="Logo de Shikashi Monthly Friday Series">
@@ -167,41 +275,38 @@
       </div>
     </div>
   </nav>
-
+  
+  <!-- Navegación Mobile -->
+  <nav class="mobile-nav">
+    <img src="img/logo.png" alt="Logo Shikashi" class="logo">
+    <button id="menuToggle" class="hamburger-btn">☰</button>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Inicio</a>
+      <a href="Articulos.html">Artículos</a>
+      <a href="rensai.html">Rensai</a>
+      <a href="#">SMF Plus</a>
+    </div>
+  </nav>
+  
   <div class="container" id="detailsContainer">
-    <!-- Se inyectarán los detalles de la issue aquí -->
+    <!-- Los detalles de la issue se inyectarán aquí -->
   </div>
-
+  
   <footer>
     © 2025 Shikashi Monthly Friday Series. Todos los derechos reservados.
   </footer>
-
+  
   <script>
     // Función para obtener parámetros de la URL
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
-
     const issueId = getQueryParam('id');
     if (!issueId) {
-      // Si no se especifica el ID, redirige a la página principal de Rensai
       window.location.href = 'rensai.html';
     }
-
-    // Función para cargar issues.json
-    async function fetchIssues() {
-      try {
-        const response = await fetch('issues.json');
-        if (!response.ok) throw new Error('Error al cargar issues.json');
-        const issues = await response.json();
-        return issues;
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
-    }
-
+    
     // Función para parsear Markdown con front matter (YAML)
     function parseMarkdownWithFrontMatter(mdText) {
       const regex = /^---\s*([\s\S]+?)\s*---\s*([\s\S]*)$/;
@@ -220,25 +325,24 @@
       }
       return { meta: {}, content: mdText };
     }
-
+    
     async function loadIssueDetails() {
-      const issues = await fetchIssues();
-      const issue = issues.find(i => i.id === issueId);
-      if (!issue) {
-        window.location.href = 'rensai.html';
-        return;
-      }
       try {
-        // Cargar el archivo Issue.md
+        const response = await fetch('issues.json');
+        if (!response.ok) throw new Error('Error al cargar issues.json');
+        const issues = await response.json();
+        const issue = issues.find(i => i.id === issueId);
+        if (!issue) {
+          window.location.href = 'rensai.html';
+          return;
+        }
         const mdResponse = await fetch(issue.path);
         if (!mdResponse.ok) throw new Error('Error al cargar el archivo markdown');
         const mdText = await mdResponse.text();
         const { meta, content } = parseMarkdownWithFrontMatter(mdText);
-        // Se asume que la portada se encuentra en la misma carpeta que Issue.md
         const basePath = issue.path.substring(0, issue.path.lastIndexOf('/'));
         const portada = basePath + '/Portada.png';
-
-        // Construir el HTML de los detalles
+    
         const container = document.getElementById('detailsContainer');
         container.innerHTML = `
           <div class="details-layout">
@@ -271,8 +375,17 @@
         window.location.href = 'rensai.html';
       }
     }
-
+    
     loadIssueDetails();
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+    }
   </script>
 </body>
 </html>
